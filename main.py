@@ -16,7 +16,7 @@ def main():
         w1 = l_sentence[s]
         w2 = l_sentence[s+1]
         g.add_edge(w1, w2, v.edge_weight(w1, w2))
-    g.plot_graph()
+    #g.plot_graph()
 
 if __name__ == "__main__":
     main()
