@@ -8,7 +8,7 @@ class NodeFeatures(object):
 
     def edge_weight(self, v1, v2):
         cos = self.w2v_model.similarity(v1, v2)
-        print(v1, v2, cos)
+        #print(v1, v2, cos)
         return cos
 
     def vertex_w2v_features(self, v):
