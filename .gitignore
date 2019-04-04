@@ -71,3 +71,5 @@ dkms.conf
 .nfs*
 
 # End of https://www.gitignore.io/api/c,linux
+
+*.bin
