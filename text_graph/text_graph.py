@@ -17,7 +17,7 @@ class TextGraph(object):
         self.graph.add_edge(v1, v2, weight=w)
 
     def plot_graph(self):
-        options = {'node_color': 'lightskyblue', 'node_size': 10000, 'with_labels': 'True'}
+        options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
         edge_labels = nx.get_edge_attributes(self.graph,'weight')
         pos=nx.spring_layout(self.graph)
         nx.draw(self.graph, pos, **options)
