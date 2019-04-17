@@ -3,6 +3,7 @@
 from os import listdir
 import nltk
 import string
+import collections
 
 class Dataset(object):
     def __init__(self, dataset):
@@ -12,7 +13,9 @@ class Dataset(object):
         self.test_data = None
         self.test_labels = None
         self.validation_data = None
+        self.validation_labels = None
         self.stop_words = set(nltk.corpus.stopwords.words('english'))
+        self.vocabulary = collections.Counter()
 
     def read_polarity(self):
         dataset = "datasets/polarity/txt_sentoken/"
@@ -38,12 +41,14 @@ class Dataset(object):
         self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
 
     def pre_process_data(self):
+        # decide if filter small words
         clean_texts = []
         for tokens in self.train_data:
             table = str.maketrans('', '', string.punctuation)
             tokens = [w.translate(table) for w in tokens] #remove punctuation
             tokens = [word for word in tokens if word.isalpha()] #remove non alphabetic tokens
             tokens = [w for w in tokens if not w in self.stop_words]
+            self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.train_data = clean_texts
 
@@ -53,17 +58,42 @@ class Dataset(object):
             tokens = [w.translate(table) for w in tokens]
             tokens = [word for word in tokens if word.isalpha()]
             tokens = [w for w in tokens if not w in self.stop_words]
+            self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.test_data = clean_texts
 
+    #remove uncommon words
+    def remove_words(self):
+        vocab, count = zip(*self.vocabulary.most_common())
+        cutoff = count.index(4)
+        vocab = set(vocab[:cutoff])
+        self.vocabulary = collections.Counter()
+        clean_texts = []
+        for tokens in self.train_data:
+            tokens = [word for word in tokens if word in vocab]         
+            self.vocabulary.update(tokens)
+            clean_texts.append(tokens)
+        self.train_data = clean_texts
+        
+        clean_texts = []
+        for tokens in self.test_data:
+            tokens = [word for word in tokens if word in vocab]         
+            self.vocabulary.update(tokens)
+            clean_texts.append(tokens)
+        self.text_data = clean_texts
+
+    def voc_stats(self):
+        print("Size: ", len(self.vocabulary))
+        print("Most common words")
+        print(self.vocabulary.most_common(50))
 
     def small_debug(self):
         print("=== DEBUG ===")
-        print("=== TRAIN ===")
+        print("=== TRAIN === ", len(self.train_data))
         for i in range(0, 3):
             print(self.train_data[i])
             print(self.train_labels[i])
-        print("=== TEST ===")
+        print("=== TEST === ", len(self.test_data))
         for i in range(0, 3):
             print(self.test_data[i])
             print(self.test_labels[i])
