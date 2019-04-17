@@ -3,8 +3,13 @@
 import gensim
 
 class NodeFeatures(object):
-    def __init__(self):
-        self.w2v_model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin', binary=True)
+    def __init__(self, dataset):
+        self.model = None
+        self.dataset = dataset
+
+    def load_model(self):
+        #load model from specific datset 
+        pass
 
     def edge_weight(self, v1, v2):
         cos = self.w2v_model.similarity(v1, v2)
