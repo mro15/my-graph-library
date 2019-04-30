@@ -41,6 +41,8 @@ class Dataset(object):
         self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
 
     def pre_process_data(self):
+        stem = nltk.stem.PorterStemmer()
+        lem = nltk.stem.WordNetLemmatizer()
         # decide if filter small words
         clean_texts = []
         for tokens in self.train_data:
@@ -48,6 +50,8 @@ class Dataset(object):
             tokens = [w.translate(table) for w in tokens] #remove punctuation
             tokens = [word for word in tokens if word.isalpha()] #remove non alphabetic tokens
             tokens = [w for w in tokens if not w in self.stop_words]
+            tokens = [stem.stem(w) for w in tokens]
+            tokens = [lem.lemmatize(w) for w in tokens]
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.train_data = clean_texts
@@ -58,9 +62,12 @@ class Dataset(object):
             tokens = [w.translate(table) for w in tokens]
             tokens = [word for word in tokens if word.isalpha()]
             tokens = [w for w in tokens if not w in self.stop_words]
+            tokens = [stem.stem(w) for w in tokens]
+            tokens = [lem.lemmatize(w) for w in tokens]
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.test_data = clean_texts
+
 
     #remove uncommon words
     def remove_words(self):
@@ -83,6 +90,7 @@ class Dataset(object):
         self.text_data = clean_texts
 
     def voc_stats(self):
+        print("====== Vocabulary ======")
         print("Size: ", len(self.vocabulary))
         print("Most common words")
         print(self.vocabulary.most_common(50))
