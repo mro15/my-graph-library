@@ -41,13 +41,16 @@ class Dataset(object):
         self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
 
     def pre_process_data(self):
+        tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
         stem = nltk.stem.PorterStemmer()
         lem = nltk.stem.WordNetLemmatizer()
-        # decide if filter small words
         clean_texts = []
-        for tokens in self.train_data:
-            table = str.maketrans('', '', string.punctuation)
-            tokens = [w.translate(table) for w in tokens] #remove punctuation
+        for token in self.train_data:
+            tokens = ""
+            for w in token:
+                tokens =  tokens + w + " "
+            tokens = tokens.lower()
+            tokens = tokenizer.tokenize(tokens)
             tokens = [word for word in tokens if word.isalpha()] #remove non alphabetic tokens
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]
@@ -57,9 +60,12 @@ class Dataset(object):
         self.train_data = clean_texts
 
         clean_texts = []
-        for tokens in self.test_data:
-            table = str.maketrans('', '', string.punctuation)
-            tokens = [w.translate(table) for w in tokens]
+        for token in self.test_data:
+            tokens = ""
+            for w in token:
+                tokens = tokens + w + " "
+            tokens = tokens.lower()
+            tokens = tokenizer.tokenize(tokens)
             tokens = [word for word in tokens if word.isalpha()]
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]
