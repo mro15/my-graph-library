@@ -16,6 +16,7 @@ class Dataset(object):
         self.validation_labels = None
         self.stop_words = set(nltk.corpus.stopwords.words('english'))
         self.vocabulary = collections.Counter()
+        self.classes = 0
 
     def read_polarity(self):
         dataset = "datasets/polarity/txt_sentoken/"
@@ -39,6 +40,7 @@ class Dataset(object):
         test_pos = data["pos"][int(len(data["pos"])/2):]
         self.test_data = test_neg + test_pos
         self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
+        self.classes = 2
 
     def pre_process_data(self):
         tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
