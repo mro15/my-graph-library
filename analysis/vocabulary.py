@@ -8,9 +8,9 @@ import numpy as np
 def all_voc_analysis(d):
     print("VOCABULARY SIZE: ", len(d.vocabulary))
     print("=== MOST COMMON WORDS ===")
-    print(d.vocabulary.most_common(50))
+    print(d.vocabulary.most_common(100))
     print("=== MOST UNCOMMON WORDS ===")
-    print(d.vocabulary.most_common()[:-50-1:-1])
+    print(d.vocabulary.most_common()[:-100-1:-1])
 
 def pos_voc_analysis(d):
     pos_voc = collections.Counter()
@@ -26,9 +26,9 @@ def pos_voc_analysis(d):
     print("====== Positive Vocabulary ======")
     print("Size: ", len(pos_voc))
     print("Most common words")
-    print(pos_voc.most_common(50))
+    print(pos_voc.most_common(100))
     print("=== MOST UNCOMMON WORDS ===")
-    print(pos_voc.most_common()[:-50-1:-1])
+    print(pos_voc.most_common()[:-100-1:-1])
     return pos_voc
 
 def neg_voc_analysis(d):
@@ -45,17 +45,18 @@ def neg_voc_analysis(d):
     print("====== Negative Vocabulary ======")
     print("Size: ", len(neg_voc))
     print("Most common words")
-    print(neg_voc.most_common(50))
+    print(neg_voc.most_common(100))
     print("=== MOST UNCOMMON WORDS ===")
-    print(neg_voc.most_common()[:-50-1:-1])
+    print(neg_voc.most_common()[:-100-1:-1])
     return neg_voc
 
 def plot_analysis(vocabulary, x_name, y_name, g_name, g_save):
-    d = collections.OrderedDict(vocabulary.most_common(50)) #falta ordenar
-    x = list(range(50))
+    d = collections.OrderedDict(vocabulary.most_common(100))
+    x = list(range(100))
     words = list(d.keys())
     counts = list(d.values())
     #print(words, counts)
+    plt.figure(figsize=(15,5))
     plt.bar(x, counts)
     plt.xticks(x, words)
     plt.xticks(rotation=90)
