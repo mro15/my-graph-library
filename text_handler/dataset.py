@@ -42,6 +42,27 @@ class Dataset(object):
         self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
         self.classes = 2
 
+    def read_imdb(self):
+        dataset = "datasets/imdb/aclImdb/"
+        data = {}
+        data["train"] = {}
+        data["train"]["neg"] = []
+        data["train"]["pos"] = []
+        data["test"] = {}
+        data["test"]["neg"] = []
+        data["test"]["pos"] = []
+        for i in ["train", "test"]:
+            for j in ["pos", "neg"]:
+                files = listdir(dataset+i+"/"+j+"/")
+                for f in files:
+                    fp = open(dataset+i+"/"+j+"/"+f, 'r')
+                    data[i][j].append(fp.read().split())
+        
+        self.train_data = data["train"]["neg"] + data["train"]["pos"]
+        self.train_labels = [0]*len(data["train"]["neg"]) + [1]*len(data["train"]["pos"])
+        self.test_data = data["test"]["neg"] + data["test"]["pos"]
+        self.test_labels = [0]*len(data["test"]["neg"]) + [1]*len(data["test"]["pos"])
+
     def pre_process_data(self):
         tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
         stem = nltk.stem.PorterStemmer()

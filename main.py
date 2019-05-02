@@ -19,8 +19,8 @@ def main():
         d.read_polarity()
     elif args.dataset == "imdb":
         d = Dataset(args.dataset)
-        exit()
-        #d.read_polarity()
+        d.read_imdb()
+        d.small_debug()
     else:
         print("Error: dataset name unknown")
         return 1

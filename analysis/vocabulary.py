@@ -56,7 +56,7 @@ def plot_analysis(vocabulary, x_name, y_name, g_name, g_save):
     words = list(d.keys())
     counts = list(d.values())
     #print(words, counts)
-    plt.figure(figsize=(15,5))
+    plt.figure(figsize=(20,10))
     plt.bar(x, counts)
     plt.xticks(x, words)
     plt.xticks(rotation=90)
