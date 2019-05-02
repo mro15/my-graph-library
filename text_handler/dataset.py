@@ -62,6 +62,7 @@ class Dataset(object):
         self.train_labels = [0]*len(data["train"]["neg"]) + [1]*len(data["train"]["pos"])
         self.test_data = data["test"]["neg"] + data["test"]["pos"]
         self.test_labels = [0]*len(data["test"]["neg"]) + [1]*len(data["test"]["pos"])
+        self.classes = 2
 
     def pre_process_data(self):
         tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
