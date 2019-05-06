@@ -75,10 +75,11 @@ class Dataset(object):
                 tokens =  tokens + w + " "
             tokens = tokens.lower()
             tokens = tokenizer.tokenize(tokens)
-            tokens = [word for word in tokens if word.isalpha()] #remove non alphabetic tokens
+            tokens = [word for word in tokens if word.isalpha() and (word!="br")] #remove non alphabetic tokens
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]
             tokens = [lem.lemmatize(w) for w in tokens]
+            tokens = [w for w in tokens if not (w=="br")]
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.train_data = clean_texts
@@ -90,7 +91,7 @@ class Dataset(object):
                 tokens = tokens + w + " "
             tokens = tokens.lower()
             tokens = tokenizer.tokenize(tokens)
-            tokens = [word for word in tokens if word.isalpha()]
+            tokens = [word for word in tokens if word.isalpha() and (word!="br")]
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]
             tokens = [lem.lemmatize(w) for w in tokens]
