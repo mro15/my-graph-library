@@ -20,7 +20,6 @@ def main():
     elif args.dataset == "imdb":
         d = Dataset(args.dataset)
         d.read_imdb()
-        d.small_debug()
     else:
         print("Error: dataset name unknown")
         return 1
@@ -29,18 +28,32 @@ def main():
     #for now I will not remove any word
     #d.remove_words()
 
+    #vocabulary analysis
+    """
     an.all_voc_analysis(d)
     pos_voc = an.pos_voc_analysis(d)
     neg_voc = an.neg_voc_analysis(d)
     an.plot_analysis(d.vocabulary, "words", "count", args.dataset + " all classes", args.dataset + "_all")
     an.plot_analysis(pos_voc, "words", "count", args.dataset + " positive class", args.dataset + "_pos")
     an.plot_analysis(neg_voc, "words", "count", args.dataset + " negative class", args.dataset + "_neg")
+    """
 
-    #train_graphs, test_graphs = utils.graph_strategy_one(d)
-    #print(len(train_graphs), len(test_graphs))
+    #graph construction
+    train_graphs, test_graphs = utils.graph_strategy_two(d, 3)
+    print(len(train_graphs), len(test_graphs))
     #plot graphs
-    #for i in train_graphs:
-    #    i.plot_graph()
+    """
+    cont = 0
+    for i in train_graphs:
+        if cont < 10:
+            i.plot_graph()
+            cont = cont + 1
+    cont = 0
+    for i in test_graphs:
+        if cont < 10:
+            i.plot_graph()
+            cont = cont + 1
+    """
 
 if __name__ == "__main__":
     main()
