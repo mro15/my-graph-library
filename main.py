@@ -6,6 +6,7 @@ from text_graph.node_features import NodeFeatures
 from text_handler.dataset import Dataset
 import utils
 import analysis.vocabulary as an
+from representation_learning.representation_learning import RepresentationLearning
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
@@ -43,6 +44,7 @@ def main():
     print(len(train_graphs), len(test_graphs))
     #plot graphs
     """
+    # DEBUG
     cont = 0
     for i in train_graphs:
         if cont < 10:
@@ -54,6 +56,21 @@ def main():
             i.plot_graph()
             cont = cont + 1
     """
+    print("=== STARTING RL IN TRAIN GRAPHS ===")
+    for i in train_graphs:
+        rl = RepresentationLearning(i, 1)
+        rl.initialize_rl_class()
+        rl.representation_method.initialize_model(5, 10, 200)
+        rl.representation_method.train()
+    print("=== FINISHED RL IN TRAIN GRAPHS ===")
+
+    print("=== STARTING RL IN TEST GRAPHS ===")
+    for i in test_graphs:
+        rl = RepresentationLearning(i, 1)
+        rl.initialize_rl_class()
+        rl.representation_method.initialize_model(5, 10, 200)
+        rl.representation_method.train()
+    print("=== FINISHED RL IN TEST GRAPHS ===")
 
 if __name__ == "__main__":
     main()

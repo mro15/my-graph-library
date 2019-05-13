@@ -80,7 +80,7 @@ def graph_strategy_two(d, k):
         g.plot_graph()
         exit()
         """
-        train_graphs.append(g)
+        train_graphs.append(g.graph)
 
     print("FINISHED TRAIN GRAPHS") 
     for i in d.test_data:
@@ -99,7 +99,7 @@ def graph_strategy_two(d, k):
                 w2 = i[rn]
                 g.add_vertex(w2)
                 g.add_edge(w1, w2)
-        test_graphs.append(g)
+        test_graphs.append(g.graph)
     
     print("FINISHED TEST GRAPHS") 
 
