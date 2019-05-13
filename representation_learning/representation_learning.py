@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 from representation_learning.rl_node2vec import MyNode2Vec
+import numpy as np
 
 class RepresentationLearning(object):
     def __init__(self, graph, method):
@@ -20,5 +21,18 @@ class RepresentationLearning(object):
             #print("=== REPRESENTATION LEARNING: UNKNOWN ===")
             return False
 
+    def set_features(self):
+        self.mean, self.median, self.standard_deviation = self.representation_method.embeddings_compact()
+
+    def get_features(self):
+        mean_str = " ".join(str(e) for e in self.mean)
+        median_str = " ".join(str(e) for e in self.median)
+        std_str = " ".join(str(e) for e in self.standard_deviation)
+        return mean_str + " " + median_str + " "  + std_str + " "
+
+    def print_features(self):
+        print("MEAN: ", self.mean)
+        print("MEDIAN: ", self.median)
+        print("STD: ", self.standard_deviation)
 
 
