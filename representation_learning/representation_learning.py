@@ -13,12 +13,10 @@ class RepresentationLearning(object):
         self.standard_deviation = 0
 
     def initialize_rl_class(self):
-        if self.method == 1:
-            #print("=== REPRESENTATION LEARNING: NODE2VEC ===")
+        if self.method == "node2vec":
             self.representation_method = MyNode2Vec(self.graph)
             return True
         else:
-            #print("=== REPRESENTATION LEARNING: UNKNOWN ===")
             return False
 
     def set_features(self):

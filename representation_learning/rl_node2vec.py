@@ -8,9 +8,13 @@ class MyNode2Vec(object):
         self.graph = graph
         self.model  = None
         self.trained_model = None
+        self.dim = 50
+        self.walk_length = 10
+        self.num_walks = 100
+        self.workers = 2
 
-    def initialize_model(self, dim, walk, num_walks):
-        self.model = Node2Vec(self.graph, dimensions=dim, walk_length=walk, num_walks=num_walks, workers=1) 
+    def initialize_model(self):
+        self.model = Node2Vec(self.graph, dimensions=self.dim, walk_length=self.walk_length, num_walks=self.num_walks, workers=self.workers) 
 
     def train(self):
         self.trained_model = self.model.fit(window=10, min_count=1, batch_words=4)
