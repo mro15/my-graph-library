@@ -7,6 +7,7 @@ from text_handler.dataset import Dataset
 import utils
 import analysis.vocabulary as an
 from representation_learning.representation_learning import RepresentationLearning
+from vector_representation_learning.rl_bert import MyBert
 from features.features import Features
 
 def read_args():
@@ -37,6 +38,46 @@ def plot_graphs(train_graphs, test_graphs):
             i.plot_graph()
             cont = cont + 1
 
+def graph_methods(d, method):
+    d.pre_process_data()
+    #for now I will not remove any word
+    #d.remove_words()
+
+    #graph construction
+    train_graphs, test_graphs = utils.graph_strategy_two(d, 3)
+    print(len(train_graphs), len(test_graphs))
+
+    #extract and write graph features
+    features_out = Features(d.dataset)
+    file_train = features_out.open_file(method + "train")
+    print("=== STARTING RL IN TRAIN GRAPHS ===")
+    for i in range(0, len(train_graphs)):
+        rl = RepresentationLearning(train_graphs[i], method)
+        rl.initialize_rl_class()
+        rl.representation_method.initialize_model()
+        rl.representation_method.train()
+        rl.set_features()
+        feat = rl.get_features()
+        features_out.write_in_file(file_train, feat, str(d.train_labels[i]))
+    print("=== FINISHED RL IN TRAIN GRAPHS ===")
+
+    file_test = features_out.open_file(method + "test")
+    print("=== STARTING RL IN TEST GRAPHS ===")
+    for i in range(0, len(test_graphs)):
+        rl = RepresentationLearning(test_graphs[i], method)
+        rl.initialize_rl_class()
+        rl.representation_method.initialize_model()
+        rl.representation_method.train()
+        rl.set_features()
+        feat = rl.get_features()
+        features_out.write_in_file(file_test, feat, str(d.test_labels[i]))
+    print("=== FINISHED RL IN TEST GRAPHS ===")
+
+def vector_methods(d, method):
+    bert = MyBert()
+    bert.get_embeddings(d.train_data[0])
+    bert.get_embeddings(d.train_data[1])
+
 def main():
     args = read_args()
     if args.dataset == "polarity":
@@ -49,39 +90,11 @@ def main():
         print("Error: dataset name unknown")
         return 1
 
-    d.pre_process_data()
-    #for now I will not remove any word
-    #d.remove_words()
-
-    #graph construction
-    train_graphs, test_graphs = utils.graph_strategy_two(d, 3)
-    print(len(train_graphs), len(test_graphs))
-
-    #extract and write graph features
-    features_out = Features(d.dataset)
-    file_train = features_out.open_file("train")
-    print("=== STARTING RL IN TRAIN GRAPHS ===")
-    for i in range(0, len(train_graphs)):
-        rl = RepresentationLearning(train_graphs[i], args.method)
-        rl.initialize_rl_class()
-        rl.representation_method.initialize_model()
-        rl.representation_method.train()
-        rl.set_features()
-        feat = rl.get_features()
-        features_out.write_in_file(file_train, feat, str(d.train_labels[i]))
-    print("=== FINISHED RL IN TRAIN GRAPHS ===")
-
-    file_test = features_out.open_file("test")
-    print("=== STARTING RL IN TEST GRAPHS ===")
-    for i in range(0, len(test_graphs)):
-        rl = RepresentationLearning(test_graphs[i], args.method)
-        rl.initialize_rl_class()
-        rl.representation_method.initialize_model()
-        rl.representation_method.train()
-        rl.set_features()
-        feat = rl.get_features()
-        features_out.write_in_file(file_test, feat, str(d.test_labels[i]))
-    print("=== FINISHED RL IN TEST GRAPHS ===")
+    g_methods = ["node2vec"]
+    if args.method in g_methods:
+        graph_methods(d, args.method)
+    else:
+        vector_methods(d, args.method)
 
 if __name__ == "__main__":
     main()
