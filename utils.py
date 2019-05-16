@@ -3,6 +3,8 @@
 from text_graph.text_graph import TextGraph
 from text_graph.node_features import NodeFeatures
 from text_handler.dataset import Dataset
+import matplotlib.pyplot as plt
+import networkx as nx
 
 """
     parameters:
@@ -104,6 +106,14 @@ def graph_strategy_two(d, k):
     print("FINISHED TEST GRAPHS") 
 
     return train_graphs, test_graphs
+
+def plot_graph(g):
+        options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
+        edge_labels = nx.get_edge_attributes(g,'weight')
+        pos=nx.spring_layout(g)
+        nx.draw(g, pos, **options)
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
+        plt.show()
 
 def my_pmi(d):
     windows = {}

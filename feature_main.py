@@ -26,17 +26,11 @@ def voc_analysis(d):
     an.plot_analysis(neg_voc, "words", "count", args.dataset + " negative class", args.dataset + "_neg")
 
 #plot some graphs to test
-def plot_graphs(train_graphs, test_graphs):
-    cont = 0
-    for i in train_graphs:
-        if cont < 10:
-            i.plot_graph()
-            cont = cont + 1
-    cont = 0
-    for i in test_graphs:
-        if cont < 10:
-            i.plot_graph()
-            cont = cont + 1
+def plot_graphs(train_graphs, test_graphs, size):
+    for i in range(0, size):
+        utils.plot_graph(train_graphs[i])
+    for i in range(0, size):
+        utils.plot_graph(test_graphs[i])
 
 def graph_methods(d, method):
     d.pre_process_data()
