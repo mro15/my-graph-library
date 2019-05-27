@@ -5,6 +5,7 @@ from text_graph.node_features import NodeFeatures
 from text_handler.dataset import Dataset
 import matplotlib.pyplot as plt
 import networkx as nx
+from tqdm import tqdm
 
 """
     parameters:
@@ -54,7 +55,9 @@ def graph_strategy_two(d, k):
     #build nodes
     #pass coocurrence window to build edges
     #build train graphs
-    for i in d.train_data:
+    progress = tqdm(d.train_data)
+    print("BUILDING TRAIN GRAPHS")
+    for i in progress:
         g = TextGraph(d.dataset)
         #print("sentence: ", i)
         for j in range(0, len(i)-k):
@@ -81,9 +84,11 @@ def graph_strategy_two(d, k):
         exit()
         """
         train_graphs.append(g.graph)
+    print("FINISHED TRAIN GRAPHS")
 
-    print("FINISHED TRAIN GRAPHS") 
-    for i in d.test_data:
+    progress = tqdm(d.test_data)
+    print("BUILDING TEST GRAPHS")
+    for i in progress:
         g = TextGraph(d.dataset)
         for j in range(0, len(i)-k):
             w1 = i[j]
@@ -99,8 +104,7 @@ def graph_strategy_two(d, k):
                 w2 = i[rn]
                 g.add_vertex(w2)
                 g.add_edge(w1, w2)
-        test_graphs.append(g.graph)
-    
+        test_graphs.append(g.graph) 
     print("FINISHED TEST GRAPHS") 
 
     return train_graphs, test_graphs
