@@ -53,8 +53,6 @@ def graph_strategy_two(d, k):
     test_graphs = []
     #build nodes
     #pass coocurrence window to build edges
-    #calculate PMI as weight
-    #write the graphs in some place
     #build train graphs
     for i in d.train_data:
         g = TextGraph(d.dataset)
@@ -62,7 +60,7 @@ def graph_strategy_two(d, k):
         for j in range(0, len(i)-k):
             w1 = i[j]
             g.add_vertex(w1)
-            for s in range(j+1, j+k+1):
+            for s in range(j+1, j+k):
                 w2 = i[s]
                 g.add_vertex(w2)
                 g.add_edge(w1, w2)
@@ -90,7 +88,7 @@ def graph_strategy_two(d, k):
         for j in range(0, len(i)-k):
             w1 = i[j]
             g.add_vertex(w1)
-            for s in range(j+1, j+k+1):
+            for s in range(j+1, j+k):
                 w2 = i[s]
                 g.add_vertex(w2)
                 g.add_edge(w1, w2)
