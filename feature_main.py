@@ -14,6 +14,7 @@ def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "bert"], help='representation method', required=True)
+    parser.add_argument('--window', type=int,  help='window size', required=True)
     return parser.parse_args()
 
 #vocabulary analysis
@@ -32,13 +33,13 @@ def plot_graphs(train_graphs, test_graphs, size):
     for i in range(0, size):
         utils.plot_graph(test_graphs[i])
 
-def graph_methods(d, method):
+def graph_methods(d, method, window_size):
     d.pre_process_data()
     #for now I will not remove any word
     #d.remove_words()
 
     #graph construction
-    train_graphs, test_graphs = utils.graph_strategy_two(d, 3)
+    train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
     print(len(train_graphs), len(test_graphs))
 
     #extract and write graph features
@@ -86,7 +87,7 @@ def main():
 
     g_methods = ["node2vec"]
     if args.method in g_methods:
-        graph_methods(d, args.method)
+        graph_methods(d, args.method, args.window)
     else:
         vector_methods(d, args.method)
 
