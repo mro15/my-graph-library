@@ -60,20 +60,30 @@ def graph_strategy_two(d, k):
     for i in progress:
         g = TextGraph(d.dataset)
         #print("sentence: ", i)
-        for j in range(0, len(i)-k):
-            w1 = i[j]
-            g.add_vertex(w1)
-            for s in range(j+1, j+k):
-                w2 = i[s]
-                g.add_vertex(w2)
-                g.add_edge(w1, w2)
-        #remainder
-        for r in range(j, len(i)):
-            w1 = i[r]
-            for rn in range(r+1, len(i)):
-                w2 = i[rn]
-                g.add_vertex(w2)
-                g.add_edge(w1, w2)
+        size = len(i)
+        if size > k:
+            for j in range(0, size-k):
+                w1 = i[j]
+                g.add_vertex(w1)
+                for s in range(j+1, j+k):
+                    w2 = i[s]
+                    g.add_vertex(w2)
+                    g.add_edge(w1, w2)
+            #remainder
+            for r in range(j, size):
+                w1 = i[r]
+                for rn in range(r+0, size):
+                    w2 = i[rn]
+                    g.add_vertex(w2)
+                    g.add_edge(w1, w2)
+        else:
+            for j in range(0, size):
+                w1 = i[j]
+                g.add_vertex(w1)
+                for s in range(j+1, size):
+                    w2 = i[s]
+                    g.add_vertex(w2)
+                    g.add_edge(w1, w2)
         """
         #debug
         print("---- NODES ----")
@@ -90,20 +100,30 @@ def graph_strategy_two(d, k):
     print("BUILDING TEST GRAPHS")
     for i in progress:
         g = TextGraph(d.dataset)
-        for j in range(0, len(i)-k):
-            w1 = i[j]
-            g.add_vertex(w1)
-            for s in range(j+1, j+k):
-                w2 = i[s]
-                g.add_vertex(w2)
-                g.add_edge(w1, w2)
-        #remainder
-        for r in range(j, len(i)):
-            w1 = i[r]
-            for rn in range(r+1, len(i)):
-                w2 = i[rn]
-                g.add_vertex(w2)
-                g.add_edge(w1, w2)
+        size = len(i)
+        if size > k:
+            for j in range(0, size-k):
+                w1 = i[j]
+                g.add_vertex(w1)
+                for s in range(j+1, j+k):
+                    w2 = i[s]
+                    g.add_vertex(w2)
+                    g.add_edge(w1, w2)
+            #remainder
+            for r in range(j, size):
+                w1 = i[r]
+                for rn in range(r+1, size):
+                    w2 = i[rn]
+                    g.add_vertex(w2)
+                    g.add_edge(w1, w2)
+        else:
+            for j in range(0, size):
+                w1 = i[j]
+                g.add_vertex(w1)
+                for s in range(j+1, size):
+                    w2 = i[s]
+                    g.add_vertex(w2)
+                    g.add_edge(w1, w2)
         test_graphs.append(g.graph) 
     print("FINISHED TEST GRAPHS") 
 
