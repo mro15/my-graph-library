@@ -79,7 +79,6 @@ class Dataset(object):
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]
             tokens = [lem.lemmatize(w) for w in tokens]
-            tokens = [w for w in tokens if not (w=="br")]
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.train_data = clean_texts
