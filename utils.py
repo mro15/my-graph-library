@@ -137,6 +137,11 @@ def plot_graph(g):
         nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
         plt.show()
 
+#TODO:
+#count windows per words
+#count windows by payr of words
+#sum all windows
+#calculate PMI
 def my_pmi(d):
     windows = {}
     return windows
