@@ -52,7 +52,7 @@ def main():
     args = read_args()
     x_train, y_train, x_test, y_test = read_features(args.train, args.test)
     
-    classifiers = {"nb" : GaussianNB(), "rf": RandomForestClassifier()} 
+    classifiers = {"nb" : GaussianNB(), "rf": RandomForestClassifier(n_estimators=1000)} 
     print(len(x_train), len(y_train))
     print(len(x_test), len(y_test))
     classify(x_train, y_train, x_test, y_test, classifiers[args.classifier])
