@@ -9,7 +9,7 @@ class MyNode2Vec(object):
         self.model  = None
         self.trained_model = None
         self.dim = 50
-        self.walk_length = 10
+        self.walk_length = 20
         self.num_walks = 100
         self.workers = 2
 
