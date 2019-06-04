@@ -6,6 +6,7 @@ from text_handler.dataset import Dataset
 import matplotlib.pyplot as plt
 import networkx as nx
 from tqdm import tqdm
+import itertools
 
 """
     parameters:
@@ -48,7 +49,7 @@ def graph_strategy_one(d):
     print("FINISHED TEST GRAPHS") 
     return train_graphs, test_graphs
 
-#each node is a word from document
+#each node is a word from document and has no edge weight
 def graph_strategy_two(d, k):
     train_graphs = []
     test_graphs = []
@@ -139,9 +140,94 @@ def plot_graph(g):
 
 #TODO:
 #count windows per words
-#count windows by payr of words
+#count windows by pair of words
 #sum all windows
 #calculate PMI
 def my_pmi(d):
     windows = {}
+
     return windows
+
+def total_windows(text, k):
+    return len(text)+k-1
+
+def windows_in_pair(w1, w2):
+    pass
+
+def windows_in_word(w1, total_windows):
+    pass
+
+def build_windows(text, k):
+    iterable = iter(text)
+    result = tuple(itertools.islice(iterable, k))
+    if len(result)==k:
+        yield list(result)
+    for element in iterable:
+        result = result[1:] + (element,)
+        yield list(result)
+
+#each node is a word from document and edge weight is given by PMI
+def graph_strategy_three(d, k):
+    train_graphs = []
+    test_graphs = []
+    progress = tqdm(d.train_data)
+    print("BUILDING TRAIN GRAPHS")
+    for i in progress:
+        g = TextGraph(d.dataset)
+        #print("sentence: ", i)
+        size = len(i)
+        if size > k:
+            windows = build_windows(i, k)
+            for j in windows:
+                #get the word co-occurrences in a window
+                co_words = list(itertools.combinations(j,2))
+                for cw in co_words:
+                    g.add_vertex(cw[0])
+                    g.add_vertex(cw[1])
+                    g.add_edge(cw[0], cw[1])
+        else:
+            #get the word co-occurrences in a window
+            co_words = list(itertools.combinations(i,2))
+            for cw in co_words:
+                g.add_vertex(cw[0])
+                g.add_vertex(cw[1])
+                g.add_edge(cw[0], cw[1])
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+        train_graphs.append(g.graph)
+    print("FINISHED TRAIN GRAPHS")
+
+    progress = tqdm(d.test_data)
+    print("BUILDING TEST GRAPHS")
+    for i in progress:
+        g = TextGraph(d.dataset)
+        size = len(i)
+        if size > k:
+            windows = build_windows(i, k)
+            for j in windows:
+                #get the word co-occurrences in a window
+                co_words = list(itertools.combinations(j,2))
+                for cw in co_words:
+                    g.add_vertex(cw[0])
+                    g.add_vertex(cw[1])
+                    g.add_edge(cw[0], cw[1])
+        else:
+            #get the word co-occurrences in a window
+            co_words = list(itertools.combinations(i,2))
+            for cw in co_words:
+                g.add_vertex(cw[0])
+                g.add_vertex(cw[1])
+                g.add_edge(cw[0], cw[1])
+
+        test_graphs.append(g.graph) 
+    print("FINISHED TEST GRAPHS") 
+
+    return train_graphs, test_graphs
+

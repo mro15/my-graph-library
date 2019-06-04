@@ -39,9 +39,9 @@ def graph_methods(d, method, window_size):
     #d.remove_words()
 
     #graph construction
-    train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
+    train_graphs, test_graphs = utils.graph_strategy_three(d, window_size)
     print(len(train_graphs), len(test_graphs))
-    
+
     #extract and write graph features
     features_out = Features(d.dataset)
     file_train = features_out.open_file(method + "train")
