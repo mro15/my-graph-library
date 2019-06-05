@@ -10,6 +10,7 @@ def read_args():
     parser.add_argument('--view', type=str, choices=["tsne", "pca"], help='visualization method', required=True)   
     parser.add_argument('--train', type=str, help='path for train file', required=True)   
     parser.add_argument('--test', type=str, help='path for test file', required=True)   
+    parser.add_argument('--dataset', type=str, help='path for test file', required=True)   
     return parser.parse_args()
 
 def read_features(train_path, test_path, i_x, i_y):
@@ -63,15 +64,15 @@ def main():
     args = read_args()
     
     x_train, y_train, x_test, y_test = read_features(args.train, args.test, 1, -1)
-    plot_tsne(x_train+x_test, y_train+y_test, "polarity_mean_median_sd")
+    plot_tsne(x_train+x_test, y_train+y_test, args.dataset+"_mean_median_sd")
     x_train, y_train, x_test, y_test = read_features(args.train, args.test, 1, 51)
-    plot_tsne(x_train+x_test, y_train+y_test, "polarity_mean")
+    plot_tsne(x_train+x_test, y_train+y_test, args.dataset+"_mean")
     x_train, y_train, x_test, y_test = read_features(args.train, args.test, 51, 101)
-    plot_tsne(x_train+x_test, y_train+y_test, "polarity_median")
+    plot_tsne(x_train+x_test, y_train+y_test, args.dataset+"_median")
     x_train, y_train, x_test, y_test = read_features(args.train, args.test, 101, -1)
-    plot_tsne(x_train+x_test, y_train+y_test, "polarity_sd")
+    plot_tsne(x_train+x_test, y_train+y_test, args.dataset+"_sd")
     x_train, y_train, x_test, y_test = read_features(args.train, args.test, 1, 101)
-    plot_tsne(x_train+x_test, y_train+y_test, "polarity_mean_median")
+    plot_tsne(x_train+x_test, y_train+y_test, args.dataset+"_mean_median")
 
 if __name__ == "__main__":
     main()
