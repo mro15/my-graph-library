@@ -7,14 +7,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from tqdm import tqdm
 import itertools
-
-"""
-    parameters:
-        edge size
-        graph strategy
-        number of nodes
-"""
-
+from collections import Counter
+from math import log
 
 #each node is a word from vocabulary
 def graph_strategy_one(d):
@@ -138,24 +132,19 @@ def plot_graph(g):
         nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
         plt.show()
 
-#TODO:
-#count windows per words
-#count windows by pair of words
-#sum all windows
-#calculate PMI
-def my_pmi(d):
-    windows = {}
+def windows_in_pair(windows):
+    windows_in_pair = Counter()
+    for i in windows:
+        pairs = list(itertools.combinations(i, 2))
+        windows_in_pair.update(pairs)
+    return windows_in_pair
 
-    return windows
 
-def total_windows(text, k):
-    return len(text)+k-1
-
-def windows_in_pair(w1, w2):
-    pass
-
-def windows_in_word(w1, total_windows):
-    pass
+def windows_in_word(windows):
+    windows_in_word = Counter()
+    for i in windows:
+        windows_in_word.update(i)
+    return windows_in_word
 
 def build_windows(text, k):
     iterable = iter(text)
@@ -173,25 +162,25 @@ def graph_strategy_three(d, k):
     progress = tqdm(d.train_data)
     print("BUILDING TRAIN GRAPHS")
     for i in progress:
+        windows = []
         g = TextGraph(d.dataset)
-        #print("sentence: ", i)
         size = len(i)
         if size > k:
-            windows = build_windows(i, k)
-            for j in windows:
-                #get the word co-occurrences in a window
-                co_words = list(itertools.combinations(j,2))
-                for cw in co_words:
-                    g.add_vertex(cw[0])
-                    g.add_vertex(cw[1])
-                    g.add_edge(cw[0], cw[1])
+            windows += build_windows(i, k)
         else:
-            #get the word co-occurrences in a window
-            co_words = list(itertools.combinations(i,2))
-            for cw in co_words:
-                g.add_vertex(cw[0])
-                g.add_vertex(cw[1])
-                g.add_edge(cw[0], cw[1])
+            windows.append(i)
+        total_windows = len(windows)
+        pair_windows = windows_in_pair(windows)
+        word_windows = windows_in_word(windows)
+        for words, freq in pair_windows.items():
+            w1, w2 = words
+            g.add_vertex(w1)
+            g.add_vertex(w2)
+            pmi = log((freq/total_windows)/((word_windows[w1]/total_windows)*(word_windows[w2]/total_windows)))
+            if pmi > 0:
+                g.add_weight_edge(w1, w2, pmi)
+            else:
+                g.add_weight_edge(w1, w2, 0)
         """
         #debug
         print("---- NODES ----")
@@ -207,24 +196,25 @@ def graph_strategy_three(d, k):
     progress = tqdm(d.test_data)
     print("BUILDING TEST GRAPHS")
     for i in progress:
+        windows = []
         g = TextGraph(d.dataset)
         size = len(i)
         if size > k:
-            windows = build_windows(i, k)
-            for j in windows:
-                #get the word co-occurrences in a window
-                co_words = list(itertools.combinations(j,2))
-                for cw in co_words:
-                    g.add_vertex(cw[0])
-                    g.add_vertex(cw[1])
-                    g.add_edge(cw[0], cw[1])
+            windows += build_windows(i, k)
         else:
-            #get the word co-occurrences in a window
-            co_words = list(itertools.combinations(i,2))
-            for cw in co_words:
-                g.add_vertex(cw[0])
-                g.add_vertex(cw[1])
-                g.add_edge(cw[0], cw[1])
+            windows.append(i)
+        total_windows = len(windows)
+        pair_windows = windows_in_pair(windows)
+        word_windows = windows_in_word(windows)
+        for words, freq in pair_windows.items():
+            w1, w2 = words
+            g.add_vertex(w1)
+            g.add_vertex(w2)
+            pmi = log((freq/total_windows)/((word_windows[w1]/total_windows)*(word_windows[w2]/total_windows)))
+            if pmi > 0:
+                g.add_weight_edge(w1, w2, pmi)
+            else:
+                g.add_weight_edge(w1, w2, 0)
 
         test_graphs.append(g.graph) 
     print("FINISHED TEST GRAPHS") 
