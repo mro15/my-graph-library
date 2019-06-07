@@ -13,7 +13,8 @@ from features.features import Features
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity"], help='dataset name', required=True)   
-    parser.add_argument('--method', type=str, choices=["node2vec", "bert"], help='representation method', required=True)
+    parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
+    parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
     return parser.parse_args()
 
@@ -33,21 +34,29 @@ def plot_graphs(train_graphs, test_graphs, size):
     for i in range(0, size):
         utils.plot_graph(test_graphs[i])
 
-def graph_methods(d, method, window_size):
+def graph_methods(d, method, window_size, strategy):
     d.pre_process_data()
     #for now I will not remove any word
     #d.remove_words()
 
     #graph construction
-    train_graphs, test_graphs = utils.graph_strategy_three(d, window_size)
-    print(len(train_graphs), len(test_graphs))
+    train_graphs = []
+    test_graphs = []
+    weight = False
+    if strategy == "no_weight":
+        train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
+    elif strategy == "pmi":
+        train_graphs, test_graphs = utils.graph_strategy_three(d, window_size)
+        weight = True
+    else:
+        exit()
 
-    #extract and write graph features
+    #extract and write ddgraph features
     features_out = Features(d.dataset)
     file_train = features_out.open_file(method + "train")
     print("=== STARTING RL IN TRAIN GRAPHS ===")
     for i in range(0, len(train_graphs)):
-        rl = RepresentationLearning(train_graphs[i], method)
+        rl = RepresentationLearning(train_graphs[i], method, weight)
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
         rl.representation_method.train()
@@ -59,7 +68,7 @@ def graph_methods(d, method, window_size):
     file_test = features_out.open_file(method + "test")
     print("=== STARTING RL IN TEST GRAPHS ===")
     for i in range(0, len(test_graphs)):
-        rl = RepresentationLearning(test_graphs[i], method)
+        rl = RepresentationLearning(test_graphs[i], method, weight)
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
         rl.representation_method.train()
@@ -87,7 +96,7 @@ def main():
 
     g_methods = ["node2vec"]
     if args.method in g_methods:
-        graph_methods(d, args.method, args.window)
+        graph_methods(d, args.method, args.window, args.strategy)
     else:
         vector_methods(d, args.method)
 

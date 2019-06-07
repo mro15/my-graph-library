@@ -47,11 +47,8 @@ def graph_strategy_one(d):
 def graph_strategy_two(d, k):
     train_graphs = []
     test_graphs = []
-    #build nodes
-    #pass coocurrence window to build edges
-    #build train graphs
-    progress = tqdm(d.train_data)
     print("BUILDING TRAIN GRAPHS")
+    progress = tqdm(d.train_data)
     for i in progress:
         g = TextGraph(d.dataset)
         #print("sentence: ", i)
@@ -91,8 +88,8 @@ def graph_strategy_two(d, k):
         train_graphs.append(g.graph)
     print("FINISHED TRAIN GRAPHS")
 
-    progress = tqdm(d.test_data)
     print("BUILDING TEST GRAPHS")
+    progress = tqdm(d.test_data)
     for i in progress:
         g = TextGraph(d.dataset)
         size = len(i)
@@ -159,8 +156,8 @@ def build_windows(text, k):
 def graph_strategy_three(d, k):
     train_graphs = []
     test_graphs = []
-    progress = tqdm(d.train_data)
     print("BUILDING TRAIN GRAPHS")
+    progress = tqdm(d.train_data)
     for i in progress:
         windows = []
         g = TextGraph(d.dataset)
@@ -193,8 +190,8 @@ def graph_strategy_three(d, k):
         train_graphs.append(g.graph)
     print("FINISHED TRAIN GRAPHS")
 
-    progress = tqdm(d.test_data)
     print("BUILDING TEST GRAPHS")
+    progress = tqdm(d.test_data)
     for i in progress:
         windows = []
         g = TextGraph(d.dataset)
