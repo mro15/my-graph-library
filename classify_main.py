@@ -7,6 +7,10 @@ from sklearn.metrics import confusion_matrix
 from sklearn import preprocessing
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
+import keras
+from keras.layers import Dense, Dropout
+from keras.models import Sequential
+import numpy as np
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
@@ -39,6 +43,22 @@ def read_features(train_path, test_path, interval):
 
     return x_train, y_train, x_test, y_test
 
+def mlp_classifier(x_train, y_train, x_test, y_test, dim):
+    y_train = keras.utils.to_categorical(y_train, num_classes=2)
+    y_test = keras.utils.to_categorical(y_test, num_classes=2)
+
+    x_train = np.array(x_train)
+    x_test = np.array(x_test)
+
+    model = Sequential()
+    model.add(Dense(100, activation='relu', input_dim=dim))
+    model.add(Dense(50, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(2, activation='softmax'))
+    model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+    hist = model.fit(x_train, y_train, validation_split=0.25, epochs=100, batch_size=128)
+    score = model.evaluate(x_test, y_test, batch_size=128)
+    print(score[-1])
 
 def classify(x_train, y_train, x_test, y_test, classifier):
     c = classifier
@@ -63,8 +83,12 @@ def main():
 
     x_train, y_train, x_test, y_test = read_features(args.train, args.test, features[args.features])
     
-    classifiers = {"nb" : GaussianNB(), "rf": RandomForestClassifier(n_estimators=1000), "svm" : svm.SVC(kernel='linear', C=args.svm_c, gamma=args.svm_gamma, probability=True)} 
-    classify(x_train, y_train, x_test, y_test, classifiers[args.classifier])
+    classifiers = {"nb" : GaussianNB(), "rf": RandomForestClassifier(n_estimators=1000), "svm" : svm.SVC(kernel='linear', C=args.svm_c, gamma=args.svm_gamma, probability=True)}
+    if args.classifier in ["nb", "rf", "svm"]:
+        classify(x_train, y_train, x_test, y_test, classifiers[args.classifier])
+    else:
+        print(len(x_train[0]))
+        mlp_classifier(x_train, y_train, x_test, y_test, len(x_train[0]))
 
 if __name__ == "__main__":
     main()
