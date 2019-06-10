@@ -176,8 +176,8 @@ def graph_strategy_three(d, k):
             pmi = log((freq/total_windows)/((word_windows[w1]/total_windows)*(word_windows[w2]/total_windows)))
             if pmi > 0:
                 g.add_weight_edge(w1, w2, pmi)
-            else:
-                g.add_weight_edge(w1, w2, 0)
+            #else:
+            #    g.add_weight_edge(w1, w2, 0)
         """
         #debug
         print("---- NODES ----")
@@ -210,8 +210,8 @@ def graph_strategy_three(d, k):
             pmi = log((freq/total_windows)/((word_windows[w1]/total_windows)*(word_windows[w2]/total_windows)))
             if pmi > 0:
                 g.add_weight_edge(w1, w2, pmi)
-            else:
-                g.add_weight_edge(w1, w2, 0)
+            #else:
+            #    g.add_weight_edge(w1, w2, 0)
 
         test_graphs.append(g.graph) 
     print("FINISHED TEST GRAPHS") 
