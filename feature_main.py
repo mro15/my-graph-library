@@ -35,9 +35,11 @@ def plot_graphs(train_graphs, test_graphs, size):
         utils.plot_graph(test_graphs[i])
 
 def graph_methods(d, method, window_size, strategy):
+    print("PRE PROCESS: START")
     d.pre_process_data()
     #for now I will not remove any word
     #d.remove_words()
+    print("PRE PROCESS: END")
 
     #graph construction
     train_graphs = []

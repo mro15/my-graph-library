@@ -17,9 +17,9 @@ class MyNode2Vec(object):
 
     def initialize_model(self):
         if self.weight:
-            self.model = Node2Vec(self.graph, dimensions=self.dim, walk_length=self.walk_length, num_walks=self.num_walks, weight_key='weight', workers=self.workers) 
+            self.model = Node2Vec(self.graph, dimensions=self.dim, walk_length=self.walk_length, num_walks=self.num_walks, weight_key='weight', workers=self.workers, quiet=True) 
         else:
-            self.model = Node2Vec(self.graph, dimensions=self.dim, walk_length=self.walk_length, num_walks=self.num_walks, workers=self.workers) 
+            self.model = Node2Vec(self.graph, dimensions=self.dim, walk_length=self.walk_length, num_walks=self.num_walks, workers=self.workers, quiet=True) 
 
     def train(self):
         self.trained_model = self.model.fit(window=10, min_count=1, batch_words=4)
