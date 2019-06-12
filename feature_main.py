@@ -58,7 +58,7 @@ def graph_methods(d, method, window_size, strategy):
     file_train = features_out.open_file(method + "train")
     print("=== STARTING RL IN TRAIN GRAPHS ===")
     for i in range(0, len(train_graphs)):
-        rl = RepresentationLearning(train_graphs[i], method, weight)
+        rl = RepresentationLearning(train_graphs[i], method, weight, d.train_data[i])
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
         rl.representation_method.train()
@@ -70,7 +70,7 @@ def graph_methods(d, method, window_size, strategy):
     file_test = features_out.open_file(method + "test")
     print("=== STARTING RL IN TEST GRAPHS ===")
     for i in range(0, len(test_graphs)):
-        rl = RepresentationLearning(test_graphs[i], method, weight)
+        rl = RepresentationLearning(test_graphs[i], method, weight, d.test_data[i])
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
         rl.representation_method.train()
