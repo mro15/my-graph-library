@@ -50,39 +50,29 @@ def graph_strategy_two(d, k):
     print("BUILDING TRAIN GRAPHS")
     progress = tqdm(d.train_data)
     for i in progress:
+        windows = []
         g = TextGraph(d.dataset)
-        #print("sentence: ", i)
         size = len(i)
         if size > k:
-            for j in range(0, size-k):
-                w1 = i[j]
-                g.add_vertex(w1)
-                for s in range(j+1, j+k):
-                    w2 = i[s]
-                    g.add_vertex(w2)
-                    g.add_edge(w1, w2)
-            #remainder
-            for r in range(j, size):
-                w1 = i[r]
-                for rn in range(r+0, size):
-                    w2 = i[rn]
-                    g.add_vertex(w2)
-                    g.add_edge(w1, w2)
+            windows += build_windows(i, k)
         else:
-            for j in range(0, size):
-                w1 = i[j]
-                g.add_vertex(w1)
-                for s in range(j+1, size):
-                    w2 = i[s]
-                    g.add_vertex(w2)
-                    g.add_edge(w1, w2)
+            windows.append(i)
+        total_windows = len(windows)
+        pair_windows = windows_in_pair(windows)
+        word_windows = windows_in_word(windows)
+        for words, freq in pair_windows.items():
+            w1, w2 = words
+            g.add_vertex(w1)
+            g.add_vertex(w2)
+            g.add_edge(w1, w2)
+        
         """
         #debug
         print("---- NODES ----")
         print(g.nodes())
         print("---- EDGES ----")
         print(g.edges())
-        g.plot_graph()
+        plot_graph(g.graph)
         exit()
         """
         train_graphs.append(g.graph)
@@ -91,35 +81,27 @@ def graph_strategy_two(d, k):
     print("BUILDING TEST GRAPHS")
     progress = tqdm(d.test_data)
     for i in progress:
+        windows = []
         g = TextGraph(d.dataset)
         size = len(i)
         if size > k:
-            for j in range(0, size-k):
-                w1 = i[j]
-                g.add_vertex(w1)
-                for s in range(j+1, j+k):
-                    w2 = i[s]
-                    g.add_vertex(w2)
-                    g.add_edge(w1, w2)
-            #remainder
-            for r in range(j, size):
-                w1 = i[r]
-                for rn in range(r+1, size):
-                    w2 = i[rn]
-                    g.add_vertex(w2)
-                    g.add_edge(w1, w2)
+            windows += build_windows(i, k)
         else:
-            for j in range(0, size):
-                w1 = i[j]
-                g.add_vertex(w1)
-                for s in range(j+1, size):
-                    w2 = i[s]
-                    g.add_vertex(w2)
-                    g.add_edge(w1, w2)
+            windows.append(i)
+        total_windows = len(windows)
+        pair_windows = windows_in_pair(windows)
+        word_windows = windows_in_word(windows)
+        for words, freq in pair_windows.items():
+            w1, w2 = words
+            g.add_vertex(w1)
+            g.add_vertex(w2)
+            g.add_edge(w1, w2)
+
         test_graphs.append(g.graph) 
     print("FINISHED TEST GRAPHS") 
 
     return train_graphs, test_graphs
+
 
 def plot_graph(g):
         options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
