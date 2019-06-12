@@ -4,7 +4,7 @@ from representation_learning.rl_node2vec import MyNode2Vec
 import numpy as np
 
 class RepresentationLearning(object):
-    def __init__(self, graph, method, weight):
+    def __init__(self, graph, method, weight, sentence):
         self.graph = graph
         self.method = method
         self.representation_method = None
@@ -12,10 +12,11 @@ class RepresentationLearning(object):
         self.median = 0
         self.standard_deviation = 0
         self.weight = weight
+        self.sentence = sentence
 
     def initialize_rl_class(self):
         if self.method == "node2vec":
-            self.representation_method = MyNode2Vec(self.graph, self.weight)
+            self.representation_method = MyNode2Vec(self.graph, self.weight, self.sentence)
             return True
         else:
             return False

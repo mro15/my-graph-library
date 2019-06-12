@@ -4,7 +4,7 @@ from node2vec import Node2Vec
 import numpy as np
 
 class MyNode2Vec(object):
-    def __init__(self, graph, weight):
+    def __init__(self, graph, weight, sentence):
         self.graph = graph
         self.model  = None
         self.trained_model = None
@@ -13,6 +13,7 @@ class MyNode2Vec(object):
         self.num_walks = 10
         self.workers = 2
         self.weight = weight
+        self.sentence = sentence
 
 
     def initialize_model(self):
@@ -24,13 +25,16 @@ class MyNode2Vec(object):
     def train(self):
         self.trained_model = self.model.fit(window=10, min_count=1, batch_words=4)
 
-    def print(self):
+    def debug(self):
+        print(self.sentence)
+        for i in self.sentence:
+            print(i, ": ", self.trained_model.wv[str(i)])
         for i in self.graph.nodes():
             print(i, ": ", self.trained_model.wv[str(i)])
 
     #this method returns the mean, the median and the standard deviation of the graph node embeddings 
     def embeddings_compact(self):
         emb = []
-        for i in self.graph.nodes():
+        for i in self.sentence:
             emb.append(self.trained_model.wv[str(i)])
         return np.mean(emb, axis=0), np.median(emb, axis=0), np.std(emb, axis=0)
