@@ -25,6 +25,12 @@ class MyNode2Vec(object):
     def train(self):
         self.trained_model = self.model.fit(window=10, min_count=1, batch_words=4)
 
+    def get_embeddings(self):
+        emb = []
+        for i in self.sentence:
+            emb.append(self.trained_model.wv[str(i)])
+        return emb
+
     def debug(self):
         print(self.sentence)
         for i in self.sentence:

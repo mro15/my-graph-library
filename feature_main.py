@@ -53,30 +53,26 @@ def graph_methods(d, method, window_size, strategy):
     else:
         exit()
 
+    train_emb = []
+    test_emb = []
     #extract and write ddgraph features
     features_out = Features(d.dataset)
-    file_train = features_out.open_file(method + "train")
     print("=== STARTING RL IN TRAIN GRAPHS ===")
     for i in range(0, len(train_graphs)):
         rl = RepresentationLearning(train_graphs[i], method, weight, d.train_data[i])
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
         rl.representation_method.train()
-        rl.set_features()
-        feat = rl.get_features()
-        features_out.write_in_file(file_train, feat, str(d.train_labels[i]))
+        train_emb.append(rl.representation_method.get_embeddings())
     print("=== FINISHED RL IN TRAIN GRAPHS ===")
 
-    file_test = features_out.open_file(method + "test")
     print("=== STARTING RL IN TEST GRAPHS ===")
     for i in range(0, len(test_graphs)):
         rl = RepresentationLearning(test_graphs[i], method, weight, d.test_data[i])
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
         rl.representation_method.train()
-        rl.set_features()
-        feat = rl.get_features()
-        features_out.write_in_file(file_test, feat, str(d.test_labels[i]))
+        test_emb.append(rl.representation_method.get_embeddings())
     print("=== FINISHED RL IN TEST GRAPHS ===")
 
 def vector_methods(d, method):
