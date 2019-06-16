@@ -31,16 +31,20 @@ class Dataset(object):
                 data[i].append(fp.read().split())
         #shuffle
         #change here the division in train, test and validation
-        train_neg = data["neg"][:int(len(data["neg"])/2)]
-        train_pos = data["pos"][:int(len(data["pos"])/2)]
-        self.train_data = train_neg + train_pos
+        len_train_neg = int(len(data["neg"]) * 0.5)
+        len_train_pos = int(len(data["pos"]) * 0.5)
+        train_neg = data["neg"][:len_train_neg]
+        train_pos = data["pos"][:len_train_pos]
+        self.train_data = train_pos + train_neg
         self.train_labels = [1]*len(train_pos)+[0]*len(train_neg)
 
-        test_neg = data["neg"][int(len(data["neg"])/2):]
-        test_pos = data["pos"][int(len(data["pos"])/2):]
-        self.test_data = test_neg + test_pos
+        test_neg = data["neg"][len_train_neg:]
+        test_pos = data["pos"][len_train_pos:]
+        self.test_data = test_pos + test_neg
         self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
         self.classes = 2
+        print(len(self.train_data), len(self.train_labels))
+        print(len(self.test_data), len(self.test_labels))
 
     def read_imdb(self):
         dataset = "datasets/imdb/aclImdb/"
