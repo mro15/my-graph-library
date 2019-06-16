@@ -1,36 +1,44 @@
 #! /usr/bin/env python3
 
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
+import keras
+from keras.models import Sequential, Model
+from keras.layers import Dense, Dropout, Flatten, Input
+from keras.layers import Conv1D, GlobalMaxPooling1D, MaxPooling1D
+import numpy as np
+from keras.layers.merge import Concatenate
 
 class My_cnn(object):
     def __init__(self, train_x, train_y, test_x, test_y, input_shape, num_classes):
         self.train_x = train_x
-        self.train_y = train_y
+        self.train_y = keras.utils.to_categorical(train_y, num_classes)
         self.test_x = test_x
-        self.test_y = test_y
+        self.test_y = keras.utils.to_categorical(test_y, num_classes)
         self.input_shape = input_shape
         self.num_classes = num_classes
 
     def do_all(self):
-        model = Sequential()
-        model.add(Conv2D(100, kernel_size=(50,4), activation='relu', input_shape=self.input_shape))
-        model.add(MaxPooling2D(pool_size=(50,4)))
-        model.add(Conv2D(100, kernel_size=(50, 2),  activation='relu'))
-        model.add(MaxPooling2D(pool_size=(50, 2)))
-        model.add(Conv2D(100, kernel_size=(50, 4),  activation='relu'))
-        model.add(MaxPooling2D(pool_size=(50, 2)))
-        model.add(Conv2D(100, kernel_size=(50, 4),  activation='relu'))
-        model.add(MaxPooling2D(pool_size=(50, 2)))
-        model.add(Dense(100, activation='relu'))
-        model.add(Dense(self.num_classes, activation='softmax'))
+        print(self.input_shape, self.train_x.shape)
+        filters = (2, 3, 5, 6, 8)
+        model_input = Input(shape=self.input_shape)
+        conv_blocks = []
+        for block_size in filters:
+            conv = Conv1D(filters=128, kernel_size=block_size, padding='valid', activation='tanh', strides=1)(model_input)
+            conv = Dropout(0.2)(conv)
+            conv = GlobalMaxPooling1D()(conv)
+            #conv = Flatten()(conv)
+            conv_blocks.append(conv)
 
-        model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adadelta(), metrics=['accuracy'])
+        conc = Concatenate()(conv_blocks) if len(conv_blocks) > 1 else conv_blocks[0]
+        conc = Dropout(0.2)(conc)
+        conc = Dense(32, activation='relu')(conc)
+        model_output = Dense(2, activation='softmax')(conc)
 
-        hist = model.fit(self.train_x, self.train_y, batch_size=100, epochs=50, verbose=1, validation_data=(self.test_x, self.test_y))
+        model = Model(model_input, model_output)
+        model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
 
-        score = model.evaluate(self.test_x, self.test.y)
+        hist = model.fit(self.train_x, self.train_y, batch_size=32, epochs=20, shuffle=True, verbose=2, validation_data=(self.test_x, self.test_y))
+
+        score = model.evaluate(self.test_x, self.test_y)
 
         print("loss: ", score[0], "accuracy: ", score[1])
         
