@@ -15,7 +15,7 @@ import sklearn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
@@ -40,6 +40,7 @@ def plot_graphs(train_graphs, test_graphs, size):
 def graph_methods(d, method, window_size, strategy):
     print("PRE PROCESS: START")
     d.pre_process_data()
+    d.hard_pre_processing()
     #for now I will not remove any word
     #d.remove_words()
     print("PRE PROCESS: END")
@@ -94,6 +95,9 @@ def main():
     elif args.dataset == "imdb":
         d = Dataset(args.dataset)
         d.read_imdb()
+    elif args.dataset == "mr":
+        d = Dataset(args.dataset)
+        d.read_mr()
     else:
         print("Error: dataset name unknown")
         return 1
