@@ -25,12 +25,10 @@ class Dataset(object):
         data["pos"] = []
         for i in ["neg", "pos"]:
             files = listdir(dataset+i+"/")
-            sentence = ""
             for f in files:
                 fp = open(dataset+i+"/"+f, 'r')
                 data[i].append(fp.read().split())
-        #shuffle
-        #change here the division in train, test and validation
+                
         len_train_neg = int(len(data["neg"]) * 0.5)
         len_train_pos = int(len(data["pos"]) * 0.5)
         train_neg = data["neg"][:len_train_neg]
@@ -43,8 +41,6 @@ class Dataset(object):
         self.test_data = test_pos + test_neg
         self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
         self.classes = 2
-        print(len(self.train_data), len(self.train_labels))
-        print(len(self.test_data), len(self.test_labels))
 
     def read_imdb(self):
         dataset = "datasets/imdb/aclImdb/"
@@ -68,10 +64,35 @@ class Dataset(object):
         self.test_labels = [0]*len(data["test"]["neg"]) + [1]*len(data["test"]["pos"])
         self.classes = 2
 
+    def read_mr(self):
+        dataset = "datasets/rt-polaritydata/rt-polarity."
+        data = {}
+        data["neg"] = []
+        data["pos"] = []
+        for i in ["neg", "pos"]:
+            fp = open(dataset+i)
+            lines = fp.readlines()
+            for l in lines:
+                data[i].append(l.split())
+
+        len_train_neg = int(len(data["neg"]) * 0.5)
+        len_train_pos = int(len(data["pos"]) * 0.5)
+        train_neg = data["neg"][:len_train_neg]
+        train_pos = data["pos"][:len_train_pos]
+        self.train_data = train_pos + train_neg
+        self.train_labels = [1]*len(train_pos)+[0]*len(train_neg)
+
+        test_neg = data["neg"][len_train_neg:]
+        test_pos = data["pos"][len_train_pos:]
+        self.test_data = test_pos + test_neg
+        self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
+        self.classes = 2
+
+        print(len(self.train_data), len(self.train_labels))
+        print(len(self.test_data), len(self.test_labels))
+
     def pre_process_data(self):
         tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
-        stem = nltk.stem.PorterStemmer()
-        lem = nltk.stem.WordNetLemmatizer()
         clean_texts = []
         for token in self.train_data:
             tokens = ""
@@ -80,9 +101,6 @@ class Dataset(object):
             tokens = tokens.lower()
             tokens = tokenizer.tokenize(tokens)
             tokens = [word for word in tokens if word.isalpha() and (word!="br")] #remove non alphabetic tokens
-            tokens = [w for w in tokens if not w in self.stop_words]
-            tokens = [stem.stem(w) for w in tokens]
-            tokens = [lem.lemmatize(w) for w in tokens]
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.train_data = clean_texts
@@ -95,13 +113,36 @@ class Dataset(object):
             tokens = tokens.lower()
             tokens = tokenizer.tokenize(tokens)
             tokens = [word for word in tokens if word.isalpha() and (word!="br")]
+            self.vocabulary.update(tokens)
+            clean_texts.append(tokens)
+        self.test_data = clean_texts
+
+    def hard_pre_processing(self):
+        stem = nltk.stem.PorterStemmer()
+        lem = nltk.stem.WordNetLemmatizer()
+        clean_texts = []
+        for token in self.train_data:
+            tokens = ""
+            for w in token:
+                tokens =  tokens + w + " "
+            tokens = [w for w in tokens if not w in self.stop_words]
+            tokens = [stem.stem(w) for w in tokens]
+            tokens = [lem.lemmatize(w) for w in tokens]
+            self.vocabulary.update(tokens)
+            clean_texts.append(tokens)
+        self.train_data = clean_texts
+        
+        clean_texts = []
+        for token in self.test_data:
+            tokens = ""
+            for w in token:
+                tokens = tokens + w + " "
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]
             tokens = [lem.lemmatize(w) for w in tokens]
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.test_data = clean_texts
-
 
     #remove uncommon words
     def remove_words(self):
