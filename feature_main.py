@@ -9,7 +9,9 @@ import analysis.vocabulary as an
 from representation_learning.representation_learning import RepresentationLearning
 from vector_representation_learning.rl_bert import MyBert
 from features.features import Features
-from cnn.my_cnn import My_cnn
+import numpy as np
+import _pickle as pickle
+import sklearn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
@@ -59,7 +61,7 @@ def graph_methods(d, method, window_size, strategy):
     #extract and write ddgraph features
     features_out = Features(d.dataset)
     print("=== STARTING RL IN TRAIN GRAPHS ===")
-    for i in range(0, len(train_graphs[:10])):
+    for i in range(0, len(train_graphs)):
         rl = RepresentationLearning(train_graphs[i], method, weight, d.train_data[i])
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
@@ -68,7 +70,7 @@ def graph_methods(d, method, window_size, strategy):
     print("=== FINISHED RL IN TRAIN GRAPHS ===")
 
     print("=== STARTING RL IN TEST GRAPHS ===")
-    for i in range(0, len(test_graphs[:10])):
+    for i in range(0, len(test_graphs)):
         rl = RepresentationLearning(test_graphs[i], method, weight, d.test_data[i])
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
@@ -82,28 +84,10 @@ def vector_methods(d, method):
     bert.get_embeddings(d.train_data[0])
     bert.get_embeddings(d.train_data[1])
 
-def padding(train, test):
-    m_train = len(max(test, key = lambda i: len(i)))
-    m_test = len(max(test, key = lambda i: len(i)))
-    m_all = max(m_train, m_test)
-    pad = [0] * 50
-    for i in range(0, len(train)):
-        if len(train[i]) < m_all:
-            mult = m_all - len(train[i])
-            train[i]+= ([pad] * mult)
-    for i in range (0, len(test)):
-        if len(test[i]) < m_all:
-            mult = m_all - len(test[i])
-            test[i]+= ([pad] * mult)
-    print(m_all)
-    for i in train:
-        print(len(i))
-    for i in test:
-        print(len(i))
-    return train, test
 
 def main():
     args = read_args()
+
     if args.dataset == "polarity":
         d = Dataset(args.dataset)
         d.read_polarity()
@@ -119,10 +103,19 @@ def main():
         train_emb, test_emb = graph_methods(d, args.method, args.window, args.strategy)
     else:
         vector_methods(d, args.method)
+   
+    train_pad = np.array(train_emb)
+    test_pad = np.array(test_emb)
 
-    train_pad, test_pad = padding(train_emb, test_emb)
-    mcnn = My_cnn(train_pad, d.train_labels[:10], test_pad, d.test_labels[:10], (len(train_pad[0]), 50, 1), 2)
-    mcnn.do_all()
+    print("=== WRITING NODE EMBEDDINGS ===")
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_x.pkl', 'wb') as outfile:
+        pickle.dump(np.array(train_pad), outfile)
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_y.pkl', 'wb') as outfile:
+        pickle.dump(np.array(d.train_labels), outfile)
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_x.pkl', 'wb') as outfile:
+        pickle.dump(np.array(test_pad), outfile)
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'wb') as outfile:
+        pickle.dump(np.array(d.test_labels), outfile)
 
 if __name__ == "__main__":
     main()
