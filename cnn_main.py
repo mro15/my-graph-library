@@ -33,13 +33,13 @@ def padding(train, test):
 def main():
     args = read_args()
 
-    with open(args.method + '_' + args.strategy + '_' + 'train_x.pkl', 'rb') as infile:
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_x.pkl', 'rb') as infile:
         train_emb = pickle.load(infile)
-    with open(args.method + '_' + args.strategy + '_' + 'train_y.pkl', 'rb') as infile:
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_y.pkl', 'rb') as infile:
         train_labels = pickle.load(infile)
-    with open(args.method + '_' + args.strategy + '_' + 'test_x.pkl', 'rb') as infile:
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_x.pkl', 'rb') as infile:
         test_emb = pickle.load(infile)
-    with open(args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'rb') as infile:
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'rb') as infile:
         test_labels = pickle.load(infile)
     
     train_pad, test_pad = padding(train_emb, test_emb)
