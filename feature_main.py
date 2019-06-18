@@ -113,11 +113,11 @@ def main():
 
     print("=== WRITING NODE EMBEDDINGS ===")
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_x.pkl', 'wb') as outfile:
-        pickle.dump(np.array(train_pad), outfile)
+        pickle.dump(train_pad, outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_y.pkl', 'wb') as outfile:
         pickle.dump(np.array(d.train_labels), outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_x.pkl', 'wb') as outfile:
-        pickle.dump(np.array(test_pad), outfile)
+        pickle.dump(test_pad, outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'wb') as outfile:
         pickle.dump(np.array(d.test_labels), outfile)
 
