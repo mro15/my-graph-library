@@ -85,6 +85,22 @@ def vector_methods(d, method):
     bert.get_embeddings(d.train_data[0])
     bert.get_embeddings(d.train_data[1])
 
+def padding(train, test):
+    m_train = len(max(train, key = lambda i: len(i)))
+    m_test = len(max(test, key = lambda i: len(i)))
+    m_all = max(m_train, m_test)
+    pad = [0] * 50
+    for i in range(0, len(train)):
+        if len(train[i]) < m_all:
+            mult = m_all - len(train[i])
+            train[i]+= ([pad] * mult)
+    for i in range (0, len(test)):
+        if len(test[i]) < m_all:
+            mult = m_all - len(test[i])
+            test[i]+= ([pad] * mult)
+    print(m_all)
+    return train, test
+
 
 def main():
     args = read_args()
@@ -108,16 +124,18 @@ def main():
     else:
         vector_methods(d, args.method)
    
-    train_pad = np.array(train_emb)
-    test_pad = np.array(test_emb)
+    train_pad, test_pad = padding(train_emb, test_emb)
+    print(np.array(train_pad).shape)
+    print(np.array(test_pad).shape)
+    
 
     print("=== WRITING NODE EMBEDDINGS ===")
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_x.pkl', 'wb') as outfile:
-        pickle.dump(train_pad, outfile)
+        pickle.dump(np.array(train_pad), outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_y.pkl', 'wb') as outfile:
         pickle.dump(np.array(d.train_labels), outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_x.pkl', 'wb') as outfile:
-        pickle.dump(test_pad, outfile)
+        pickle.dump(np.array(test_pad), outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'wb') as outfile:
         pickle.dump(np.array(d.test_labels), outfile)
 
