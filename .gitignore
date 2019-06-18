@@ -76,4 +76,5 @@ dkms.conf
 *__pycache__*
 *.swp
 datasets/
+datasets
 *.pyc

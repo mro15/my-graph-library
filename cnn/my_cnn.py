@@ -18,24 +18,25 @@ class My_cnn(object):
 
     def do_all(self):
         print(self.input_shape, self.train_x.shape)
-        filters = (2, 3, 5, 7, 8)
+        filters = (2, 3, 5, 7)
         model_input = Input(shape=self.input_shape)
         conv_blocks = []
         for block_size in filters:
-            conv = Conv1D(filters=32, kernel_size=block_size, padding='valid', activation='tanh', strides=1)(model_input)
+            conv = Conv1D(filters=32, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
             conv = Dropout(0.2)(conv)
             conv = GlobalMaxPooling1D()(conv)
-            conv1 = Conv1D(filters=64, kernel_size=block_size, padding='valid', activation='tanh', strides=1)(model_input)
+            conv1 = Conv1D(filters=64, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
             conv1 = Dropout(0.2)(conv1)
             conv1 = GlobalMaxPooling1D()(conv1)
-            conv2 = Conv1D(filters=128, kernel_size=block_size, padding='valid', activation='tanh', strides=1)(model_input)
+            conv2 = Conv1D(filters=128, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
             conv2 = Dropout(0.2)(conv2)
             conv2 = GlobalMaxPooling1D()(conv2)
-            conv_blocks.append(conv)
-            conv_blocks.append(conv1)
             conv_blocks.append(conv2)
+            conv_blocks.append(conv1)
+            conv_blocks.append(conv)
 
         conc = Concatenate(axis=1)(conv_blocks) if len(conv_blocks) > 1 else conv_blocks[0]
+        conc = Dropout(0.2)(conc)
         conc = Dense(256, activation='relu')(conc)
         conc = Dropout(0.2)(conc)
         model_output = Dense(2, activation='softmax')(conc)
