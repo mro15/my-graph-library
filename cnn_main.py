@@ -14,21 +14,6 @@ def read_args():
     parser.add_argument('--window', type=int,  help='window size', required=True)
     return parser.parse_args()
 
-def padding(train, test):
-    m_train = len(max(train, key = lambda i: len(i)))
-    m_test = len(max(test, key = lambda i: len(i)))
-    m_all = max(m_train, m_test)
-    pad = [0] * 50
-    for i in range(0, len(train)):
-        if len(train[i]) < m_all:
-            mult = m_all - len(train[i])
-            train[i]+= ([pad] * mult)
-    for i in range (0, len(test)):
-        if len(test[i]) < m_all:
-            mult = m_all - len(test[i])
-            test[i]+= ([pad] * mult)
-    print(m_all)
-    return train, test
 
 def main():
     args = read_args()
@@ -42,15 +27,12 @@ def main():
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'rb') as infile:
         test_labels = pickle.load(infile)
     
-    train_pad, test_pad = padding(train_emb, test_emb)
-    print(np.array(train_pad).shape)
-    print(np.array(test_pad).shape)
 
     train_emb, train_labels = sklearn.utils.shuffle(train_emb, train_labels, random_state=0)
     test_emb, test_labels = sklearn.utils.shuffle(test_emb, test_labels, random_state=0)
 
-    print(np.array(train_pad).shape)
-    print(np.array(test_pad).shape)
+    print(np.array(train_emb).shape)
+    print(np.array(test_emb).shape)
 
     mcnn = My_cnn(train_emb, train_labels, test_emb, test_labels, (len(train_emb[0]),50), 2)
     mcnn.do_all()
