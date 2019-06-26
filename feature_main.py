@@ -12,6 +12,7 @@ from features.features import Features
 import numpy as np
 import _pickle as pickle
 import sklearn
+from cnn.my_cnn import My_cnn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
@@ -40,7 +41,6 @@ def plot_graphs(train_graphs, test_graphs, size):
 def graph_methods(d, method, window_size, strategy):
     print("PRE PROCESS: START")
     d.pre_process_data()
-    d.hard_pre_processing()
     #for now I will not remove any word
     #d.remove_words()
     print("PRE PROCESS: END")
@@ -99,7 +99,7 @@ def padding(train, test):
             mult = m_all - len(test[i])
             test[i]+= ([pad] * mult)
     print(m_all)
-    return train, test
+    return np.array(train), np.array(test)
 
 
 def main():
@@ -129,15 +129,20 @@ def main():
     print(np.array(test_pad).shape)
     
 
+    mcnn = My_cnn(train_pad, d.train_labels, test_pad, d.test_labels, (len(train_pad[0]),50), 2)
+    mcnn.do_all()
+
+    """
     print("=== WRITING NODE EMBEDDINGS ===")
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_x.pkl', 'wb') as outfile:
-        pickle.dump(np.array(train_pad), outfile)
+        pickle.dump(np.array(train_emb), outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_y.pkl', 'wb') as outfile:
         pickle.dump(np.array(d.train_labels), outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_x.pkl', 'wb') as outfile:
-        pickle.dump(np.array(test_pad), outfile)
+        pickle.dump(np.array(test_emb), outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'wb') as outfile:
         pickle.dump(np.array(d.test_labels), outfile)
+    """
 
 if __name__ == "__main__":
     main()
