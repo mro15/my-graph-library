@@ -161,7 +161,6 @@ def graph_strategy_three(d, k):
                 g.add_weight_edge(w1, w2, pmi)
         if ((len(list(pair_windows))<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
-
         """
         #debug
         print("---- NODES ----")
