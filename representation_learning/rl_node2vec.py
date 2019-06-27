@@ -28,7 +28,9 @@ class MyNode2Vec(object):
     def get_embeddings(self):
         emb = []
         for i in self.sentence:
-            emb.append(self.trained_model.wv[str(i)])
+            #check if word is in vocabulary
+            if i in self.trained_model.wv:
+                emb.append(self.trained_model.wv[str(i)])
         return emb
 
     def debug(self):
