@@ -154,16 +154,14 @@ def graph_strategy_three(d, k):
         word_windows = windows_in_word(windows)
         for words, freq in pair_windows.items():
             w1, w2 = words
-            pmi = log((freq/total_windows)/((word_windows[w1]*word_windows[w2])/total_windows))
-            if pmi <= 0:
-                g.add_vertex(w1)
-                g.add_vertex(w2)
-                g.add_weight_edge(w1, w2, 0)
-            else:
+            pmi = log((freq/total_windows)/((word_windows[w1]*word_windows[w2])/(total_windows*total_windows)))
+            if pmi >= 0:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
                 g.add_weight_edge(w1, w2, pmi)
-        
+        if ((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+
         """
         #debug
         print("---- NODES ----")
@@ -191,15 +189,13 @@ def graph_strategy_three(d, k):
         word_windows = windows_in_word(windows)
         for words, freq in pair_windows.items():
             w1, w2 = words
-            pmi = log((freq/total_windows)/((word_windows[w1]*word_windows[w2])/total_windows))
-            if pmi <=  0:
-                g.add_vertex(w1)
-                g.add_vertex(w2)
-                g.add_weight_edge(w1, w2, 0)
-            else:
+            pmi = log((freq/total_windows)/((word_windows[w1]*word_windows[w2])/(total_windows*total_windows)))
+            if pmi >=  0:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
                 g.add_weight_edge(w1, w2, pmi)
+        if ((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
 
         test_graphs.append(g.graph) 
     print("FINISHED TEST GRAPHS") 
