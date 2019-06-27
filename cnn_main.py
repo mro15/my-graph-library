@@ -8,7 +8,7 @@ import sklearn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
@@ -28,19 +28,18 @@ def padding(train, test):
             mult = m_all - len(test[i])
             test[i]+= ([pad] * mult)
     print(m_all)
-    print(train.shape)
-    return train, test
+    return np.array(train), np.array(test)
 
 def main():
     args = read_args()
 
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_x.pkl', 'rb') as infile:
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'rb') as infile:
         train_emb = pickle.load(infile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_y.pkl', 'rb') as infile:
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'rb') as infile:
         train_labels = pickle.load(infile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_x.pkl', 'rb') as infile:
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'rb') as infile:
         test_emb = pickle.load(infile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'rb') as infile:
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'rb') as infile:
         test_labels = pickle.load(infile)
     
 
@@ -52,6 +51,7 @@ def main():
 
     train_emb, train_labels = sklearn.utils.shuffle(train_emb, train_labels, random_state=0)
     test_emb, test_labels = sklearn.utils.shuffle(test_emb, test_labels, random_state=0)
+    print("======== AFTER SHUFFLE =======")
 
     print(np.array(train_emb).shape)
     print(np.array(test_emb).shape)

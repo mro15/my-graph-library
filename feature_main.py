@@ -63,6 +63,7 @@ def graph_methods(d, method, window_size, strategy):
     features_out = Features(d.dataset)
     print("=== STARTING RL IN TRAIN GRAPHS ===")
     for i in range(0, len(train_graphs)):
+    #for i in range(0, 10):
         rl = RepresentationLearning(train_graphs[i], method, weight, d.train_data[i])
         rl.initialize_rl_class()
         rl.representation_method.initialize_model()
@@ -71,6 +72,7 @@ def graph_methods(d, method, window_size, strategy):
     print("=== FINISHED RL IN TRAIN GRAPHS ===")
 
     print("=== STARTING RL IN TEST GRAPHS ===")
+    #for i in range(0, 10):
     for i in range(0, len(test_graphs)):
         rl = RepresentationLearning(test_graphs[i], method, weight, d.test_data[i])
         rl.initialize_rl_class()
@@ -124,25 +126,22 @@ def main():
     else:
         vector_methods(d, args.method)
    
+    print(np.array(train_emb).shape, np.array(test_emb).shape)
+ 
+
+    print("=== WRITING NODE EMBEDDINGS ===")
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'wb') as outfile:
+        pickle.dump(train_emb, outfile)
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'wb') as outfile:
+        pickle.dump(d.train_labels, outfile)
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'wb') as outfile:
+        pickle.dump(test_emb, outfile)
+    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'wb') as outfile:
+        pickle.dump(d.test_labels, outfile)
+    
     train_pad, test_pad = padding(train_emb, test_emb)
     print(np.array(train_pad).shape)
     print(np.array(test_pad).shape)
-    
-
-    mcnn = My_cnn(train_pad, d.train_labels, test_pad, d.test_labels, (len(train_pad[0]),50), 2)
-    mcnn.do_all()
-
-    """
-    print("=== WRITING NODE EMBEDDINGS ===")
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_x.pkl', 'wb') as outfile:
-        pickle.dump(np.array(train_emb), outfile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'train_y.pkl', 'wb') as outfile:
-        pickle.dump(np.array(d.train_labels), outfile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_x.pkl', 'wb') as outfile:
-        pickle.dump(np.array(test_emb), outfile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + 'test_y.pkl', 'wb') as outfile:
-        pickle.dump(np.array(d.test_labels), outfile)
-    """
 
 if __name__ == "__main__":
     main()
