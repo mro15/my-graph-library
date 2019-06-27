@@ -78,4 +78,3 @@ dkms.conf
 datasets/
 datasets
 *.pyc
-graphs/
