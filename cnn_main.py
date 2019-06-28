@@ -46,17 +46,17 @@ def main():
     print(np.array(train_emb).shape)
     print(np.array(test_emb).shape)
     train_emb, test_emb = padding(train_emb, test_emb)
-    print(np.array(train_emb).shape)
-    print(np.array(test_emb).shape)
+    print(train_emb.shape)
+    print(test_emb.shape)
 
-    train_emb, train_labels = sklearn.utils.shuffle(train_emb, train_labels, random_state=0)
-    test_emb, test_labels = sklearn.utils.shuffle(test_emb, test_labels, random_state=0)
-    print("======== AFTER SHUFFLE =======")
+    all_x = np.concatenate((train_emb, test_emb), axis=0)
+    all_y = np.concatenate((np.array(train_labels), np.array(test_labels)), axis=None)
 
-    print(np.array(train_emb).shape)
-    print(np.array(test_emb).shape)
+    print(all_x.shape)
+    print(all_y.shape)
 
-    mcnn = My_cnn(train_emb, train_labels, test_emb, test_labels, (len(train_emb[0]),50), 2)
+
+    mcnn = My_cnn(all_x, all_y, (len(all_x[0]),50), 2)
     mcnn.do_all()
 
 if __name__ == "__main__":
