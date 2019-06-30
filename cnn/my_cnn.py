@@ -7,6 +7,7 @@ from keras.layers import Conv1D, GlobalMaxPooling1D, MaxPooling1D
 import numpy as np
 from keras.layers.merge import Concatenate
 from sklearn.model_selection import StratifiedKFold
+from keras import backend as K
 
 class My_cnn(object):
     def __init__(self, all_x, all_y, input_shape, num_classes):
@@ -47,11 +48,13 @@ class My_cnn(object):
             model = Model(model_input, model_output)
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
 
-            model.fit(self.all_x[train], keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=128, epochs=25, shuffle=True, verbose=2, validation_data=(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes)))
+            K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_threads=4)))
+            model.fit(self.all_x[train], keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=128, epochs=25, verbose=2, validation_data=(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes)))
 
             score = model.evaluate(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes))
 
             print("loss: ", score[0], "accuracy: ", score[1])
             results.append(score[1])
         print("%.2f%% (+/- %.2f%%)" % (numpy.mean(results), numpy.std(results)))
+        return results
         

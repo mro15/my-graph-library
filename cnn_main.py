@@ -57,7 +57,11 @@ def main():
 
 
     mcnn = My_cnn(all_x, all_y, (len(all_x[0]),50), 2)
-    mcnn.do_all()
+    results = mcnn.do_all()
+
+    with open('results/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
+        for i in results:
+            f.write(str(i) + "\n")
 
 if __name__ == "__main__":
     main()
