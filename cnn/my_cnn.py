@@ -49,12 +49,12 @@ class My_cnn(object):
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
 
             K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_threads=4)))
-            model.fit(self.all_x[train], keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=128, epochs=25, verbose=2, validation_data=(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes)))
+            model.fit(self.all_x[train], keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=128, epochs=30, verbose=2, validation_data=(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes)))
 
             score = model.evaluate(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes))
 
             print("loss: ", score[0], "accuracy: ", score[1])
             results.append(score[1])
-        print("%.2f%% (+/- %.2f%%)" % (numpy.mean(results), numpy.std(results)))
+        print("%.2f%% (+/- %.2f%%)" % (np.mean(results), np.std(results)))
         return results
         
