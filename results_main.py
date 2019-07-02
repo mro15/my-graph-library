@@ -17,28 +17,24 @@ def mean_and_std(res, strat, windows, dataset, output):
     means = {}
     stds = {}
     for s in strat:
-        for w in windows:
-            for v in res[s]:
-                m = np.mean(v[w])
-                sd = np.std(v[w])
-                line = s, str(w)+" =>", "mean: "+str(m), "std: "+str(sd)
-                print(line)
-                output.write(str(line)+"\n")
-                means[s]=m
-                stds[s]=sd
+        m_l = []
+        s_l = []
+        for w in range(0, len(windows)):
+            m = np.mean(res[s][w])
+            sd = np.std(res[s][w])
+            line = s, str(windows[w])+" =>", "mean: "+str(m), "std: "+str(sd)
+            print(line)
+            output.write(str(line)+"\n")
+            m_l.append(m)
+            s_l.append(sd)
+        means[s]=m_l
+        stds[s]=s_l
     plot_graphic(windows, strat, means, stds, dataset)
 
 def plot_graphic(windows, strat, means, stds, dataset):
     for s in strat:
-        acc = []
-        win = []
-        sd = []
-        for w in windows:
-            acc.append(means[s])
-            win.append(w)
-            sd.append(stds[s])
-        print(win, acc, sd)
-        plt.errorbar(win, acc, yerr=sd)
+        print(windows, means[s], stds[s])
+        plt.errorbar(windows, means[s], yerr=stds[s], fmt='o', marker='s', capsize=10)
     plt.legend(["no_weight", "pmi"], loc="upper left")
     plt.xlabel("window size")
     plt.ylabel("accuracy")
@@ -49,17 +45,17 @@ def main():
     args = read_args()
 
     strategies = ["no_weight", "pmi"]
-    windows = [4]
+    windows = [4, 5]
     all_res = {"no_weight":[], "pmi":[]}
     output = open("plots/"+args.dataset+".txt", "w")
     for s in strategies:
         for w in windows:
             f = open('results/' + args.dataset + '_' + args.method + '_' + s + '_' + str(w) + '.txt', 'r')
-            all_res[s].append({w:np.array([line.rstrip('\n') for line in f]).astype(np.float)})
+            all_res[s].append(np.array([line.rstrip('\n') for line in f]).astype(np.float))
     for s in strategies:
-        for w in windows:
-            for v in all_res[s]:
-                print(s, w, v[w])
+        for w in range(0, len(windows)):
+            print(all_res[s][w])
+        print("---")
     mean_and_std(all_res, strategies, windows, args.dataset, output)
 
 if __name__ == "__main__":
