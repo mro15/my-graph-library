@@ -6,12 +6,20 @@ import sklearn
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from scipy.stats import wilcoxon
+from scipy.stats import ttest_ind
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     return parser.parse_args()
+
+def wilcoxon_test(x, y):
+    print(wilcoxon(x, y, alternative='greater'))
+
+def student_test(x, y):
+    print(ttest_ind(x, y))
 
 def mean_and_std(res, strat, windows, dataset, output):
     means = {}
@@ -46,7 +54,7 @@ def main():
     args = read_args()
 
     strategies = ["no_weight", "pmi"]
-    windows = [4, 5, 7]
+    windows = [4, 5, 7, 20]
     all_res = {"no_weight":[], "pmi":[]}
     output = open("plots/"+args.dataset+".txt", "w")
     for s in strategies:
@@ -57,6 +65,12 @@ def main():
         for w in range(0, len(windows)):
             print(all_res[s][w])
         print("---")
+
+    for w in range(0, len(windows)):
+        y = all_res["no_weight"][w]
+        x = all_res["pmi"][w]
+        wilcoxon_test(x, y)
+        student_test(x, y)
     mean_and_std(all_res, strategies, windows, args.dataset, output)
 
 if __name__ == "__main__":
