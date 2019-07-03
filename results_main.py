@@ -46,7 +46,7 @@ def main():
     args = read_args()
 
     strategies = ["no_weight", "pmi"]
-    windows = [4, 5]
+    windows = [4, 5, 7]
     all_res = {"no_weight":[], "pmi":[]}
     output = open("plots/"+args.dataset+".txt", "w")
     for s in strategies:
