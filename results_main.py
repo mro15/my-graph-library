@@ -35,9 +35,10 @@ def plot_graphic(windows, strat, means, stds, dataset):
     for s in strat:
         print(windows, means[s], stds[s])
         plt.errorbar(windows, means[s], yerr=stds[s], fmt='o', marker='s', capsize=10)
-    plt.legend(["no_weight", "pmi"], loc="upper left")
+    plt.legend(["no_weight", "pmi"], loc="upper left", numpoints=1)
     plt.xlabel("window size")
     plt.ylabel("accuracy")
+    plt.xlim(windows[0]-2, windows[-1]+2)
     plt.savefig("plots/"+dataset+".png")
     plt.close()
 
