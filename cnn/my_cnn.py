@@ -22,7 +22,7 @@ class My_cnn(object):
         kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=2)
         results = []
         for train, test in kfold.split(self.all_x, self.all_y):
-            filters = (2, 3, 5, 7)
+            filters = (2, 3)
             model_input = Input(shape=self.input_shape)
             conv_blocks = []
             for block_size in filters:
@@ -40,7 +40,7 @@ class My_cnn(object):
                 conv_blocks.append(conv)
 
             conc = Concatenate(axis=1)(conv_blocks) if len(conv_blocks) > 1 else conv_blocks[0]
-            conc = Dropout(0.2)(conc)
+            #conc = Dropout(0.2)(conc)
             conc = Dense(256, activation='relu')(conc)
             conc = Dropout(0.2)(conc)
             model_output = Dense(2, activation='softmax')(conc)
@@ -49,7 +49,7 @@ class My_cnn(object):
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
 
             K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=8, inter_op_parallelism_threads=8)))
-            model.fit(self.all_x[train], keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=128, epochs=30, verbose=2, validation_data=(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes)))
+            model.fit(self.all_x[train], keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=128, epochs=40, verbose=2, validation_data=(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes)))
 
             score = model.evaluate(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes))
 
