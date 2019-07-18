@@ -141,10 +141,6 @@ def main():
         pickle.dump(test_emb, outfile)
     with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'wb') as outfile:
         pickle.dump(d.test_labels, outfile)
-    
-    train_pad, test_pad = padding(train_emb, test_emb)
-    print(np.array(train_pad).shape)
-    print(np.array(test_pad).shape)
 
 if __name__ == "__main__":
     main()

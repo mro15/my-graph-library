@@ -16,7 +16,7 @@ def read_args():
     return parser.parse_args()
 
 def wilcoxon_test(x, y):
-    print(wilcoxon(x, y, alternative='greater'))
+    print(wilcoxon(x, y))
 
 def student_test(x, y):
     print(ttest_ind(x, y))
