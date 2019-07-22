@@ -43,7 +43,7 @@ def plot_graphic(windows, strat, means, stds, dataset):
     for s in strat:
         print(windows, means[s], stds[s])
         plt.errorbar(windows, means[s], yerr=stds[s], fmt='o', marker='s', capsize=10)
-    plt.legend(["no_weight", "pmi"], loc="upper left", numpoints=1)
+    plt.legend(["no_weight", "pmi", "normalized_pmi"], loc="upper left", numpoints=1)
     plt.xlabel("window size")
     plt.ylabel("accuracy")
     plt.xlim(windows[0]-2, windows[-1]+2)
@@ -53,9 +53,9 @@ def plot_graphic(windows, strat, means, stds, dataset):
 def main():
     args = read_args()
 
-    strategies = ["no_weight", "pmi"]
-    windows = [4, 5, 7, 20]
-    all_res = {"no_weight":[], "pmi":[]}
+    strategies = ["no_weight", "pmi", "normalized_pmi"]
+    windows = [4, 5, 7]
+    all_res = {"no_weight":[], "pmi":[], "normalized_pmi":[]}
     output = open("plots/"+args.dataset+".txt", "w")
     for s in strategies:
         for w in windows:
@@ -69,6 +69,9 @@ def main():
     for w in range(0, len(windows)):
         y = all_res["no_weight"][w]
         x = all_res["pmi"][w]
+        wilcoxon_test(x, y)
+        student_test(x, y)
+        x = all_res["normalized_pmi"][w]
         wilcoxon_test(x, y)
         student_test(x, y)
     mean_and_std(all_res, strategies, windows, args.dataset, output)
