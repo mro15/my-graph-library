@@ -18,7 +18,7 @@ def padding(train, test):
     m_train = len(max(train, key = lambda i: len(i)))
     m_test = len(max(test, key = lambda i: len(i)))
     m_all = max(m_train, m_test)
-    pad = np.zeros(50)
+    pad = np.zeros(20)
     for i in range(0, len(train)):
         if len(train[i]) < m_all:
             mult = m_all - len(train[i])
@@ -56,7 +56,7 @@ def main():
     print(all_y.shape)
 
 
-    mcnn = My_cnn(all_x, all_y, (len(all_x[0]),50), 2)
+    mcnn = My_cnn(all_x, all_y, (len(all_x[0]),20), 2)
     results = mcnn.do_all()
 
     with open('results/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
