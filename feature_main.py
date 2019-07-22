@@ -20,6 +20,7 @@ def read_args():
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi", "normalized_pmi"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
+    parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
     return parser.parse_args()
 
 #vocabulary analysis
@@ -38,7 +39,7 @@ def plot_graphs(train_graphs, test_graphs, size):
     for i in range(0, size):
         utils.plot_graph(test_graphs[i])
 
-def graph_methods(d, method, window_size, strategy):
+def graph_methods(d, method, window_size, strategy, emb_dim):
     print("PRE PROCESS: START")
     d.pre_process_data()
     #for now I will not remove any word
@@ -90,22 +91,6 @@ def vector_methods(d, method):
     bert.get_embeddings(d.train_data[0])
     bert.get_embeddings(d.train_data[1])
 
-def padding(train, test):
-    m_train = len(max(train, key = lambda i: len(i)))
-    m_test = len(max(test, key = lambda i: len(i)))
-    m_all = max(m_train, m_test)
-    pad = [0] * 50
-    for i in range(0, len(train)):
-        if len(train[i]) < m_all:
-            mult = m_all - len(train[i])
-            train[i]+= ([pad] * mult)
-    for i in range (0, len(test)):
-        if len(test[i]) < m_all:
-            mult = m_all - len(test[i])
-            test[i]+= ([pad] * mult)
-    print(m_all)
-    return np.array(train), np.array(test)
-
 
 def main():
     args = read_args()
@@ -125,21 +110,19 @@ def main():
 
     g_methods = ["node2vec"]
     if args.method in g_methods:
-        train_emb, test_emb = graph_methods(d, args.method, args.window, args.strategy)
+        train_emb, test_emb = graph_methods(d, args.method, args.window, args.strategy, args.emb_dim)
     else:
         vector_methods(d, args.method)
    
-    print(np.array(train_emb).shape, np.array(test_emb).shape)
- 
-
     print("=== WRITING NODE EMBEDDINGS ===")
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'wb') as outfile:
+    directory = "graphs/" + args.dataset + "-" + str(args.emb_dim) + "/"
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'wb') as outfile:
         pickle.dump(train_emb, outfile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'wb') as outfile:
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'wb') as outfile:
         pickle.dump(d.train_labels, outfile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'wb') as outfile:
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'wb') as outfile:
         pickle.dump(test_emb, outfile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'wb') as outfile:
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'wb') as outfile:
         pickle.dump(d.test_labels, outfile)
 
 if __name__ == "__main__":
