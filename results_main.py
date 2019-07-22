@@ -13,7 +13,7 @@ def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
-    parser.add_argument('--emb_dim)', type=int, help='embeddings dimension', required=True)
+    parser.add_argument('--emb_dim', type=int, help='embeddings dimension', required=True)
     return parser.parse_args()
 
 def wilcoxon_test(x, y):
@@ -22,7 +22,7 @@ def wilcoxon_test(x, y):
 def student_test(x, y):
     print(ttest_ind(x, y))
 
-def mean_and_std(res, strat, windows, dataset, output):
+def mean_and_std(res, strat, windows, dataset, output, output_fig):
     means = {}
     stds = {}
     for s in strat:
@@ -38,9 +38,9 @@ def mean_and_std(res, strat, windows, dataset, output):
             s_l.append(sd)
         means[s]=m_l
         stds[s]=s_l
-    plot_graphic(windows, strat, means, stds, dataset, output)
+    plot_graphic(windows, strat, means, stds, dataset, output_fig)
 
-def plot_graphic(windows, strat, means, stds, dataset, output):
+def plot_graphic(windows, strat, means, stds, dataset, output_fig):
     for s in strat:
         print(windows, means[s], stds[s])
         plt.errorbar(windows, means[s], yerr=stds[s], fmt='o', marker='s', capsize=10)
@@ -48,17 +48,19 @@ def plot_graphic(windows, strat, means, stds, dataset, output):
     plt.xlabel("window size")
     plt.ylabel("accuracy")
     plt.xlim(windows[0]-2, windows[-1]+2)
-    plt.savefig(output + ".png")
+    plt.savefig(output_fig + ".png")
     plt.close()
 
 def main():
     args = read_args()
+    print(args.emb_dim)
 
     directory = args.dataset + "-" + str(args.emb_dim) + "/"
     strategies = ["no_weight", "pmi", "normalized_pmi"]
     windows = [4, 5, 7]
     all_res = {"no_weight":[], "pmi":[], "normalized_pmi":[]}
     output = open("plots/" + directory + args.dataset+".txt", "w")
+    output_fig = "plots/" + directory + args.dataset+".txt"
     for s in strategies:
         for w in windows:
             f = open("results/" + directory + args.dataset + '_' + args.method + '_' + s + '_' + str(w) + '.txt', 'r')
@@ -78,7 +80,7 @@ def main():
         print("=== NO_WEIGHT & NORMALIZED_PMI ===")
         wilcoxon_test(x, y)
         student_test(x, y)
-    mean_and_std(all_res, strategies, windows, args.dataset, output)
+    mean_and_std(all_res, strategies, windows, args.dataset, output, output_fig)
 
 if __name__ == "__main__":
     main()
