@@ -13,7 +13,7 @@ class RepresentationLearning(object):
         self.standard_deviation = 0
         self.weight = weight
         self.sentence = sentence
-        emb_dim = emb_dim
+        self.emb_dim = emb_dim
 
     def initialize_rl_class(self):
         if self.method == "node2vec":
