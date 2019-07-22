@@ -12,13 +12,14 @@ def read_args():
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi", "normalized_pmi"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
+    parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
     return parser.parse_args()
 
-def padding(train, test):
+def padding(train, test, dim):
     m_train = len(max(train, key = lambda i: len(i)))
     m_test = len(max(test, key = lambda i: len(i)))
     m_all = max(m_train, m_test)
-    pad = np.zeros(20)
+    pad = np.zeros(dim)
     for i in range(0, len(train)):
         if len(train[i]) < m_all:
             mult = m_all - len(train[i])
@@ -33,19 +34,20 @@ def padding(train, test):
 def main():
     args = read_args()
 
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'rb') as infile:
+    directory = "graphs/" + args.dataset + "-" + str(args.emb_dim) + "/"
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'rb') as infile:
         train_emb = pickle.load(infile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'rb') as infile:
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'rb') as infile:
         train_labels = pickle.load(infile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'rb') as infile:
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'rb') as infile:
         test_emb = pickle.load(infile)
-    with open('graphs/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'rb') as infile:
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'rb') as infile:
         test_labels = pickle.load(infile)
     
 
     print(np.array(train_emb).shape)
     print(np.array(test_emb).shape)
-    train_emb, test_emb = padding(train_emb, test_emb)
+    train_emb, test_emb = padding(train_emb, test_emb, args.emb_dim)
     print(train_emb.shape)
     print(test_emb.shape)
 
@@ -56,10 +58,11 @@ def main():
     print(all_y.shape)
 
 
-    mcnn = My_cnn(all_x, all_y, (len(all_x[0]),20), 2)
+    mcnn = My_cnn(all_x, all_y, (len(all_x[0]),args.emb_dim), 2)
     results = mcnn.do_all()
 
-    with open('results/' + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
+    directory = "results/" + args.dataset + "-" + str(args.emb_dim) + "/"
+    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
         for i in results:
             f.write(str(i) + "\n")
 
