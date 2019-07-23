@@ -57,7 +57,7 @@ def main():
 
     directory = args.dataset + "-" + str(args.emb_dim) + "/"
     strategies = ["no_weight", "pmi", "normalized_pmi"]
-    windows = [4, 5, 7]
+    windows = [4, 5, 7, 20]
     all_res = {"no_weight":[], "pmi":[], "normalized_pmi":[]}
     output = open("plots/" + directory + args.dataset+".txt", "w")
     output_fig = "plots/" + directory + args.dataset+".txt"
