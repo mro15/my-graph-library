@@ -15,9 +15,9 @@ class RepresentationLearning(object):
         self.sentence = sentence
         self.emb_dim = emb_dim
 
-    def initialize_rl_class(self):
+    def initialize_rl_class(self, walk_length):
         if self.method == "node2vec":
-            self.representation_method = MyNode2Vec(self.graph, self.weight, self.sentence, self.emb_dim)
+            self.representation_method = MyNode2Vec(self.graph, self.weight, self.sentence, self.emb_dim, walk_length)
             return True
         else:
             return False

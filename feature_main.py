@@ -69,7 +69,7 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
     for i in range(0, len(train_graphs)):
     #for i in range(0, 10):
         rl = RepresentationLearning(train_graphs[i], method, weight, d.train_data[i], emb_dim)
-        rl.initialize_rl_class()
+        rl.initialize_rl_class(window_size)
         rl.representation_method.initialize_model()
         rl.representation_method.train()
         train_emb.append(rl.representation_method.get_embeddings())

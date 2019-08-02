@@ -4,12 +4,12 @@ from node2vec import Node2Vec
 import numpy as np
 
 class MyNode2Vec(object):
-    def __init__(self, graph, weight, sentence, dim):
+    def __init__(self, graph, weight, sentence, dim, walk_length):
         self.graph = graph
         self.model  = None
         self.trained_model = None
         self.dim = dim
-        self.walk_length = 2
+        self.walk_length = walk_length
         self.num_walks = 10
         self.workers = 4
         self.weight = weight
