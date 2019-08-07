@@ -10,12 +10,12 @@ class MyNode2Vec(object):
         self.trained_model = None
         self.dim = dim
         self.walk_length = walk_length
-        self.num_walks = 10
+        self.num_walks = walk_length
         self.workers = 4
         self.weight = weight
         self.sentence = sentence
-        self.p = 2
-        self.q = 0.7
+        self.p = 1
+        self.q = 0.25
 
 
     def initialize_model(self):
