@@ -28,17 +28,21 @@ class Other_cnn(object):
             conv_blocks = []
             for block_size in filters:
                 conv = Conv1D(filters=32, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
+                conv = MaxPooling1D()(conv)
                 conv = Dropout(0.2)(conv)
-                conv = GlobalMaxPooling1D()(conv)
                 conv1 = Conv1D(filters=64, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
+                conv1 = MaxPooling1D()(conv1)
                 conv1 = Dropout(0.2)(conv1)
-                conv1 = GlobalMaxPooling1D()(conv1)
                 conv2 = Conv1D(filters=128, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
+                conv2 = MaxPooling1D()(conv2)
                 conv2 = Dropout(0.2)(conv2)
-                conv2 = GlobalMaxPooling1D()(conv2)
-                conv_blocks.append(conv2)
-                conv_blocks.append(conv1)
+                conv3 = Conv1D(filters=128, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
+                conv3 = Dropout(0.2)(conv3)
+                conv3 = Flatten()(conv3)
                 conv_blocks.append(conv)
+                conv_blocks.append(conv1)
+                conv_blocks.append(conv2)
+                conv_blocks.append(conv3)
 
             conc = Concatenate(axis=1)(conv_blocks) if len(conv_blocks) > 1 else conv_blocks[0]
             #conc = Dropout(0.2)(conc)
