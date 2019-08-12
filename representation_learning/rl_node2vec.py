@@ -14,8 +14,8 @@ class MyNode2Vec(object):
         self.workers = 4
         self.weight = weight
         self.sentence = sentence
-        self.p = 0.25
-        self.q = 1
+        self.p = 4
+        self.q = 0.25
 
 
     def initialize_model(self):
