@@ -19,9 +19,11 @@ class My_cnn(object):
     def do_all(self):
         print("INPUT SHAPE: ", self.input_shape)
 
+        fold = 1
         kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=2)
         results = []
         for train, test in kfold.split(self.all_x, self.all_y):
+            print("RUNNING FOLD ", fold)
             filters = (2, 3)
             model_input = Input(shape=self.input_shape)
             conv_blocks = []
@@ -55,6 +57,7 @@ class My_cnn(object):
 
             print("loss: ", score[0], "accuracy: ", score[1])
             results.append(score[1])
-        print("%.2f%% (+/- %.2f%%)" % (np.mean(results), np.std(results)))
+            fold += 1
+        print("MEAN: ",(np.mean(results), "STD: ", np.std(results)))
         return results
         
