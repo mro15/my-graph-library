@@ -299,3 +299,74 @@ def graph_strategy_four(d, k):
     print("FINISHED TEST GRAPHS") 
 
     return train_graphs, test_graphs
+
+def graph_strategy_five(d, k):
+    train_graphs = []
+    test_graphs = []
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        total_words = len(i)
+        g = TextGraph(d.dataset)
+        windows = []
+        if total_words > k:
+            windows += build_windows(i, k)
+        else:
+            windows.append(i)
+        pair_windows = windows_in_pair(windows)
+        word_windows = windows_in_word(windows)
+        for words, freq in pair_windows.items():
+            w1, w2 = words
+            pmi_damani = log((freq)/((word_windows[w1]*word_windows[w2])/total_words))
+            if pmi_damani >= 0:
+                g.add_vertex(w1)
+                g.add_vertex(w2)
+                g.add_weight_edge(w1, w2, pmi_damani)
+        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        total_words = len(i)
+        g = TextGraph(d.dataset)
+        windows = []
+        if total_words > k:
+            windows += build_windows(i, k)
+        else:
+            windows.append(i)
+        pair_windows = windows_in_pair(windows)
+        word_windows = windows_in_word(windows)
+        for words, freq in pair_windows.items():
+            w1, w2 = words
+            pmi_damani = log((freq)/((word_windows[w1]*word_windows[w2])/total_words))
+            if pmi_damani >= 0:
+                g.add_vertex(w1)
+                g.add_vertex(w2)
+                g.add_weight_edge(w1, w2, pmi_damani)
+        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
