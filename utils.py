@@ -128,6 +128,9 @@ def windows_in_word(windows):
         windows_in_word.update(i)
     return windows_in_word
 
+def word_count(sentence):
+    return Counter(sentence)
+
 def build_windows(text, k):
     iterable = iter(text)
     result = tuple(itertools.islice(iterable, k))
@@ -137,7 +140,7 @@ def build_windows(text, k):
         result = result[1:] + (element,)
         yield list(result)
 
-#each node is a word from document and edge weight is given by PMI
+#each node is a word from document and edge weight is given by PMI(yao, 2019)
 def graph_strategy_three(d, k):
     train_graphs = []
     test_graphs = []
@@ -203,7 +206,7 @@ def graph_strategy_three(d, k):
 
     return train_graphs, test_graphs
 
-#each node is a word from document and edge weight is given by PMI normalized
+#each node is a word from document and edge weight is given by PMI(yao, 2019) normalized
 #with min max norm
 def graph_strategy_four(d, k):
     train_graphs = []
@@ -241,7 +244,7 @@ def graph_strategy_four(d, k):
                 pmi_pos = pmi_pos + 1
         else:
             print(np.shape(pmi_vet_n), len(list(pair_windows)), len(pmi_vet_n))
-            print("eita nois")
+            print("something wrong in normalized pmi vector in train graphs")
             exit()
         if ((len(list(pair_windows))<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
@@ -290,7 +293,7 @@ def graph_strategy_four(d, k):
                 pmi_pos = pmi_pos + 1
         else:
             print(np.shape(pmi_vet_n), len(list(pair_windows)), len(pmi_vet_n))
-            print("eita nois test")
+            print("something wrong in normalized omi vector in train graphs")
             exit()
         if ((len(list(pair_windows))<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
@@ -300,28 +303,30 @@ def graph_strategy_four(d, k):
 
     return train_graphs, test_graphs
 
+#word association measure defined as PMI (Pointwise Mutual Information)
+#by  Church and Hankis 1990.
 def graph_strategy_five(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING GRAPHS FROM TRAIN DATASET")
     progress = tqdm(d.train_data)
     for i in progress:
-        total_words = len(i)
         g = TextGraph(d.dataset)
+        total_words = len(i)
+        word_windows = word_count(i)
         windows = []
         if total_words > k:
             windows += build_windows(i, k)
         else:
             windows.append(i)
         pair_windows = windows_in_pair(windows)
-        word_windows = windows_in_word(windows)
         for words, freq in pair_windows.items():
             w1, w2 = words
-            pmi_damani = log((freq)/((word_windows[w1]*word_windows[w2])/total_words))
-            if pmi_damani >= 0:
+            pmi = log((freq/total_words)/((word_windows[w1]*word_windows[w2])/(total_words*total_words)))
+            if pmi >= 0:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
-                g.add_weight_edge(w1, w2, pmi_damani)
+                g.add_weight_edge(w1, w2, pmi)
         if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
@@ -339,22 +344,22 @@ def graph_strategy_five(d, k):
     print("BUILDING GRAPHS FROM TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
-        total_words = len(i)
         g = TextGraph(d.dataset)
+        total_words = len(i)
+        word_windows = word_count(i)
         windows = []
         if total_words > k:
             windows += build_windows(i, k)
         else:
             windows.append(i)
         pair_windows = windows_in_pair(windows)
-        word_windows = windows_in_word(windows)
         for words, freq in pair_windows.items():
             w1, w2 = words
-            pmi_damani = log((freq)/((word_windows[w1]*word_windows[w2])/total_words))
-            if pmi_damani >= 0:
+            pmi = log((freq/total_words)/((word_windows[w1]*word_windows[w2])/(total_words*total_words)))
+            if pmi >= 0:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
-                g.add_weight_edge(w1, w2, pmi_damani)
+                g.add_weight_edge(w1, w2, pmi)
         if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
@@ -370,3 +375,40 @@ def graph_strategy_five(d, k):
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
+
+#Dice(1945)
+def graph_strategy_six(d, k):
+    train_graphs = []
+    test_graphs = []
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        total_words = len(i)
+        g = TextGraph(d.dataset)
+        windows = []
+        if total_words > k:
+            windows += build_windows(i, k)
+        else:
+            windows.append(i)
+        pair_windows = windows_in_pair(windows) #co-occurrence of (w1, w2)
+        word_frequency = word_count(i) #frequency of each word in sentence
+        for words, freq in pair_windows:
+            w1, w2 = words
+            dice = ((2*freq)/(word_frequency[w1]/word_frequency[w2]))
+            if dice >= 0:
+                g.add_vertex(w1)
+                g.add_vertex(w2)
+                g.add_weight_edge(w1, w2, dice)
+        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+
+
