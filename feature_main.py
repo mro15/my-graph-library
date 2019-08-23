@@ -18,7 +18,7 @@ def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
-    parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "normalized_pmi", "pmi_1990", "dice"], help='representation method', required=True)
+    parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "normalized_pmi", "pmi_1990", "dice", "jaccard"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
     return parser.parse_args()
@@ -63,6 +63,9 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
         weight = True
     elif strategy == "dice":
         train_graphs, test_graphs = utils.graph_strategy_six(d, window_size)
+        weight = True
+    elif strategy == "jaccard":
+        train_graphs, test_graphs = utils.graph_strategy_seven(d, window_size)
         weight = True
     else:
         exit()
