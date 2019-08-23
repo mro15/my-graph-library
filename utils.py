@@ -446,3 +446,78 @@ def graph_strategy_six(d, k):
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
+
+#Jaccard
+def graph_strategy_seven(d, k):
+    train_graphs = []
+    test_graphs = []
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        total_words = len(i)
+        word_frequency = word_count(i) #frequency of each word in sentence
+        windows = []
+        if total_words > k:
+            windows += build_windows(i, k)
+        else:
+            windows.append(i)
+        pair_windows = windows_in_pair(windows) #co-occurrence of (w1, w2)
+        for words, freq in pair_windows.items():
+            w1, w2 = words
+            den = ((word_frequency[w1]+word_frequency[w2])-freq)
+            if den > 0:
+                jaccard = (freq/den)
+                if jaccard >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, jaccard)
+        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        total_words = len(i)
+        word_frequency = word_count(i) #frequency of each word in sentence
+        windows = []
+        if total_words > k:
+            windows += build_windows(i, k)
+        else:
+            windows.append(i)
+        pair_windows = windows_in_pair(windows) #co-occurrence of (w1, w2)
+        for words, freq in pair_windows.items():
+            w1, w2 = words
+            den = ((word_frequency[w1]+word_frequency[w2])-freq)
+            if den > 0:
+                jaccard = (freq/den)
+                if jaccard >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, jaccard)
+        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
