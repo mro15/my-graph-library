@@ -44,7 +44,7 @@ def plot_graphic(windows, strat, means, stds, dataset, output_fig):
     for s in strat:
         print(windows, means[s], stds[s])
         plt.errorbar(windows, means[s], yerr=stds[s], fmt='o', marker='s', capsize=10)
-    plt.legend(["no_weight", "pmi_2019", "normalized_pmi", "pmi_1990"], loc="upper left", numpoints=1)
+    plt.legend(["no_weight", "pmi_1990", "pmi_2019", "normalized_pmi", "dice"], loc="upper left", numpoints=1)
     plt.xlabel("window size")
     plt.ylabel("accuracy")
     plt.xlim(windows[0]-2, windows[-1]+2)
@@ -56,9 +56,10 @@ def main():
     print(args.emb_dim)
 
     directory = args.dataset + "-" + str(args.emb_dim) + "/"
-    strategies = ["no_weight", "pmi_2019", "normalized_pmi", "pmi_1990" ]
-    windows = [4]
-    all_res = {"no_weight":[], "pmi_1989":[], "normalized_pmi":[], "pmi_1989":[]}
+    strategies = ["no_weight", "pmi_1990", "pmi_2019", "normalized_pmi", "dice"]
+    windows = [4, 5, 7, 20]
+    #all_res = {"no_weight":[], "pmi_1990":[], "normalized_pmi":[], "pmi_2019":[], "dice":[]}
+    all_res = {"no_weight":[], "pmi_1990":[], "pmi_2019":[], "normalized_pmi":[], "dice":[]}
     output = open("plots/" + directory + args.dataset+".txt", "w")
     output_fig = "plots/" + directory + args.dataset+".txt"
     for s in strategies:
@@ -72,7 +73,7 @@ def main():
 
     for w in range(0, len(windows)):
         y = all_res["no_weight"][w]
-        x = all_res["pmi"][w]
+        x = all_res["pmi_2019"][w]
         print("=== NO_WEIGHT & PMI (2019) ===")
         wilcoxon_test(x, y)
         student_test(x, y)
@@ -82,6 +83,10 @@ def main():
         student_test(x, y)
         x = all_res["pmi_1990"][w]
         print("=== NO_WEIGHT & PMI (1990) ===")
+        wilcoxon_test(x, y)
+        student_test(x, y)
+        x = all_res["dice"][w]
+        print("=== NO_WEIGHT & DICE ===")
         wilcoxon_test(x, y)
         student_test(x, y)
     mean_and_std(all_res, strategies, windows, args.dataset, output, output_fig)
