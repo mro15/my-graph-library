@@ -11,6 +11,8 @@ from collections import Counter
 from math import log
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
+from nltk.collocations import BigramAssocMeasures as bam
+from nltk.collocations import BigramCollocationFinder as bcf
 
 #each node is a word from vocabulary
 def graph_strategy_one(d):
@@ -312,25 +314,24 @@ def graph_strategy_five(d, k):
     progress = tqdm(d.train_data)
     for i in progress:
         g = TextGraph(d.dataset)
-        total_words = len(i)
-        word_windows = word_count(i)
-        windows = []
-        if total_words > k:
-            windows += build_windows(i, k)
-        else:
-            windows.append(i)
-        pair_windows = windows_in_pair(windows)
-        for words, freq in pair_windows.items():
-            w1, w2 = words
-            pmi = log((freq/total_words)/((word_windows[w1]*word_windows[w2])/(total_words*total_words)))
+        windows = bcf.from_words(i, window_size=k)
+        print(windows)
+        for k,v in windows.ngram_fd.items():
+            print(k,v)
+        for pairs in windows.score_ngrams(bam.pmi):
+            pmi = pairs[1]
+            w1 = pairs[0][0]
+            w2 = pairs[0][1]
+            print(pairs,pmi, w1, w2)
             if pmi >= 0:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
                 g.add_weight_edge(w1, w2, pmi)
-        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            else:
+                print("hu3")
+        if((len(pairs)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
         #debug
         print("---- NODES ----")
         print(g.nodes())
@@ -338,32 +339,30 @@ def graph_strategy_five(d, k):
         print(g.edges())
         plot_graph(g.graph)
         exit()
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
-
+    
     print("BUILDING GRAPHS FROM TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
         g = TextGraph(d.dataset)
-        total_words = len(i)
-        word_windows = word_count(i)
-        windows = []
-        if total_words > k:
-            windows += build_windows(i, k)
-        else:
-            windows.append(i)
-        pair_windows = windows_in_pair(windows)
-        for words, freq in pair_windows.items():
-            w1, w2 = words
-            pmi = log((freq/total_words)/((word_windows[w1]*word_windows[w2])/(total_words*total_words)))
+        windows = bcf.from_words(i, window_size=k)
+        print(windows)
+        for k,v in windows.ngram_fd.items():
+            print(k,v)
+        for pairs in windows.score_ngrams(bam.pmi):
+            pmi = pairs[1]
+            w1 = pairs[0][0]
+            w2 = pairs[0][1]
+            print(pairs,pmi, w1, w2)
             if pmi >= 0:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
                 g.add_weight_edge(w1, w2, pmi)
-        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+            else:
+                print("hu3")
+        if((len(pairs)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
         #debug
         print("---- NODES ----")
         print(g.nodes())
@@ -371,7 +370,6 @@ def graph_strategy_five(d, k):
         print(g.edges())
         plot_graph(g.graph)
         exit()
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs

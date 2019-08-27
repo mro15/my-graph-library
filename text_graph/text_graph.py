@@ -24,3 +24,9 @@ class TextGraph(object):
     def edges(self):
         return self.graph.edges()
 
+    def num_nodes(self):
+        return self.graph.number_of_nodes()
+
+    def num_edges(self):
+        return self.graph.number_of_edges()
+
