@@ -307,6 +307,7 @@ def graph_strategy_four(d, k):
 
 #word association measure defined as PMI (Pointwise Mutual Information)
 #by  Church and Hankis 1990.
+# TODO: fix for MR
 def graph_strategy_five(d, k):
     train_graphs = []
     test_graphs = []
@@ -315,23 +316,18 @@ def graph_strategy_five(d, k):
     for i in progress:
         g = TextGraph(d.dataset)
         windows = bcf.from_words(i, window_size=k)
-        print(windows)
-        for k,v in windows.ngram_fd.items():
-            print(k,v)
         for pairs in windows.score_ngrams(bam.pmi):
             pmi = pairs[1]
             w1 = pairs[0][0]
             w2 = pairs[0][1]
-            print(pairs,pmi, w1, w2)
             if pmi >= 0:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
                 g.add_weight_edge(w1, w2, pmi)
-            else:
-                print("hu3")
         if((len(pairs)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
+        """
         #debug
         print("---- NODES ----")
         print(g.nodes())
@@ -339,6 +335,7 @@ def graph_strategy_five(d, k):
         print(g.edges())
         plot_graph(g.graph)
         exit()
+        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
     
     print("BUILDING GRAPHS FROM TEST DATASET")
@@ -346,23 +343,18 @@ def graph_strategy_five(d, k):
     for i in progress:
         g = TextGraph(d.dataset)
         windows = bcf.from_words(i, window_size=k)
-        print(windows)
-        for k,v in windows.ngram_fd.items():
-            print(k,v)
         for pairs in windows.score_ngrams(bam.pmi):
             pmi = pairs[1]
             w1 = pairs[0][0]
             w2 = pairs[0][1]
-            print(pairs,pmi, w1, w2)
             if pmi >= 0:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
                 g.add_weight_edge(w1, w2, pmi)
-            else:
-                print("hu3")
         if((len(pairs)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
+        """
         #debug
         print("---- NODES ----")
         print(g.nodes())
@@ -370,6 +362,7 @@ def graph_strategy_five(d, k):
         print(g.edges())
         plot_graph(g.graph)
         exit()
+        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
@@ -382,22 +375,19 @@ def graph_strategy_six(d, k):
     progress = tqdm(d.train_data)
     for i in progress:
         g = TextGraph(d.dataset)
-        total_words = len(i)
-        word_frequency = word_count(i) #frequency of each word in sentence
-        windows = []
-        if total_words > k:
-            windows += build_windows(i, k)
-        else:
-            windows.append(i)
-        pair_windows = windows_in_pair(windows) #co-occurrence of (w1, w2)
-        for words, freq in pair_windows.items():
-            w1, w2 = words
-            dice = ((2*freq)/(word_frequency[w1]+word_frequency[w2]))
-            if dice >= 0:
-                g.add_vertex(w1)
-                g.add_vertex(w2)
-                g.add_weight_edge(w1, w2, dice)
-        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.dice):
+                dice = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if dice >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, dice)
+                else:
+                    print("hu3")
+        if((len(i)<2) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
         """
@@ -410,26 +400,24 @@ def graph_strategy_six(d, k):
         exit()
         """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
+    
     print("BUILDING GRAPHS FROM TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
         g = TextGraph(d.dataset)
-        total_words = len(i)
-        word_frequency = word_count(i) #frequency of each word in sentence
-        windows = []
-        if total_words > k:
-            windows += build_windows(i, k)
-        else:
-            windows.append(i)
-        pair_windows = windows_in_pair(windows) #co-occurrence of (w1, w2)
-        for words, freq in pair_windows.items():
-            w1, w2 = words
-            dice = ((2*freq)/(word_frequency[w1]+word_frequency[w2]))
-            if dice >= 0:
-                g.add_vertex(w1)
-                g.add_vertex(w2)
-                g.add_weight_edge(w1, w2, dice)
-        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.dice):
+                dice = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if dice >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, dice)
+                else:
+                    print("hu3")
+        if((len(i)<2) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
         """
@@ -445,7 +433,8 @@ def graph_strategy_six(d, k):
 
     return train_graphs, test_graphs
 
-#Jaccard
+#word association measure defined as LLR (Log Likelihood Ratio)
+#by Dunning 1993
 def graph_strategy_seven(d, k):
     train_graphs = []
     test_graphs = []
@@ -453,24 +442,19 @@ def graph_strategy_seven(d, k):
     progress = tqdm(d.train_data)
     for i in progress:
         g = TextGraph(d.dataset)
-        total_words = len(i)
-        word_frequency = word_count(i) #frequency of each word in sentence
-        windows = []
-        if total_words > k:
-            windows += build_windows(i, k)
-        else:
-            windows.append(i)
-        pair_windows = windows_in_pair(windows) #co-occurrence of (w1, w2)
-        for words, freq in pair_windows.items():
-            w1, w2 = words
-            den = ((word_frequency[w1]+word_frequency[w2])-freq)
-            if den > 0:
-                jaccard = (freq/den)
-                if jaccard >= 0:
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.likelihood_ratio):
+                llr = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
-                    g.add_weight_edge(w1, w2, jaccard)
-        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+                    g.add_weight_edge(w1, w2, llr)
+                else:
+                    print("hu3")
+        if((len(i)<2) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
         """
@@ -483,28 +467,24 @@ def graph_strategy_seven(d, k):
         exit()
         """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
+    
     print("BUILDING GRAPHS FROM TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
         g = TextGraph(d.dataset)
-        total_words = len(i)
-        word_frequency = word_count(i) #frequency of each word in sentence
-        windows = []
-        if total_words > k:
-            windows += build_windows(i, k)
-        else:
-            windows.append(i)
-        pair_windows = windows_in_pair(windows) #co-occurrence of (w1, w2)
-        for words, freq in pair_windows.items():
-            w1, w2 = words
-            den = ((word_frequency[w1]+word_frequency[w2])-freq)
-            if den > 0:
-                jaccard = (freq/den)
-                if jaccard >= 0:
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.likelihood_ratio):
+                llr = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
-                    g.add_weight_edge(w1, w2, jaccard)
-        if((len(list(pair_windows))<1) or (len(g.nodes())==0)):
+                    g.add_weight_edge(w1, w2, llr)
+                else:
+                    print("hu3")
+        if((len(i)<2) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
         """
@@ -519,3 +499,4 @@ def graph_strategy_seven(d, k):
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
+
