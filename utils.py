@@ -307,7 +307,6 @@ def graph_strategy_four(d, k):
 
 #word association measure defined as PMI (Pointwise Mutual Information)
 #by  Church and Hankis 1990.
-# TODO: fix for MR
 def graph_strategy_five(d, k):
     train_graphs = []
     test_graphs = []
@@ -315,15 +314,16 @@ def graph_strategy_five(d, k):
     progress = tqdm(d.train_data)
     for i in progress:
         g = TextGraph(d.dataset)
-        windows = bcf.from_words(i, window_size=k)
-        for pairs in windows.score_ngrams(bam.pmi):
-            pmi = pairs[1]
-            w1 = pairs[0][0]
-            w2 = pairs[0][1]
-            if pmi >= 0:
-                g.add_vertex(w1)
-                g.add_vertex(w2)
-                g.add_weight_edge(w1, w2, pmi)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.pmi):
+                pmi = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if pmi >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, pmi)
         if((len(pairs)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
@@ -342,15 +342,16 @@ def graph_strategy_five(d, k):
     progress = tqdm(d.test_data)
     for i in progress:
         g = TextGraph(d.dataset)
-        windows = bcf.from_words(i, window_size=k)
-        for pairs in windows.score_ngrams(bam.pmi):
-            pmi = pairs[1]
-            w1 = pairs[0][0]
-            w2 = pairs[0][1]
-            if pmi >= 0:
-                g.add_vertex(w1)
-                g.add_vertex(w2)
-                g.add_weight_edge(w1, w2, pmi)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.pmi):
+                pmi = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if pmi >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, pmi)
         if((len(pairs)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
@@ -385,9 +386,7 @@ def graph_strategy_six(d, k):
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, dice)
-                else:
-                    print("hu3")
-        if((len(i)<2) or (len(g.nodes())==0)):
+        if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
         """
@@ -415,9 +414,7 @@ def graph_strategy_six(d, k):
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, dice)
-                else:
-                    print("hu3")
-        if((len(i)<2) or (len(g.nodes())==0)):
+        if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
         """
@@ -452,9 +449,7 @@ def graph_strategy_seven(d, k):
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, llr)
-                else:
-                    print("hu3")
-        if((len(i)<2) or (len(g.nodes())==0)):
+        if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
         """
@@ -482,9 +477,70 @@ def graph_strategy_seven(d, k):
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, llr)
-                else:
-                    print("hu3")
-        if((len(i)<2) or (len(g.nodes())==0)):
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
+
+#word association measure defined as Chi-Square
+#by: TODO
+def graph_strategy_eight(d, k):
+    train_graphs = []
+    test_graphs = []
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.chi_sq):
+                chi = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if chi >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, chi)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+    
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.chi_sq):
+                chi = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if chi >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, chi)
+        if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
         """
