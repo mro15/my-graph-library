@@ -56,10 +56,12 @@ def main():
     print(args.emb_dim)
 
     directory = args.dataset + "-" + str(args.emb_dim) + "/"
-    strategies = ["no_weight", "pmi_1990", "pmi_2019", "normalized_pmi", "dice"]
-    windows = [4, 5, 7, 20]
+    #strategies = ["no_weight", "pmi_1990", "pmi_2019", "normalized_pmi", "dice", "llr", "chi_square"]
+    strategies = ["no_weight", "pmi_1990", "pmi_2019", "dice", "llr", "chi_square"]
+    #windows = [4, 5, 7, 20]
+    windows = [4]
     #all_res = {"no_weight":[], "pmi_1990":[], "normalized_pmi":[], "pmi_2019":[], "dice":[]}
-    all_res = {"no_weight":[], "pmi_1990":[], "pmi_2019":[], "normalized_pmi":[], "dice":[]}
+    all_res = {"no_weight":[], "pmi_1990":[], "pmi_2019":[], "dice":[], "llr":[], "chi_square":[]}
     output = open("plots/" + directory + args.dataset+".txt", "w")
     output_fig = "plots/" + directory + args.dataset+".txt"
     for s in strategies:
@@ -77,16 +79,26 @@ def main():
         print("=== NO_WEIGHT & PMI (2019) ===")
         wilcoxon_test(x, y)
         student_test(x, y)
+        """
         x = all_res["normalized_pmi"][w]
         print("=== NO_WEIGHT & NORMALIZED_PMI ===")
         wilcoxon_test(x, y)
         student_test(x, y)
+        """
         x = all_res["pmi_1990"][w]
         print("=== NO_WEIGHT & PMI (1990) ===")
         wilcoxon_test(x, y)
         student_test(x, y)
         x = all_res["dice"][w]
         print("=== NO_WEIGHT & DICE ===")
+        wilcoxon_test(x, y)
+        student_test(x, y)
+        x = all_res["llr"][w]
+        print("=== NO_WEIGHT & LRR ===")
+        wilcoxon_test(x, y)
+        student_test(x, y)
+        x = all_res["chi_square"][w]
+        print("=== NO_WEIGHT & Chi Square ===")
         wilcoxon_test(x, y)
         student_test(x, y)
     mean_and_std(all_res, strategies, windows, args.dataset, output, output_fig)
