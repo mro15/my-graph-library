@@ -59,12 +59,17 @@ def main():
 
 
     mcnn = My_cnn(all_x, all_y, (len(all_x[0]),args.emb_dim), 2)
-    results = mcnn.do_all()
+    results, results_f1 = mcnn.do_all()
 
     directory = "results/" + args.dataset + "-" + str(args.emb_dim) + "/"
     with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
         for i in results:
             f.write(str(i) + "\n")
+    directory = "results/" + args.dataset + "-" + str(args.emb_dim) + "/"
+    with open(directory + "f1_" + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
+        for i in results_f1:
+            f.write(str(i) + "\n")
+
 
 if __name__ == "__main__":
     main()

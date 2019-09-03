@@ -8,6 +8,7 @@ import numpy as np
 from keras.layers.merge import Concatenate
 from sklearn.model_selection import StratifiedKFold
 from keras import backend as K
+from sklearn.metrics import f1_score
 
 class My_cnn(object):
     def __init__(self, all_x, all_y, input_shape, num_classes):
@@ -22,6 +23,7 @@ class My_cnn(object):
         fold = 1
         kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=2)
         results = []
+        f1_results = []
         for train, test in kfold.split(self.all_x, self.all_y):
             print("RUNNING FOLD ", fold)
             filters = (2, 3)
@@ -55,9 +57,13 @@ class My_cnn(object):
 
             score = model.evaluate(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes))
 
-            print("loss: ", score[0], "accuracy: ", score[1])
             results.append(score[1])
+            y_prob = model.predict(self.all_x[test])
+            y_pred = np.argmax(y_prob, axis=1)
+            f1 = f1_score(self.all_y[test], y_pred, average='macro')
+            f1_results.append(f1)
+            print("loss: ", score[0], "accuracy: ", score[1], "f1: ", f1)
             fold += 1
-        print("MEAN: ",(np.mean(results), "STD: ", np.std(results)))
-        return results
+        print("MEAN: ", np.mean(results), "STD: ", np.std(results), "MEAN F1: ", np.mean(f1_results), "STD F1: ", np.std(f1_results))
+        return results, f1_results
         
