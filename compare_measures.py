@@ -100,7 +100,7 @@ def main():
     edges_llr = count_edges(llr_edges_train, llr_edges_test)
     edges_dice = count_edges(dice_edges_train, dice_edges_test)
     edges_chi_square = count_edges(chi_square_edges_train, chi_square_edges_test)
-    plot_boxplot([edges_all, edges_pmi_2019, edges_pmi_1990, edges_llr, edges_dice, edges_chi_square], ["no_weight", "pmi_2019", "pmi_1990", "llr", "dice", "chi_square"], "number_of_edges_"+str(args.window))
+    plot_boxplot([edges_all, edges_pmi_1990, edges_pmi_2019, edges_llr, edges_dice, edges_chi_square], ["Sem peso", "PMI (1990)", "PMI (2019)", "LLR", "Dice", "Chi-square"], "number_of_edges_"+str(args.window))
 
     #get number of edges that are small
     edges_sub(edges_all, edges_pmi_2019, "pmi_2019")
@@ -117,7 +117,7 @@ def main():
     density_llr = measure_density(llr_edges_train, llr_edges_test)
     density_dice = measure_density(dice_edges_train, dice_edges_test)
     density_chi_square = measure_density(chi_square_edges_train, chi_square_edges_test)
-    plot_boxplot([density_all, density_pmi_2019, density_pmi_1990, density_llr, density_dice, density_chi_square], ["no_weight", "pmi_2019", "pmi_1990", "llr", "dice", "chi_square"], "density_"+str(args.window))
+    plot_boxplot([density_all, density_pmi_1990, density_pmi_2019, density_llr, density_dice, density_chi_square], ["Sem peso", "PMI (1990)", "PMI (2019)", "LLR", "Dice", "Chi-square"], "density_"+str(args.window))
 
 if __name__ == "__main__":
     main()
