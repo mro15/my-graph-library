@@ -92,6 +92,7 @@ def main():
     all_res = {"no_weight":[], "pmi_1990":[], "pmi_2019":[], "dice":[], "llr":[], "chi_square":[]}
     output = open("plots/" + directory + args.dataset+".txt", "w")
     output_fig = "plots/" + directory + args.dataset+".txt"
+    print("===== ACCURACY =====")
     for s in strategies:
         for w in windows:
             f = open("results/" + directory + args.dataset + '_' + args.method + '_' + s + '_' + str(w) + '.txt', 'r')
@@ -131,6 +132,20 @@ def main():
         wilcoxon_test(x, y)
         student_test(x, y)
     mean_and_std_w(all_res, strategies, windows, args.dataset, output, output_fig)
+
+    print("===== F1-SCORE =====")
+    output = open("plots/" + directory + "f1_" + args.dataset+".txt", "w")
+    output_fig = "plots/" + directory + "f1_" + args.dataset+".txt"
+    for s in strategies:
+        for w in windows:
+            f = open("results/" + directory + "f1_" + args.dataset + '_' + args.method + '_' + s + '_' + str(w) + '.txt', 'r')
+            all_res[s].append(np.array([line.rstrip('\n') for line in f]).astype(np.float))
+    for s in strategies:
+        for w in range(0, len(windows)):
+            print(all_res[s][w])
+        print("---")
+    mean_and_std_w(all_res, strategies, windows, args.dataset, output, output_fig)
+
 
 if __name__ == "__main__":
     main()
