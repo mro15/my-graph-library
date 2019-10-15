@@ -13,7 +13,8 @@ This project contains the  implementation of my tests with graph of words.
 # Experiments
 
 ## First experiment
-In my first experiment I created graphs of words with co-occurrence = 3, so the window size is 4.
-After build a graph for each review, the node embeddings were extracted using **node2vec**. In this experiment for each graph I build a feature vector containing the mean, median and standard deviation of the node embeddings.
-In analysis directory using T-SNE is possible to see the feature vectors in 2D space. 
-
+In my first experiment I created graphs of words with sliding window size is 4, 7, 12 and 20.
+After build a graph for each review, the node embeddings were extracted using **node2vec**.
+The node embeddings are fed into a CNN for sentence classification.
+We perform stratified 10-fold cross validation and report the mean and standard deviation.
+Student t-test and Wilcoxon test are performed.
