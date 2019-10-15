@@ -8,6 +8,7 @@ import numpy as np
 from keras.layers.merge import Concatenate
 from sklearn.model_selection import StratifiedKFold
 from keras import backend as K
+from sklearn.metrics import f1_score
 
 class My_cnn(object):
     def __init__(self, all_x, all_y, input_shape, num_classes):
@@ -19,10 +20,13 @@ class My_cnn(object):
     def do_all(self):
         print("INPUT SHAPE: ", self.input_shape)
 
+        fold = 1
         kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=2)
         results = []
+        f1_results = []
         for train, test in kfold.split(self.all_x, self.all_y):
-            filters = (2, 3, 5, 7)
+            print("RUNNING FOLD ", fold)
+            filters = (2, 3)
             model_input = Input(shape=self.input_shape)
             conv_blocks = []
             for block_size in filters:
@@ -40,7 +44,7 @@ class My_cnn(object):
                 conv_blocks.append(conv)
 
             conc = Concatenate(axis=1)(conv_blocks) if len(conv_blocks) > 1 else conv_blocks[0]
-            conc = Dropout(0.2)(conc)
+            #conc = Dropout(0.2)(conc)
             conc = Dense(256, activation='relu')(conc)
             conc = Dropout(0.2)(conc)
             model_output = Dense(2, activation='softmax')(conc)
@@ -49,12 +53,17 @@ class My_cnn(object):
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
 
             K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=8, inter_op_parallelism_threads=8)))
-            model.fit(self.all_x[train], keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=128, epochs=30, verbose=2, validation_data=(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes)))
+            model.fit(self.all_x[train], keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=32, epochs=20, verbose=2, validation_data=(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes)))
 
             score = model.evaluate(self.all_x[test], keras.utils.to_categorical(self.all_y[test], self.num_classes))
 
-            print("loss: ", score[0], "accuracy: ", score[1])
             results.append(score[1])
-        print("%.2f%% (+/- %.2f%%)" % (np.mean(results), np.std(results)))
-        return results
+            y_prob = model.predict(self.all_x[test])
+            y_pred = np.argmax(y_prob, axis=1)
+            f1 = f1_score(self.all_y[test], y_pred, average='macro')
+            f1_results.append(f1)
+            print("loss: ", score[0], "accuracy: ", score[1], "f1: ", f1)
+            fold += 1
+        print("MEAN: ", np.mean(results), "STD: ", np.std(results), "MEAN F1: ", np.mean(f1_results), "STD F1: ", np.std(f1_results))
+        return results, f1_results
         
