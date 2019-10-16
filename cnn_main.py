@@ -8,7 +8,7 @@ import sklearn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "normalized_pmi", "pmi_1990", "dice", "llr", "chi_square"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)

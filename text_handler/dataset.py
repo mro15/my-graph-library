@@ -12,11 +12,33 @@ class Dataset(object):
         self.train_labels = None
         self.test_data = None
         self.test_labels = None
-        self.validation_data = None
-        self.validation_labels = None
         self.stop_words = set(nltk.corpus.stopwords.words('english'))
         self.vocabulary = collections.Counter()
         self.classes = 0
+    
+    def read_webkb(self):
+        dataset = "datasets/webkb/"
+        data_sentence = []
+        data_label = []
+        for i in ["train", "test"]:
+            fp = open(dataset+i+".txt", 'r')
+            for lines in fp.readlines():
+                line = lines.split()
+                if len(line[1:]) > 0:
+                    data_label.append(line[0])
+                    data_sentence.append(line[1:])
+        labels_map = {}
+        for i, label in enumerate(list(set(data_label))):
+            labels_map.update({label:i})
+        data_label_int = []
+        for i in range(0, len(data_label)):
+            data_label_int.append(labels_map[data_label[i]])
+        half = int(len(data_sentence)/2)
+        self.train_data = data_sentence[:half]
+        self.train_labels = data_label_int[:half]
+        self.test_data = data_sentence[half:]
+        self.test_labels = data_label_int[half:]
+        self.classes = 4
 
     def read_polarity(self):
         dataset = "datasets/polarity/txt_sentoken/"
@@ -87,9 +109,6 @@ class Dataset(object):
         self.test_data = test_pos + test_neg
         self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
         self.classes = 2
-
-        print(len(self.train_data), len(self.train_labels))
-        print(len(self.test_data), len(self.test_labels))
 
     def pre_process_data(self):
         tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
