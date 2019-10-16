@@ -42,26 +42,25 @@ class Dataset(object):
 
     def read_polarity(self):
         dataset = "datasets/polarity/txt_sentoken/"
-        data = {}
-        data["neg"] = []
-        data["pos"] = []
+        data_sentence = []
+        data_label = []
         for i in ["neg", "pos"]:
             files = listdir(dataset+i+"/")
             for f in files:
                 fp = open(dataset+i+"/"+f, 'r')
-                data[i].append(fp.read().split())
-                
-        len_train_neg = int(len(data["neg"]) * 0.5)
-        len_train_pos = int(len(data["pos"]) * 0.5)
-        train_neg = data["neg"][:len_train_neg]
-        train_pos = data["pos"][:len_train_pos]
-        self.train_data = train_pos + train_neg
-        self.train_labels = [1]*len(train_pos)+[0]*len(train_neg)
-
-        test_neg = data["neg"][len_train_neg:]
-        test_pos = data["pos"][len_train_pos:]
-        self.test_data = test_pos + test_neg
-        self.test_labels = [1]*len(test_pos)+[0]*len(test_neg)
+                data_label.append(i)
+                data_sentence.append(fp.read().split())
+        labels_map = {}
+        for i, label in enumerate(list(set(data_label))):
+            labels_map.update({label:i})
+        data_label_int = []
+        for i in range(0, len(data_label)):
+            data_label_int.append(labels_map[data_label[i]])
+        half = int(len(data_sentence)/2)
+        self.train_data = data_sentence[:half]
+        self.train_labels = data_label_int[:half]
+        self.test_data = data_sentence[half:]
+        self.test_labels = data_label_int[half:]
         self.classes = 2
 
     def read_imdb(self):
