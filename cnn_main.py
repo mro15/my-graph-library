@@ -5,6 +5,8 @@ from cnn.my_cnn import My_cnn
 import numpy as np
 import _pickle as pickle
 import sklearn
+from scipy.sparse import csr_matrix, lil_matrix
+from keras.preprocessing.sequence import pad_sequences
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
@@ -19,17 +21,20 @@ def padding(train, test, dim):
     m_train = len(max(train, key = lambda i: len(i)))
     m_test = len(max(test, key = lambda i: len(i)))
     m_all = max(m_train, m_test)
+    print(m_all)
     pad = np.zeros(dim)
+    sparse_all = []
     for i in range(0, len(train)):
         if len(train[i]) < m_all:
             mult = m_all - len(train[i])
             train[i]+= ([pad] * mult)
+        sparse_all.append(lil_matrix(train[i]))
     for i in range (0, len(test)):
         if len(test[i]) < m_all:
             mult = m_all - len(test[i])
             test[i]+= ([pad] * mult)
-    print(m_all)
-    return np.array(train), np.array(test)
+        sparse_all.append(lil_matrix(test[i]))
+    return sparse_all
 
 def main():
     args = read_args()
@@ -47,18 +52,18 @@ def main():
 
     print(np.array(train_emb).shape)
     print(np.array(test_emb).shape)
-    train_emb, test_emb = padding(train_emb, test_emb, args.emb_dim)
-    print(train_emb.shape)
-    print(test_emb.shape)
-
-    all_x = np.concatenate((train_emb, test_emb), axis=0)
+    all_x = padding(train_emb, test_emb, args.emb_dim)
     all_y = np.concatenate((np.array(train_labels), np.array(test_labels)), axis=None)
 
-    print(all_x.shape)
-    print(all_y.shape)
+    train_emb = None
+    test_emb = None
 
+    print(np.array(all_x).shape)
+    print(np.array(all_y).shape)
 
-    mcnn = My_cnn(all_x, all_y, (len(all_x[0]),args.emb_dim), 2)
+    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0].A).shape, 4)
+    all_x = None
+    all_y = None
     results, results_f1 = mcnn.do_all()
 
     directory = "results/" + args.dataset + "-" + str(args.emb_dim) + "/"
@@ -69,7 +74,6 @@ def main():
     with open(directory + "f1_" + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
         for i in results_f1:
             f.write(str(i) + "\n")
-
 
 if __name__ == "__main__":
     main()
