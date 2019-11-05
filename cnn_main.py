@@ -15,6 +15,7 @@ def read_args():
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "normalized_pmi", "pmi_1990", "dice", "llr", "chi_square"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
+    parser.add_argument('--pool_type', type=str, choices=["max", "global_max"], help='pooling type', required=True)
     return parser.parse_args()
 
 def padding(train, test, dim):
@@ -61,7 +62,7 @@ def main():
     print(np.array(all_x).shape)
     print(np.array(all_y).shape)
 
-    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0].A).shape, 4)
+    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0].A).shape, 4, args.pool_type)
     all_x = None
     all_y = None
     results, results_f1 = mcnn.do_all()
