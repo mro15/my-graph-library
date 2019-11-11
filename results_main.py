@@ -45,8 +45,8 @@ def plot_graphic(windows, strat, means, stds, dataset, output_fig):
         print(windows, means[s], stds[s])
         plt.errorbar(windows, means[s], yerr=stds[s], fmt='o', marker='s', capsize=10)
     plt.legend(strat, loc="upper left", numpoints=1)
-    plt.xlabel("window size")
-    plt.ylabel("accuracy")
+    plt.xlabel("Tamanho da janela")
+    plt.ylabel("Taxa de acerto")
     plt.xlim(windows[0]-2, windows[-1]+2)
     plt.savefig(output_fig + ".png")
     plt.close()
@@ -70,13 +70,14 @@ def mean_and_std_w(res, strat, windows, dataset, output, output_fig):
     plot_graphic_w(windows, strat, means, stds, dataset, output_fig)
 
 def plot_graphic_w(windows, strat, means, stds, dataset, output_fig):
+    bar =  ["Sem peso", "PMI (1990)", "PMI (2019)", "Dice", "LLR", "Chi-square"]
     for w in range(0, len(windows)):
-        title = "window size: " + str(windows[w])
+        title = "Tamanho da janela: " + str(windows[w])
         print("---")
         print(windows[w], means[w], stds[w])
-        plt.errorbar(strat, means[w], yerr=stds[w], marker='s', capsize=10)
-        plt.xlabel("strategy")
-        plt.ylabel("accuracy")
+        plt.errorbar(bar, means[w], yerr=stds[w], marker='s', capsize=10)
+        plt.xlabel("Métrica")
+        plt.ylabel("Taxa de acerto")
         plt.title(title)
         plt.savefig(output_fig + str(windows[w]) + ".png")
         plt.close()
