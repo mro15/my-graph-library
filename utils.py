@@ -396,6 +396,52 @@ def graph_strategy_four(d, k):
 
     return train_graphs, test_graphs
 
+def graph_strategy_five_all(d, k):
+    train_graphs = []
+    test_graphs = []
+    print("BUILDING WINDOWS AND FINDING BIGRAMS")
+    docs = d.train_data+d.test_data
+    bcf.default_ws = k
+    windows = bcf.from_documents(docs)
+    bcf.default_ws = k
+    print("======= ALL ===============")
+    print(windows.nbest(bam.likelihood_ratio, 10))
+    llr_all = dict(windows.score_ngrams(bam.likelihood_ratio))
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            print(i)
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.likelihood_ratio):
+            #for pairs in t_windows.ngram_fd.items():
+                print(pairs)
+                print(llr_all[pairs[0]])
+                """
+                llr = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+                """
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        break
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+
 #word association measure defined as LLR (Log Likelihood Ratio)
 #by Dunning 1993
 def graph_strategy_five(d, k):

@@ -86,11 +86,11 @@ def main():
     d.pre_process_data()
     print("PRE PROCESS: END")
 
-    all_edges_train, all_edges_test = utils.graph_strategy_two(d, args.window)
-    pmi_2019_edges_train, pmi_2019_edges_test = utils.graph_strategy_three(d, args.window)
-    pmi_1990_edges_train, pmi_1990_edges_test = utils.graph_strategy_five(d, args.window)
-    llr_edges_train, llr_edges_test = utils.graph_strategy_seven(d, args.window)
-    dice_edges_train, dice_edges_test = utils.graph_strategy_six(d, args.window)
+    all_edges_train, all_edges_test = utils.graph_strategy_one(d, args.window)
+    pmi_2019_edges_train, pmi_2019_edges_test = utils.graph_strategy_two(d, args.window)
+    pmi_1990_edges_train, pmi_1990_edges_test = utils.graph_strategy_three(d, args.window)
+    llr_edges_train, llr_edges_test = utils.graph_strategy_five(d, args.window)
+    dice_edges_train, dice_edges_test = utils.graph_strategy_four(d, args.window)
     chi_square_edges_train, chi_square_edges_test = utils.graph_strategy_six(d, args.window)
 
     #number of edges of each graph
