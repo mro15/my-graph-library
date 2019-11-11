@@ -51,24 +51,24 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
     test_graphs = []
     weight = False
     if strategy == "no_weight":
-        train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_one(d, window_size)
     elif strategy == "pmi_2019":
-        train_graphs, test_graphs = utils.graph_strategy_three(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
         weight = True
     elif strategy == "normalized_pmi":
-        train_graphs, test_graphs = utils.graph_strategy_four(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_norm_two(d, window_size)
         weight = True
     elif strategy == "pmi_1990":
-        train_graphs, test_graphs = utils.graph_strategy_five(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_three(d, window_size)
         weight = True
     elif strategy == "dice":
-        train_graphs, test_graphs = utils.graph_strategy_six(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_four(d, window_size)
         weight = True
     elif strategy == "llr":
-        train_graphs, test_graphs = utils.graph_strategy_seven(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_five(d, window_size)
         weight = True
     elif strategy == "chi_square":
-        train_graphs, test_graphs = utils.graph_strategy_eight(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_six(d, window_size)
         weight = True
     else:
         exit()
@@ -102,7 +102,6 @@ def vector_methods(d, method):
     bert = MyBert()
     bert.get_embeddings(d.train_data[0])
     bert.get_embeddings(d.train_data[1])
-
 
 def main():
     args = read_args()

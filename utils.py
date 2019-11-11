@@ -14,41 +14,41 @@ import numpy as np
 from nltk.collocations import BigramAssocMeasures as bam
 from nltk.collocations import BigramCollocationFinder as bcf
 
-#each node is a word from vocabulary
-def graph_strategy_one(d):
-    train_graphs = []
-    for i in range(0, len(d.train_data)):
-        g = TextGraph(d.dataset)
-        for word in d.vocabulary:
-            g.add_vertex(word)
-        #word co-occurrence size 2
-        for s in range(0, len(d.train_data[i])-1):
-                w1 = d.train_data[i][s]
-                w2 = d.train_data[i][s+1]
-                g.add_edge(w1, w2)
-        #convert graph to sparse matrix
+def plot_graph(g):
+        options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
+        edge_labels = nx.get_edge_attributes(g,'weight')
+        pos=nx.spring_layout(g)
+        nx.draw(g, pos, **options)
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
+        plt.show()
 
-        #train_graphs.append(g)
-    
-    print("FINISHED TRAIN GRAPHS") 
+def windows_in_pair(windows):
+    windows_in_pair = Counter()
+    for i in windows:
+        pairs = list(itertools.combinations(i, 2))
+        windows_in_pair.update(pairs)
+    return windows_in_pair
 
-    test_graphs = []
-    for i in range(0, len(d.test_data)):
-        g = TextGraph(d.dataset)
-        for word in d.vocabulary:
-            g.add_vertex(word)
-        #word co-occurrence size 2
-        for s in range(0, len(d.test_data[i])-1):
-                w1 = d.test_data[i][s]
-                w2 = d.test_data[i][s+1]
-                g.add_edge(w1, w2)
-        #test_graphs.append(g)
-    
-    print("FINISHED TEST GRAPHS") 
-    return train_graphs, test_graphs
+def windows_in_word(windows):
+    windows_in_word = Counter()
+    for i in windows:
+        windows_in_word.update(i)
+    return windows_in_word
+
+def word_count(sentence):
+    return Counter(sentence)
+
+def build_windows(text, k):
+    iterable = iter(text)
+    result = tuple(itertools.islice(iterable, k))
+    if len(result)==k:
+        yield list(result)
+    for element in iterable:
+        result = result[1:] + (element,)
+        yield list(result)
 
 #each node is a word from document and has no edge weight
-def graph_strategy_two(d, k):
+def graph_strategy_one(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING TRAIN GRAPHS")
@@ -108,42 +108,8 @@ def graph_strategy_two(d, k):
     return train_graphs, test_graphs
 
 
-def plot_graph(g):
-        options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
-        edge_labels = nx.get_edge_attributes(g,'weight')
-        pos=nx.spring_layout(g)
-        nx.draw(g, pos, **options)
-        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
-        plt.show()
-
-def windows_in_pair(windows):
-    windows_in_pair = Counter()
-    for i in windows:
-        pairs = list(itertools.combinations(i, 2))
-        windows_in_pair.update(pairs)
-    return windows_in_pair
-
-
-def windows_in_word(windows):
-    windows_in_word = Counter()
-    for i in windows:
-        windows_in_word.update(i)
-    return windows_in_word
-
-def word_count(sentence):
-    return Counter(sentence)
-
-def build_windows(text, k):
-    iterable = iter(text)
-    result = tuple(itertools.islice(iterable, k))
-    if len(result)==k:
-        yield list(result)
-    for element in iterable:
-        result = result[1:] + (element,)
-        yield list(result)
-
 #each node is a word from document and edge weight is given by PMI(yao, 2019)
-def graph_strategy_three(d, k):
+def graph_strategy_two(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING TRAIN GRAPHS")
@@ -210,7 +176,7 @@ def graph_strategy_three(d, k):
 
 #each node is a word from document and edge weight is given by PMI(yao, 2019) normalized
 #with min max norm
-def graph_strategy_four(d, k):
+def graph_strategy_norm_two(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING TRAIN GRAPHS")
@@ -307,7 +273,7 @@ def graph_strategy_four(d, k):
 
 #word association measure defined as PMI (Pointwise Mutual Information)
 #by  Church and Hankis 1990.
-def graph_strategy_five(d, k):
+def graph_strategy_three(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING GRAPHS FROM TRAIN DATASET")
@@ -369,7 +335,7 @@ def graph_strategy_five(d, k):
     return train_graphs, test_graphs
 
 #Dice(1945)
-def graph_strategy_six(d, k):
+def graph_strategy_four(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING GRAPHS FROM TRAIN DATASET")
@@ -432,7 +398,7 @@ def graph_strategy_six(d, k):
 
 #word association measure defined as LLR (Log Likelihood Ratio)
 #by Dunning 1993
-def graph_strategy_seven(d, k):
+def graph_strategy_five(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING GRAPHS FROM TRAIN DATASET")
@@ -494,8 +460,7 @@ def graph_strategy_seven(d, k):
     return train_graphs, test_graphs
 
 #word association measure defined as Chi-Square
-#by: TODO
-def graph_strategy_eight(d, k):
+def graph_strategy_six(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING GRAPHS FROM TRAIN DATASET")
