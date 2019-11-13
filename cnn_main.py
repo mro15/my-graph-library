@@ -62,7 +62,7 @@ def main():
     print(np.array(all_x).shape)
     print(np.array(all_y).shape)
 
-    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0].A).shape, 4, args.pool_type)
+    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0].A).shape, 2, args.pool_type)
     all_x = None
     all_y = None
     results, results_f1 = mcnn.do_all()
