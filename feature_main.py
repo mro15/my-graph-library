@@ -18,7 +18,7 @@ def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
-    parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "normalized_pmi", "pmi_1990", "dice", "llr", "chi_square"], help='representation method', required=True)
+    parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "pmi_2019_all", "normalized_pmi", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
     return parser.parse_args()
@@ -51,24 +51,40 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
     test_graphs = []
     weight = False
     if strategy == "no_weight":
-        train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_one(d, window_size)
     elif strategy == "pmi_2019":
-        train_graphs, test_graphs = utils.graph_strategy_three(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
         weight = True
+    elif strategy == "pmi_2019_all":
+        pass
+        #train_graphs, test_graphs = utils.graph_strategy_two_all(d, window_size)
+        #weight = True
     elif strategy == "normalized_pmi":
-        train_graphs, test_graphs = utils.graph_strategy_four(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_norm_two(d, window_size)
         weight = True
     elif strategy == "pmi_1990":
-        train_graphs, test_graphs = utils.graph_strategy_five(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_three(d, window_size)
+        weight = True
+    elif strategy == "pmi_1990_all":
+        train_graphs, test_graphs = utils.graph_strategy_three_all(d, window_size)
         weight = True
     elif strategy == "dice":
-        train_graphs, test_graphs = utils.graph_strategy_six(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_four(d, window_size)
+        weight = True
+    elif strategy == "dice_all":
+        train_graphs, test_graphs = utils.graph_strategy_four_all(d, window_size)
         weight = True
     elif strategy == "llr":
-        train_graphs, test_graphs = utils.graph_strategy_seven(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_five(d, window_size)
+        weight = True
+    elif strategy == "llr_all":
+        train_graphs, test_graphs = utils.graph_strategy_five_all(d, window_size)
         weight = True
     elif strategy == "chi_square":
-        train_graphs, test_graphs = utils.graph_strategy_eight(d, window_size)
+        train_graphs, test_graphs = utils.graph_strategy_six(d, window_size)
+        weight = True
+    elif strategy == "chi_square_all":
+        train_graphs, test_graphs = utils.graph_strategy_six_all(d, window_size)
         weight = True
     else:
         exit()
@@ -102,7 +118,6 @@ def vector_methods(d, method):
     bert = MyBert()
     bert.get_embeddings(d.train_data[0])
     bert.get_embeddings(d.train_data[1])
-
 
 def main():
     args = read_args()

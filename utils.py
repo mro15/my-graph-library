@@ -14,41 +14,48 @@ import numpy as np
 from nltk.collocations import BigramAssocMeasures as bam
 from nltk.collocations import BigramCollocationFinder as bcf
 
-#each node is a word from vocabulary
-def graph_strategy_one(d):
-    train_graphs = []
-    for i in range(0, len(d.train_data)):
-        g = TextGraph(d.dataset)
-        for word in d.vocabulary:
-            g.add_vertex(word)
-        #word co-occurrence size 2
-        for s in range(0, len(d.train_data[i])-1):
-                w1 = d.train_data[i][s]
-                w2 = d.train_data[i][s+1]
-                g.add_edge(w1, w2)
-        #convert graph to sparse matrix
+def plot_graph(g):
+        options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
+        edge_labels = nx.get_edge_attributes(g,'weight')
+        pos=nx.spring_layout(g)
+        nx.draw(g, pos, **options)
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
+        plt.show()
 
-        #train_graphs.append(g)
-    
-    print("FINISHED TRAIN GRAPHS") 
+def windows_in_pair(windows):
+    windows_in_pair = Counter()
+    for i in windows:
+        pairs = list(itertools.combinations(i, 2))
+        windows_in_pair.update(pairs)
+    return windows_in_pair
 
-    test_graphs = []
-    for i in range(0, len(d.test_data)):
-        g = TextGraph(d.dataset)
-        for word in d.vocabulary:
-            g.add_vertex(word)
-        #word co-occurrence size 2
-        for s in range(0, len(d.test_data[i])-1):
-                w1 = d.test_data[i][s]
-                w2 = d.test_data[i][s+1]
-                g.add_edge(w1, w2)
-        #test_graphs.append(g)
-    
-    print("FINISHED TEST GRAPHS") 
-    return train_graphs, test_graphs
+def windows_in_word(windows):
+    windows_in_word = Counter()
+    for i in windows:
+        windows_in_word.update(i)
+    return windows_in_word
+
+def word_count(sentence):
+    return Counter(sentence)
+
+def build_windows(text, k):
+    iterable = iter(text)
+    result = tuple(itertools.islice(iterable, k))
+    if len(result)==k:
+        yield list(result)
+    for element in iterable:
+        result = result[1:] + (element,)
+        yield list(result)
+
+# todo: see a way of not do this
+def all_docs_to_one_tokens_list(d):
+    docs = d.train_data+d.test_data
+    #docs = d.train_data[:2]
+    token_list = list(itertools.chain(*docs))
+    return token_list
 
 #each node is a word from document and has no edge weight
-def graph_strategy_two(d, k):
+def graph_strategy_one(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING TRAIN GRAPHS")
@@ -108,42 +115,8 @@ def graph_strategy_two(d, k):
     return train_graphs, test_graphs
 
 
-def plot_graph(g):
-        options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
-        edge_labels = nx.get_edge_attributes(g,'weight')
-        pos=nx.spring_layout(g)
-        nx.draw(g, pos, **options)
-        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
-        plt.show()
-
-def windows_in_pair(windows):
-    windows_in_pair = Counter()
-    for i in windows:
-        pairs = list(itertools.combinations(i, 2))
-        windows_in_pair.update(pairs)
-    return windows_in_pair
-
-
-def windows_in_word(windows):
-    windows_in_word = Counter()
-    for i in windows:
-        windows_in_word.update(i)
-    return windows_in_word
-
-def word_count(sentence):
-    return Counter(sentence)
-
-def build_windows(text, k):
-    iterable = iter(text)
-    result = tuple(itertools.islice(iterable, k))
-    if len(result)==k:
-        yield list(result)
-    for element in iterable:
-        result = result[1:] + (element,)
-        yield list(result)
-
 #each node is a word from document and edge weight is given by PMI(yao, 2019)
-def graph_strategy_three(d, k):
+def graph_strategy_two(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING TRAIN GRAPHS")
@@ -210,7 +183,7 @@ def graph_strategy_three(d, k):
 
 #each node is a word from document and edge weight is given by PMI(yao, 2019) normalized
 #with min max norm
-def graph_strategy_four(d, k):
+def graph_strategy_norm_two(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING TRAIN GRAPHS")
@@ -305,8 +278,324 @@ def graph_strategy_four(d, k):
 
     return train_graphs, test_graphs
 
+def graph_strategy_three_all(d, k):
+    train_graphs = []
+    test_graphs = []
+    windows = bcf.from_words(all_docs_to_one_tokens_list(d), window_size=k)
+    llr_all = dict(windows.score_ngrams(bam.pmi))
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.pmi):
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        break
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.pmi):
+                #print(pairs)
+                #print(llr_all[pairs[0]])
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        break
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+    return train_graphs, test_graphs
+
 #word association measure defined as PMI (Pointwise Mutual Information)
 #by  Church and Hankis 1990.
+def graph_strategy_three(d, k):
+    train_graphs = []
+    test_graphs = []
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.pmi):
+                pmi = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if pmi >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, pmi)
+        if((len(pairs)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+    
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.pmi):
+                pmi = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if pmi >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, pmi)
+        if((len(pairs)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
+
+def graph_strategy_four_all(d, k):
+    train_graphs = []
+    test_graphs = []
+    windows = bcf.from_words(all_docs_to_one_tokens_list(d), window_size=k)
+    llr_all = dict(windows.score_ngrams(bam.dice))
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.dice):
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        break
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.dice):
+                #print(pairs)
+                #print(llr_all[pairs[0]])
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        break
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
+
+#Dice(1945)
+def graph_strategy_four(d, k):
+    train_graphs = []
+    test_graphs = []
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.dice):
+                dice = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if dice >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, dice)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+    
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.score_ngrams(bam.dice):
+                dice = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if dice >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, dice)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        exit()
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
+
+def graph_strategy_five_all(d, k):
+    train_graphs = []
+    test_graphs = []
+    windows = bcf.from_words(all_docs_to_one_tokens_list(d), window_size=k)
+    llr_all = dict(windows.score_ngrams(bam.likelihood_ratio))
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.likelihood_ratio):
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        break
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.likelihood_ratio):
+                #print(pairs)
+                #print(llr_all[pairs[0]])
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        break
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
+
+#word association measure defined as LLR (Log Likelihood Ratio)
+#by Dunning 1993
 def graph_strategy_five(d, k):
     train_graphs = []
     test_graphs = []
@@ -316,131 +605,6 @@ def graph_strategy_five(d, k):
         g = TextGraph(d.dataset)
         if len(i) > k:
             windows = bcf.from_words(i, window_size=k)
-            for pairs in windows.score_ngrams(bam.pmi):
-                pmi = pairs[1]
-                w1 = pairs[0][0]
-                w2 = pairs[0][1]
-                if pmi >= 0:
-                    g.add_vertex(w1)
-                    g.add_vertex(w2)
-                    g.add_weight_edge(w1, w2, pmi)
-        if((len(pairs)<1) or (len(g.nodes())==0)):
-            g.add_vertex(i[0])
-        train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
-    print("FINISHED GRAPHS FROM TRAIN DATASET")
-    
-    print("BUILDING GRAPHS FROM TEST DATASET")
-    progress = tqdm(d.test_data)
-    for i in progress:
-        g = TextGraph(d.dataset)
-        if len(i) > k:
-            windows = bcf.from_words(i, window_size=k)
-            for pairs in windows.score_ngrams(bam.pmi):
-                pmi = pairs[1]
-                w1 = pairs[0][0]
-                w2 = pairs[0][1]
-                if pmi >= 0:
-                    g.add_vertex(w1)
-                    g.add_vertex(w2)
-                    g.add_weight_edge(w1, w2, pmi)
-        if((len(pairs)<1) or (len(g.nodes())==0)):
-            g.add_vertex(i[0])
-        test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
-    print("FINISHED GRAPHS FROM TEST DATASET")
-
-    return train_graphs, test_graphs
-
-#Dice(1945)
-def graph_strategy_six(d, k):
-    train_graphs = []
-    test_graphs = []
-    print("BUILDING GRAPHS FROM TRAIN DATASET")
-    progress = tqdm(d.train_data)
-    for i in progress:
-        g = TextGraph(d.dataset)
-        if len(i) > k:
-            windows = bcf.from_words(i, window_size=k)
-            for pairs in windows.score_ngrams(bam.dice):
-                dice = pairs[1]
-                w1 = pairs[0][0]
-                w2 = pairs[0][1]
-                if dice >= 0:
-                    g.add_vertex(w1)
-                    g.add_vertex(w2)
-                    g.add_weight_edge(w1, w2, dice)
-        if((len(i)<1) or (len(g.nodes())==0)):
-            g.add_vertex(i[0])
-        train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
-    print("FINISHED GRAPHS FROM TRAIN DATASET")
-    
-    print("BUILDING GRAPHS FROM TEST DATASET")
-    progress = tqdm(d.test_data)
-    for i in progress:
-        g = TextGraph(d.dataset)
-        if len(i) > k:
-            windows = bcf.from_words(i, window_size=k)
-            for pairs in windows.score_ngrams(bam.dice):
-                dice = pairs[1]
-                w1 = pairs[0][0]
-                w2 = pairs[0][1]
-                if dice >= 0:
-                    g.add_vertex(w1)
-                    g.add_vertex(w2)
-                    g.add_weight_edge(w1, w2, dice)
-        if((len(i)<1) or (len(g.nodes())==0)):
-            g.add_vertex(i[0])
-        test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
-    print("FINISHED GRAPHS FROM TEST DATASET")
-
-    return train_graphs, test_graphs
-
-#word association measure defined as LLR (Log Likelihood Ratio)
-#by Dunning 1993
-def graph_strategy_seven(d, k):
-    train_graphs = []
-    test_graphs = []
-    print("BUILDING GRAPHS FROM TRAIN DATASET")
-    progress = tqdm(d.train_data)
-    for i in progress:
-        g = TextGraph(d.dataset)
-        if len(i) > k:
-            windows = bcf.from_words(i, window_size=k)
             for pairs in windows.score_ngrams(bam.likelihood_ratio):
                 llr = pairs[1]
                 w1 = pairs[0][0]
@@ -488,14 +652,77 @@ def graph_strategy_seven(d, k):
         print(g.edges())
         plot_graph(g.graph)
         exit()
+        """
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
+
+def graph_strategy_six_all(d, k):
+    train_graphs = []
+    test_graphs = []
+    windows = bcf.from_words(all_docs_to_one_tokens_list(d), window_size=k)
+    llr_all = dict(windows.score_ngrams(bam.chi_sq))
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.chi_sq):
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        break
+        """
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.chi_sq):
+                #print(pairs)
+                #print(llr_all[pairs[0]])
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+        """
+        #debug
+        print("---- NODES ----")
+        print(g.nodes())
+        print("---- EDGES ----")
+        print(g.edges())
+        plot_graph(g.graph)
+        break
         """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
 
 #word association measure defined as Chi-Square
-#by: TODO
-def graph_strategy_eight(d, k):
+def graph_strategy_six(d, k):
     train_graphs = []
     test_graphs = []
     print("BUILDING GRAPHS FROM TRAIN DATASET")
