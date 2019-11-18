@@ -110,7 +110,7 @@ def main():
     edges_llr_all = count_edges(llr_all_edges_train, llr_all_edges_test)
     edges_chi_square = count_edges(chi_square_edges_train, chi_square_edges_test)
     edges_chi_square_all = count_edges(chi_square_all_edges_train, chi_square_all_edges_test)
-    plot_boxplot([edges_all, edges_pmi_2019, edges_pmi_1990, edges_pmi_1990_all, edges_dice, edges_dice_all, edges_llr, edges_llr_all, edges_chi_square, edges_chi_square_all], ["Sem peso", "PMI (2019)", "PMI (1990)", "PMI (1990) all", "Dice", "Dice all", "LLR", "LLR all", "Chi-square", "Chi-square all"], "number_of_edges_"+str(args.window))
+    plot_boxplot([edges_all, edges_pmi_2019, edges_pmi_1990, edges_pmi_1990_all, edges_dice, edges_dice_all, edges_llr, edges_llr_all, edges_chi_square, edges_chi_square_all], ["Sem peso", "PMI (2019)", "PMI (1990)", "PMI (1990) all", "Dice", "Dice all", "LLR", "LLR all", "Chi-square", "Chi-square all"], args.dataset+"_number_of_edges_"+str(args.window))
 
     #get number of edges that are small
     edges_sub(edges_all, edges_pmi_2019, "pmi_2019")
@@ -134,7 +134,7 @@ def main():
     density_llr_all = measure_density(llr_all_edges_train, llr_all_edges_test)
     density_chi_square = measure_density(chi_square_edges_train, chi_square_edges_test)
     density_chi_square_all = measure_density(chi_square_all_edges_train, chi_square_all_edges_test)
-    plot_boxplot([density_all, density_pmi_2019, density_pmi_1990, density_pmi_1990_all, density_dice, density_dice_all, density_llr, density_llr_all, density_chi_square,  density_chi_square_all], ["Sem peso", "PMI (2019)", "PMI (1990)",  "PMI (1990) all",  "Dice", "Dice all", "LLR", "LLR all", "Chi-square", "Chi-square all"], "density_"+str(args.window))
+    plot_boxplot([density_all, density_pmi_2019, density_pmi_1990, density_pmi_1990_all, density_dice, density_dice_all, density_llr, density_llr_all, density_chi_square,  density_chi_square_all], ["Sem peso", "PMI (2019)", "PMI (1990)",  "PMI (1990) all",  "Dice", "Dice all", "LLR", "LLR all", "Chi-square", "Chi-square all"], args.dataset+"_density_"+str(args.window))
 
 if __name__ == "__main__":
     main()
