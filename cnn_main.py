@@ -10,12 +10,13 @@ from keras.preprocessing.sequence import pad_sequences
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "pmi_2019_all", "normalized_pmi", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
     parser.add_argument('--pool_type', type=str, choices=["max", "global_max"], help='pooling type', required=True)
+    parser.add_argument('--classes', type=int, help='number of classes', required=True)
     return parser.parse_args()
 
 def padding(train, test, dim):
@@ -62,7 +63,7 @@ def main():
     print(np.array(all_x).shape)
     print(np.array(all_y).shape)
 
-    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0].A).shape, 2, args.pool_type)
+    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0].A).shape, args.classes, args.pool_type)
     all_x = None
     all_y = None
     results, results_f1 = mcnn.do_all()

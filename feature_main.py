@@ -16,7 +16,7 @@ from cnn.my_cnn import My_cnn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "pmi_2019_all", "normalized_pmi", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
@@ -134,6 +134,9 @@ def main():
     elif args.dataset == "webkb":
         d = Dataset(args.dataset)
         d.read_webkb()
+    elif args.dataset == "20ng":
+        d = Dataset(args.dataset)
+        d.read_20ng()
     else:
         print("Error: dataset name unknown")
         return 1
