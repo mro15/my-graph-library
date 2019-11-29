@@ -24,7 +24,7 @@ def plot_boxplot(values, methods, name):
     ax1.yaxis.grid(True)
     plt.setp(ax1.get_xticklabels(), rotation=45, horizontalalignment='right')
     plt.tight_layout()
-    plt.savefig("box_plot_"+name+".png")
+    plt.savefig("analysis/box_plot_"+name+".png")
     plt.close()
 
 def plot_histogram(x, method_x, y, method_y):
@@ -81,6 +81,9 @@ def main():
     elif args.dataset == "mr":
         d = Dataset(args.dataset)
         d.read_mr()
+    elif args.dataset == "webkb":
+        d = Dataset(args.dataset)
+        d.read_webkb()
     else:
         print("Error: dataset name unknown")
         return 1

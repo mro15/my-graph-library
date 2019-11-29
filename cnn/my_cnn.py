@@ -121,8 +121,8 @@ class My_cnn(object):
             model = Model(model_input, model_output)
             model.compile(loss="binary_crossentropy", optimizer="adam", metrics=['accuracy'])
 
-            data_train = self.get_vectors_x(train)
-            data_test = self.get_vectors_x(test)
+            data_train = self.all_x[train]
+            data_test = self.all_x[test]
             
             K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=12, inter_op_parallelism_threads=12)))
             model.fit(data_train, keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=32, epochs=20, verbose=2, validation_data=(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes)))

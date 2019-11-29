@@ -7,6 +7,7 @@ import _pickle as pickle
 import sklearn
 from scipy.sparse import csr_matrix, lil_matrix
 from keras.preprocessing.sequence import pad_sequences
+import text_graph.features as tg_features
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
@@ -38,6 +39,21 @@ def padding(train, test, dim):
         sparse_all.append(lil_matrix(test[i]))
     return sparse_all
 
+def padding_and_truncate(sentences, dim, cut_point):
+    pad = np.zeros(dim)
+    sparse_all = []
+    for i in range(0, len(sentences)):
+        if len(sentences[i]) < cut_point:
+            mult = cut_point - len(sentences[i])
+            sentences[i]+= ([pad] * mult)
+        elif len(sentences[i]) > cut_point:
+            sentences[i] = sentences[i][:cut_point]
+        #print(sentences[i][:10])
+        #print("-----")
+        sparse_all.append(lil_matrix(sentences[i]))
+    return sentences
+
+
 def main():
     args = read_args()
 
@@ -54,7 +70,11 @@ def main():
 
     print(np.array(train_emb).shape)
     print(np.array(test_emb).shape)
-    all_x = padding(train_emb, test_emb, args.emb_dim)
+
+    tg_features.discover_sentences_size(train_emb+test_emb)
+    tg_features.sentences_histogram(train_emb+test_emb, args.dataset)
+    padding_cut = tg_features.sentences_percentile(train_emb+test_emb)
+    all_x = padding_and_truncate(train_emb+test_emb, args.emb_dim, int(padding_cut))
     all_y = np.concatenate((np.array(train_labels), np.array(test_labels)), axis=None)
 
     train_emb = None
@@ -63,7 +83,7 @@ def main():
     print(np.array(all_x).shape)
     print(np.array(all_y).shape)
 
-    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0].A).shape, args.classes, args.pool_type)
+    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0]).shape, args.classes, args.pool_type)
     all_x = None
     all_y = None
     results, results_f1 = mcnn.do_all()
