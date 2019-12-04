@@ -17,13 +17,40 @@ class Dataset(object):
         self.vocabulary = collections.Counter()
         self.classes = 0
 
+    def read_ohsumed(self):
+        dataset = "datasets/ohsumed/"
+        data_sentence = []
+        data_label = []
+        for i in ["train", "test"]:
+            classes = [f for f in listdir(dataset+i)]
+            for c in classes:
+                files = listdir(dataset+i+"/"+c)
+                for f in files:
+                    fp = open(dataset+i+"/"+c+"/"+f, encoding='latin1', mode='r')
+                    data_sentence.append(fp.read().split())
+                    data_label.append(c)
+        labels_map = {}
+        for i, label in enumerate(list(set(data_label))):
+            labels_map.update({label:i})
+        data_label_int = []
+        for i in range(0, len(data_label)):
+            data_label_int.append(labels_map[data_label[i]])
+        half = int(len(data_sentence)/2)
+        self.train_data = data_sentence[:half]
+        self.train_labels = data_label_int[:half]
+        self.test_data = data_sentence[half:]
+        self.test_labels = data_label_int[half:]
+        self.classes = len(list(labels_map))
+        print(len(self.train_data), len(self.train_labels))
+        print(len(self.test_data), len(self.test_labels))
+        print(labels_map, self.classes)
+
     def read_20ng(self):
         dataset = "datasets/20ng/"
         data_sentence = []
         data_label = []
         for i in ["train", "test"]:
             classes = [f for f in listdir(dataset+i)]
-            print(len(classes), classes)
             for c in classes:
                 files = listdir(dataset+i+"/"+c)
                 for f in files:
@@ -164,9 +191,9 @@ class Dataset(object):
             tokens = ""
             for w in token:
                 tokens = tokens + w + " "
-            tokens = self.clean_str(tokens)
+            #tokens = self.clean_str(tokens)
             tokens = tokens.lower()
-            #tokens = tokenizer.tokenize(tokens)
+            tokens = tokenizer.tokenize(tokens)
             tokens = [word for word in tokens if word.isalpha() and (word!="br")]
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]

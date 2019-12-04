@@ -11,7 +11,7 @@ import text_graph.features as tg_features
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng", "ohsumed"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "pmi_2019_all", "normalized_pmi", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
@@ -31,12 +31,14 @@ def padding(train, test, dim):
         if len(train[i]) < m_all:
             mult = m_all - len(train[i])
             train[i]+= ([pad] * mult)
-        sparse_all.append(lil_matrix(train[i]))
+        #sparse_all.append(lil_matrix(train[i]))
+        sparse_all.append(train[i])
     for i in range (0, len(test)):
         if len(test[i]) < m_all:
             mult = m_all - len(test[i])
             test[i]+= ([pad] * mult)
-        sparse_all.append(lil_matrix(test[i]))
+        #sparse_all.append(lil_matrix(test[i]))
+        sparse_all.append(test[i])
     return sparse_all
 
 def padding_and_truncate(sentences, dim, cut_point):
@@ -74,7 +76,8 @@ def main():
     tg_features.discover_sentences_size(train_emb+test_emb)
     tg_features.sentences_histogram(train_emb+test_emb, args.dataset)
     padding_cut = tg_features.sentences_percentile(train_emb+test_emb)
-    all_x = padding_and_truncate(train_emb+test_emb, args.emb_dim, int(padding_cut))
+    #all_x = padding_and_truncate(train_emb+test_emb, args.emb_dim, int(padding_cut))
+    all_x = padding(train_emb, test_emb, args.emb_dim)
     all_y = np.concatenate((np.array(train_labels), np.array(test_labels)), axis=None)
 
     train_emb = None
