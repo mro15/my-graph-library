@@ -8,7 +8,7 @@ import numpy as np
 from keras.layers.merge import Concatenate
 from sklearn.model_selection import StratifiedKFold
 from keras import backend as K
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, classification_report, confusion_matrix
 
 class My_cnn(object):
     def __init__(self, all_x, all_y, input_shape, num_classes, pooling_type):
@@ -80,8 +80,7 @@ class My_cnn(object):
             y_pred = np.argmax(y_prob, axis=1)
             f1 = f1_score(self.all_y[test], y_pred, average='macro')
             f1_results.append(f1)
-            all_x = None
-            all_y = None
+            print(classification_report(self.all_y[test], y_pred))
             K.clear_session()
             print("loss: ", score[0], "accuracy: ", score[1], "f1: ", f1)
             fold += 1
@@ -125,7 +124,7 @@ class My_cnn(object):
             data_test = self.all_x[test]
             
             K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=12, inter_op_parallelism_threads=12)))
-            model.fit(data_train, keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=32, epochs=20, verbose=2, validation_data=(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes)))
+            model.fit(data_train, keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=32, epochs=20, verbose=0, validation_data=(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes)))
 
             score = model.evaluate(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes))
 
@@ -134,8 +133,8 @@ class My_cnn(object):
             y_pred = np.argmax(y_prob, axis=1)
             f1 = f1_score(self.all_y[test], y_pred, average='macro')
             f1_results.append(f1)
-            all_x = None
-            all_y = None
+            print(classification_report(self.all_y[test], y_pred))
+            print(confusion_matrix(self.all_y[test], y_pred))
             K.clear_session()
             print("loss: ", score[0], "accuracy: ", score[1], "f1: ", f1)
             fold += 1
