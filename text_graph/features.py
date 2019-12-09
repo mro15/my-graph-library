@@ -34,7 +34,7 @@ def discover_sentences_size(sentences):
 
 def sentences_percentile(all_sentences):
     lengths = sentences_len(all_sentences)
-    percent = np.percentile(lengths, 100)
+    percent = np.percentile(lengths, 75)
     print(percent)
     return percent
 
