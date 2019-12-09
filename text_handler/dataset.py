@@ -30,7 +30,7 @@ class Dataset(object):
                     data_sentence.append(fp.read().split())
                     data_label.append(c)
         labels_map = {}
-        for i, label in enumerate(list(set(data_label))):
+        for i, label in enumerate(sorted(list(set(data_label)))):
             labels_map.update({label:i})
         data_label_int = []
         for i in range(0, len(data_label)):
@@ -58,7 +58,7 @@ class Dataset(object):
                     data_sentence.append(fp.read().split())
                     data_label.append(c)
         labels_map = {}
-        for i, label in enumerate(list(set(data_label))):
+        for i, label in enumerate(sorted(list(set(data_label)))):
             labels_map.update({label:i})
         data_label_int = []
         for i in range(0, len(data_label)):
@@ -85,7 +85,7 @@ class Dataset(object):
                     data_label.append(line[0])
                     data_sentence.append(line[1:])
         labels_map = {}
-        for i, label in enumerate(list(set(data_label))):
+        for i, label in enumerate(sorted(list(set(data_label)))):
             labels_map.update({label:i})
         data_label_int = []
         for i in range(0, len(data_label)):
@@ -108,7 +108,7 @@ class Dataset(object):
                 data_label.append(i)
                 data_sentence.append(fp.read().split())
         labels_map = {}
-        for i, label in enumerate(list(set(data_label))):
+        for i, label in enumerate(sorted(list(set(data_label)))):
             labels_map.update({label:i})
         data_label_int = []
         for i in range(0, len(data_label)):
