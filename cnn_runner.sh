@@ -15,8 +15,7 @@ for dr in $datasets; do
 			for w in $windows; do
 				for s in $strategies; do
 					for p in $pooling; do
-						command="python3 cnn_main.py --dataset $dr --method $m --strategy $s --window $w --emb_dim $d --pool_type $p"
-						echo $command | bash >> logs/$dr/$m/$s.$w.$d.$p.txt
+						python3 cnn_main.py --dataset $dr --method $m --strategy $s --window $w --emb_dim $d --pool_type $p > logs/$dr/$m/$s.$w.$d.$p.txt
 					done
 				done
 			done
