@@ -15,12 +15,12 @@ from nltk.collocations import BigramAssocMeasures as bam
 from nltk.collocations import BigramCollocationFinder as bcf
 
 def plot_graph(g):
-        options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
-        edge_labels = nx.get_edge_attributes(g,'weight')
-        pos=nx.spring_layout(g)
-        nx.draw(g, pos, **options)
-        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
-        plt.show()
+    options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
+    edge_labels = nx.get_edge_attributes(g,'weight')
+    pos=nx.spring_layout(g)
+    nx.draw(g, pos, **options)
+    nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
+    plt.show()
 
 def windows_in_pair(windows):
     windows_in_pair = Counter()
