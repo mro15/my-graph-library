@@ -7,8 +7,6 @@ from text_handler.dataset import Dataset
 import utils
 import analysis.vocabulary as an
 from representation_learning.representation_learning import RepresentationLearning
-from vector_representation_learning.rl_bert import MyBert
-from features.features import Features
 import numpy as np
 import _pickle as pickle
 import sklearn
@@ -32,21 +30,13 @@ def voc_analysis(d):
     an.plot_analysis(pos_voc, "words", "count", args.dataset + " positive class", args.dataset + "_pos")
     an.plot_analysis(neg_voc, "words", "count", args.dataset + " negative class", args.dataset + "_neg")
 
-#plot some graphs to test
-def plot_graphs(train_graphs, test_graphs, size):
-    for i in range(0, size):
-        utils.plot_graph(train_graphs[i])
-    for i in range(0, size):
-        utils.plot_graph(test_graphs[i])
-
 def graph_methods(d, method, window_size, strategy, emb_dim):
     print("PRE PROCESS: START")
     d.pre_process_data()
-    #for now I will not remove any word
-    #d.remove_words()
+    #d.remove_words() #remove words with low frequency
     print("PRE PROCESS: END")
 
-    #graph construction
+    #graph construction based in weight strategies
     train_graphs = []
     test_graphs = []
     weight = False
@@ -56,9 +46,8 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
         train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
         weight = True
     elif strategy == "pmi_2019_all":
-        pass
-        #train_graphs, test_graphs = utils.graph_strategy_two_all(d, window_size)
         #weight = True
+        pass
     elif strategy == "normalized_pmi":
         train_graphs, test_graphs = utils.graph_strategy_norm_two(d, window_size)
         weight = True
@@ -91,8 +80,6 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
 
     train_emb = []
     test_emb = []
-    #extract and write graph features
-    features_out = Features(d.dataset)
     print("=== STARTING RL IN TRAIN GRAPHS ===")
     for i in range(0, len(train_graphs)):
     #for i in range(0, 10):
@@ -115,9 +102,7 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
     return train_emb, test_emb
 
 def vector_methods(d, method):
-    bert = MyBert()
-    bert.get_embeddings(d.train_data[0])
-    bert.get_embeddings(d.train_data[1])
+    pass
 
 def main():
     args = read_args()
