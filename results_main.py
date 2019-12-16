@@ -11,9 +11,10 @@ from scipy.stats import ttest_ind
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "20ng", "webkb", "ohsumed"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--emb_dim', type=int, help='embeddings dimension', required=True)
+    parser.add_argument('--window', type=int, help='window size', required=True)
     return parser.parse_args()
 
 def wilcoxon_test(x, y):
@@ -22,131 +23,88 @@ def wilcoxon_test(x, y):
 def student_test(x, y):
     print(ttest_ind(x, y))
 
-def mean_and_std(res, strat, windows, dataset, output, output_fig):
-    means = {}
-    stds = {}
-    for s in strat:
-        m_l = []
-        s_l = []
-        for w in range(0, len(windows)):
-            m = np.mean(res[s][w])
-            sd = np.std(res[s][w])
-            line = s, str(windows[w])+" =>", "mean: "+str(m), "std: "+str(sd)
-            print(line)
-            output.write(str(line)+"\n")
-            m_l.append(m)
-            s_l.append(sd)
-        means[s]=m_l
-        stds[s]=s_l
-    plot_graphic(windows, strat, means, stds, dataset, output_fig)
+#calculate mean and std for metrics
+def mean_and_std(all_values, window, output):
+    mean = {}
+    std = {}
+    for i in list(all_values.keys()):
+        mean[i] = np.mean(all_values[i])
+        std[i] = np.std(all_values[i])
+        line = i, str(window)+" =>", "mean: "+str(mean[i]), "std: "+str(std[i])
+        print(line)
+        output.write(str(line)+"\n")
 
-def plot_graphic(windows, strat, means, stds, dataset, output_fig):
-    for s in strat:
-        print(windows, means[s], stds[s])
-        plt.errorbar(windows, means[s], yerr=stds[s], fmt='o', marker='s', capsize=10)
-    plt.legend(strat, loc="upper left", numpoints=1)
-    plt.xlabel("Tamanho da janela")
-    plt.ylabel("Taxa de acerto")
-    plt.xlim(windows[0]-2, windows[-1]+2)
-    plt.savefig(output_fig + ".png")
+    return mean, std
+
+#plot mean and std for each strategy and metric
+def plot_graphic(mean_acc, std_acc, mean_f1, std_f1, dataset, window, output_fig):
+    legend_map = { "no_weight": "Sem peso",
+                "pmi_1990": "PMI (1990)",
+                "pmi_1990_all": "PMI (1990) ALL"}
+    bar = []
+    acc_mean = []
+    acc_std = []
+    f1_mean = []
+    f1_std = []
+    for s in mean_acc.keys():
+        bar.append(legend_map[s])
+        acc_mean.append(mean_acc[s])
+        acc_std.append(std_acc[s])
+        f1_mean.append(mean_f1[s])
+        f1_std.append(std_f1[s])
+
+    plt.errorbar(bar, acc_mean, yerr=acc_std, marker='s', capsize=5)
+    plt.errorbar(bar, f1_mean, yerr=f1_std, marker='s', capsize=5)
+    plt.xlabel("Métricas")
+    plt.ylabel("Valor")
+    plt.title("Dataset: " + dataset + " #janela: " + str(window))
+    plt.legend(["Taxa de acerto", "F1-score"], loc='upper left')
+    plt.savefig(output_fig)
     plt.close()
 
-def mean_and_std_w(res, strat, windows, dataset, output, output_fig):
-    means = {}
-    stds = {}
-    for w in range(0, len(windows)):
-        m_l = []
-        s_l = []
-        for s in strat:
-            m = np.mean(res[s][w])
-            sd = np.std(res[s][w])
-            line = s, str(windows[w])+" =>", "mean: "+str(m), "std: "+str(sd)
-            print(line)
-            output.write(str(line)+"\n")
-            m_l.append(m)
-            s_l.append(sd)
-        means[w]=m_l
-        stds[w]=s_l
-    plot_graphic_w(windows, strat, means, stds, dataset, output_fig)
+#run statistical tests in betwens accuracy and f1 score strategies values
+# Test 1: wilcoxon test
+# Test 2: student test
+def statistical_tests(all_acc, all_f1, window):
+    print("===== STATISTICAL TESTS =====")
+    it = list(all_acc.keys())[1:]
+    print(" -- TESTING ACCURACY -- ")
+    x = all_acc["no_weight"]
+    for i in it:
+        y = all_acc[i]
+        wilcoxon_test(x, y)
+        student_test(x, y)
 
-def plot_graphic_w(windows, strat, means, stds, dataset, output_fig):
-    bar =  ["Sem peso", "PMI (1990)", "PMI (2019)", "Dice", "LLR", "Chi-square"]
-    for w in range(0, len(windows)):
-        title = "Tamanho da janela: " + str(windows[w])
-        print("---")
-        print(windows[w], means[w], stds[w])
-        plt.errorbar(bar, means[w], yerr=stds[w], marker='s', capsize=10)
-        plt.xlabel("Métrica")
-        plt.ylabel("Taxa de acerto")
-        plt.title(title)
-        plt.savefig(output_fig + str(windows[w]) + ".png")
-        plt.close()
-
+    print(" -- TESTING F1-SCORE -- ")
+    x = all_f1["no_weight"]
+    for i in it:
+        y = all_f1[i]
+        wilcoxon_test(x, y)
+        student_test(x, y)
 
 def main():
     args = read_args()
-    print(args.emb_dim)
 
     directory = args.dataset + "-" + str(args.emb_dim) + "/"
-    strategies = ["no_weight", "pmi_1990", "pmi_2019", "dice", "llr", "chi_square"]
-    windows = [4, 7, 12, 20]
-    all_res = {"no_weight":[], "pmi_1990":[], "pmi_2019":[], "dice":[], "llr":[], "chi_square":[]}
-    output = open("plots/" + directory + args.dataset+".txt", "w")
-    output_fig = "plots/" + directory + args.dataset+".txt"
-    print("===== ACCURACY =====")
+    strategies = ["no_weight", "pmi_1990", "pmi_1990_all"]
+    default_output = "plots/" + directory + args.dataset + "_" + str(args.window) + ".txt"
+    acc_output = open(default_output, "w")
+    f1_output = open("plots/" + directory + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
+    output_fig = default_output + ".png" 
+    all_acc = {}
+    all_f1 = {}
+    #read results for each strategy
     for s in strategies:
-        for w in windows:
-            f = open("results/" + directory + args.dataset + '_' + args.method + '_' + s + '_' + str(w) + '.txt', 'r')
-            all_res[s].append(np.array([line.rstrip('\n') for line in f]).astype(np.float))
-    for s in strategies:
-        for w in range(0, len(windows)):
-            print(all_res[s][w])
-        print("---")
+        f = open("results/" + directory + args.dataset + '_' + args.method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+        all_acc[s] = (np.array([line.rstrip('\n') for line in f]).astype(np.float))
+        ff = open("results/" + directory + 'f1_' + args.dataset + '_' + args.method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+        all_f1[s] = (np.array([line.rstrip('\n') for line in ff]).astype(np.float))
 
-    for w in range(0, len(windows)):
-        print("WINDOW: ", windows[w])
-        y = all_res["no_weight"][w]
-        x = all_res["pmi_2019"][w]
-        print("=== NO_WEIGHT & PMI (2019) ===")
-        wilcoxon_test(x, y)
-        student_test(x, y)
-        """
-        x = all_res["normalized_pmi"][w]
-        print("=== NO_WEIGHT & NORMALIZED_PMI ===")
-        wilcoxon_test(x, y)
-        student_test(x, y)
-        """
-        x = all_res["pmi_1990"][w]
-        print("=== NO_WEIGHT & PMI (1990) ===")
-        wilcoxon_test(x, y)
-        student_test(x, y)
-        x = all_res["dice"][w]
-        print("=== NO_WEIGHT & DICE ===")
-        wilcoxon_test(x, y)
-        student_test(x, y)
-        x = all_res["llr"][w]
-        print("=== NO_WEIGHT & LRR ===")
-        wilcoxon_test(x, y)
-        student_test(x, y)
-        x = all_res["chi_square"][w]
-        print("=== NO_WEIGHT & Chi Square ===")
-        wilcoxon_test(x, y)
-        student_test(x, y)
-    mean_and_std_w(all_res, strategies, windows, args.dataset, output, output_fig)
-
-    print("===== F1-SCORE =====")
-    output = open("plots/" + directory + "f1_" + args.dataset+".txt", "w")
-    output_fig = "plots/" + directory + "f1_" + args.dataset+".txt"
-    for s in strategies:
-        for w in windows:
-            f = open("results/" + directory + "f1_" + args.dataset + '_' + args.method + '_' + s + '_' + str(w) + '.txt', 'r')
-            all_res[s].append(np.array([line.rstrip('\n') for line in f]).astype(np.float))
-    for s in strategies:
-        for w in range(0, len(windows)):
-            print(all_res[s][w])
-        print("---")
-    mean_and_std_w(all_res, strategies, windows, args.dataset, output, output_fig)
-
+    statistical_tests(all_acc, all_f1, args.window)
+    mean_acc, std_acc = mean_and_std(all_acc, args.window, acc_output)
+    mean_f1, std_f1 = mean_and_std(all_f1, args.window, f1_output)
+    
+    plot_graphic(mean_acc, std_acc, mean_f1, std_f1, args.dataset, args.window, output_fig)
 
 if __name__ == "__main__":
     main()
