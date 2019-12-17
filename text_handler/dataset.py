@@ -167,6 +167,7 @@ class Dataset(object):
         self.classes = 2
 
     def pre_process_data(self):
+        print("PRE PROCESS: START")
         tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
         stem = nltk.stem.PorterStemmer()
         lem = nltk.stem.WordNetLemmatizer()
@@ -201,6 +202,7 @@ class Dataset(object):
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.test_data = clean_texts
+        print("PRE PROCESS: END")
 
     def clean_str(self, string):
         string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
