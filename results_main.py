@@ -65,9 +65,9 @@ def plot_graphic(mean_acc, std_acc, mean_f1, std_f1, dataset, window, output_fig
 #run statistical tests in betwens accuracy and f1 score strategies values
 # Test 1: wilcoxon test
 # Test 2: student test
-def statistical_tests(all_acc, all_f1, window):
+def statistical_tests(all_acc, all_f1, window, strategies):
     print("===== STATISTICAL TESTS =====")
-    it = list(all_acc.keys())[1:]
+    it = strategies[1:]
     print(" -- TESTING ACCURACY -- ")
     x = all_acc["no_weight"]
     for i in it:
@@ -96,11 +96,11 @@ def main():
     #read results for each strategy
     for s in strategies:
         f = open("results/" + directory + args.dataset + '_' + args.method + '_' + s + '_' + str(args.window) + '.txt', 'r')
-        all_acc[s] = (np.array([line.rstrip('\n') for line in f]).astype(np.float))
+        all_acc[s] = np.array([line.rstrip('\n') for line in f]).astype(np.float)
         ff = open("results/" + directory + 'f1_' + args.dataset + '_' + args.method + '_' + s + '_' + str(args.window) + '.txt', 'r')
-        all_f1[s] = (np.array([line.rstrip('\n') for line in ff]).astype(np.float))
+        all_f1[s] = np.array([line.rstrip('\n') for line in ff]).astype(np.float)
 
-    statistical_tests(all_acc, all_f1, args.window)
+    statistical_tests(all_acc, all_f1, args.window, strategies)
     mean_acc, std_acc = mean_and_std(all_acc, args.window, acc_output)
     mean_f1, std_f1 = mean_and_std(all_f1, args.window, f1_output)
     
