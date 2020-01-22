@@ -16,12 +16,14 @@ def read_args():
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "ohsumed", "20ng"], help='dataset name', required=True)   
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--strategy', action="append", help='methods to compare', required=True)
+    parser.add_argument('--emb_dim', type=int, help='embeddings dimension', required=True)
+    #parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     return parser.parse_args()
 
 def get_legend(strategy):
-    legend_map = { "no_weight": "Sem peso",
-                "pmi_1990": "PMI (1990)",
-                "pmi_1990_all": "PMI (1990) ALL"}
+    legend_map = {  "no_weight": "UNWEIGHTED",
+                    "pmi_1990": "LOCAL PMI",
+                    "pmi_1990_all": "GLOBAL PMI"}
     return legend_map[strategy]
 
 def strategies_to_bar(strategies):
@@ -46,14 +48,6 @@ def plot_histogram(x, method_x, y, method_y):
     plt.legend([method_x, method_y])
     plt.savefig("histogram_"+method_x+"_"+method_y+".png")
     plt.close()
-
-def plot_edges(x, method_x, y, method_y):
-    aux = np.arange(1, len(x)+1)
-    fig = plt.figure(figsize=(80, 20))
-    ax = fig.add_subplot(111)
-    ax.plot(aux, x, 'ro-', color='green')
-    ax.plot(aux, y, 'ro-', color='blue')
-    plt.savefig("line_"+method_x+"_"+method_y+".png")
 
 def measure_density(g_train, g_test):
     density = []
@@ -80,6 +74,16 @@ def edges_sub(a, b, method):
             cont+=1
             number += i
     print(method, cont, number)
+    return sub
+
+def proportion(edges, strategies):
+    proportions = {}
+    #get number of edges that are small than the original graph
+    for s in strategies:
+        sub = edges_sub(edges["no_weight"], edges[s], s)
+        proportions[s] = np.mean(np.array(sub/edges["no_weight"])*100)
+        print(proportions[s])
+    return proportions 
 
 #calculate mean and std for metrics
 def mean_and_std(edges, strategies):
@@ -107,6 +111,43 @@ def plot_cost(strategies, edges, window, dataset, bar):
     plt.savefig("analysis/" + dataset + "_cost_mean_edges_" + str(window) + ".png")
     plt.close()
 
+
+def autolabel(rects, ax):
+    """Attach a text label above each bar in *rects*, displaying its height."""
+    for rect in rects:
+        height = rect.get_height()
+        ax.annotate('{}'.format(height),
+                    xy=(rect.get_x() + rect.get_width() / 2, height),
+                    xytext=(0, 3),  # 3 points vertical offset
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+    return ax
+
+def plot_cost_benefit(proportions, fscores, bar, strategies):
+    x = np.arange(len(bar))
+    width = 0.35
+    edges = []
+    acc = []
+    for s in strategies:
+        edges.append(round(float(proportions[s]), 3))
+        acc.append(round(float(fscores[s])*100, 3))
+
+    fig, ax = plt.subplots()
+    edges_bar = ax.bar(x - width/2, edges, width, label='Removed edges')
+    acc_bar = ax.bar(x + width/2, acc, width, label='F1-score')
+
+    ax.set_ylabel('Scores')
+    ax.set_title('Cost and benefit')
+    ax.set_xticks(x)
+    ax.set_xticklabels(bar)
+    ax.legend()
+    ax = autolabel(edges_bar, ax)
+    ax = autolabel(acc_bar, ax)
+
+    fig.tight_layout()
+    plt.savefig("lol.png")
+    plt.close()
+
 def main():
     args = read_args()
     if args.dataset == "polarity":
@@ -130,7 +171,6 @@ def main():
     else:
         print("Error: dataset name unknown")
         return 1
-
     d.pre_process_data()
 
     strategies_map = { "no_weight": utils.graph_strategy_one,
@@ -154,18 +194,25 @@ def main():
     edges = {}
     for s in args.strategy:
         edges[s] = count_edges(graphs[s]["train"], graphs[s]["test"])
-    plot_cost(args.strategy, edges, args.window, args.dataset, bar)   
+    #plot_cost(args.strategy, edges, args.window, args.dataset, bar)   
     #plot boxplot with the amount of edges
     plot_boxplot([edges[s] for s in args.strategy], bar, args.dataset+"_number_of_edges_"+str(args.window))
-    #get number of edges that are small than the original graph
-    for s in args.strategy[1::]:
-        edges_sub(edges["no_weight"], edges[s], s)
     #density of each graph
     density = {}
     for s in args.strategy:
         density[s] = measure_density(graphs[s]["train"], graphs[s]["test"])
     #plot boxplot with the graph density
     plot_boxplot([density[s] for s in args.strategy], bar, args.dataset+"_density_"+str(args.window))
+    
+    #graph for cost x benefit
+    proportions = proportion(edges, args.strategy)
+    mean_f1 = {}
+    f = open("plots/" + args.dataset + '-' + str(args.emb_dim) + '/f1_' + args.dataset + "_" + str(args.window) + '.txt', 'r')
+    lines = f.readlines()
+    for line in lines:
+        x = line.strip().split(",")
+        mean_f1[x[0]] = x[1]
+    plot_cost_benefit(proportions, mean_f1, bar, args.strategy)
 
 if __name__ == "__main__":
     main()

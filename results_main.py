@@ -24,15 +24,15 @@ def student_test(x, y):
     print(ttest_ind(x, y))
 
 #calculate mean and std for metrics
-def mean_and_std(all_values, window, output):
+def mean_and_std(all_values, output):
     mean = {}
     std = {}
     for i in list(all_values.keys()):
         mean[i] = np.mean(all_values[i])
         std[i] = np.std(all_values[i])
-        line = i, str(window)+" =>", "mean: "+str(mean[i]), "std: "+str(std[i])
+        line = str(i)+","+str(mean[i])+","+str(std[i])
         print(line)
-        output.write(str(line)+"\n")
+        output.write(line)
 
     return mean, std
 
@@ -101,8 +101,8 @@ def main():
         all_f1[s] = np.array([line.rstrip('\n') for line in ff]).astype(np.float)
 
     statistical_tests(all_acc, all_f1, args.window, strategies)
-    mean_acc, std_acc = mean_and_std(all_acc, args.window, acc_output)
-    mean_f1, std_f1 = mean_and_std(all_f1, args.window, f1_output)
+    mean_acc, std_acc = mean_and_std(all_acc, acc_output)
+    mean_f1, std_f1 = mean_and_std(all_f1, f1_output)
     
     plot_graphic(mean_acc, std_acc, mean_f1, std_f1, args.dataset, args.window, output_fig)
 
