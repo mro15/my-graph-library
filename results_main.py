@@ -30,7 +30,7 @@ def mean_and_std(all_values, output):
     for i in list(all_values.keys()):
         mean[i] = np.mean(all_values[i])
         std[i] = np.std(all_values[i])
-        line = str(i)+","+str(mean[i])+","+str(std[i])
+        line = str(i)+","+str(mean[i])+","+str(std[i])+"\n"
         print(line)
         output.write(line)
 

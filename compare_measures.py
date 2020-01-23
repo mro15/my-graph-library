@@ -81,7 +81,9 @@ def proportion(edges, strategies):
     #get number of edges that are small than the original graph
     for s in strategies:
         sub = edges_sub(edges["no_weight"], edges[s], s)
-        proportions[s] = np.mean(np.array(sub/edges["no_weight"])*100)
+        arr_div = np.array(sub/edges["no_weight"])
+        arr_div[np.isnan(arr_div)] = 0
+        proportions[s] = np.mean(arr_div*100)
         print(proportions[s])
     return proportions 
 
@@ -123,7 +125,7 @@ def autolabel(rects, ax):
                     ha='center', va='bottom')
     return ax
 
-def plot_cost_benefit(proportions, fscores, bar, strategies):
+def plot_cost_benefit(proportions, fscores, bar, strategies, output):
     x = np.arange(len(bar))
     width = 0.35
     edges = []
@@ -132,20 +134,27 @@ def plot_cost_benefit(proportions, fscores, bar, strategies):
         edges.append(round(float(proportions[s]), 3))
         acc.append(round(float(fscores[s])*100, 3))
 
+    color = '#2e5a88'
     fig, ax = plt.subplots()
-    edges_bar = ax.bar(x - width/2, edges, width, label='Removed edges')
-    acc_bar = ax.bar(x + width/2, acc, width, label='F1-score')
-
-    ax.set_ylabel('Scores')
-    ax.set_title('Cost and benefit')
+    ax.set_ylabel('F1-score', color=color)
+    f_bar = ax.bar(x - width/2, acc, width, label='F1-score', color=color)
+    ax.set_yticks(np.arange(0, 101, 10))
     ax.set_xticks(x)
-    ax.set_xticklabels(bar)
-    ax.legend()
-    ax = autolabel(edges_bar, ax)
-    ax = autolabel(acc_bar, ax)
+    ax.set_xticklabels(bar, fontweight='bold')
+    ax.tick_params(axis='y', labelcolor=color)
+
+    ax2 = ax.twinx()
+    color = '#850e04'
+    ax2.set_ylabel('% removed edges', color=color)
+    edges_bar = ax2.bar(x + width/2, edges, width, label='% removed edges', color=color)
+    ax2.set_yticks(np.arange(0, 101, 10))
+    ax2.tick_params(axis='y', labelcolor=color)
+
+    ax = autolabel(f_bar, ax)
+    ax2 = autolabel(edges_bar, ax2)
 
     fig.tight_layout()
-    plt.savefig("lol.png")
+    plt.savefig("analysis/"+output+".eps")
     plt.close()
 
 def main():
@@ -212,7 +221,8 @@ def main():
     for line in lines:
         x = line.strip().split(",")
         mean_f1[x[0]] = x[1]
-    plot_cost_benefit(proportions, mean_f1, bar, args.strategy)
+    print(mean_f1)
+    plot_cost_benefit(proportions, mean_f1, bar, args.strategy, args.dataset+"_cost_"+str(args.window))
 
 if __name__ == "__main__":
     main()
