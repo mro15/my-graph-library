@@ -141,7 +141,7 @@ def plot_cost_benefit(proportions, fscores, bar, strategies, output):
     ax.set_yticks(np.arange(0, 101, 10))
     ax.set_xticks(x)
     ax.set_xticklabels(bar, fontweight='bold')
-    plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
+    #plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
     ax.tick_params(axis='y', labelcolor=color)
 
     ax2 = ax.twinx()
