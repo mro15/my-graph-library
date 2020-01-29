@@ -122,23 +122,23 @@ def autolabel(rects, ax):
                     xy=(rect.get_x() + rect.get_width() / 2, height),
                     xytext=(0, 3),  # 3 points vertical offset
                     textcoords="offset points",
-                    ha='center', va='bottom')
+                    ha='center', va='bottom', weight='bold')
     return ax
 
 def plot_cost_benefit(proportions, fscores, bar, strategies, output):
     x = np.arange(len(bar))
-    width = 0.25
+    width = 0.35
     edges = []
     acc = []
     for s in strategies:
-        edges.append(round(float(proportions[s]), 3))
-        acc.append(round(float(fscores[s])*100, 3))
+        edges.append(round(float(proportions[s]), 2))
+        acc.append(round(float(fscores[s]), 2))
 
     color = '#2e5a88'
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(5,3.5))
     ax.set_ylabel('F1-score', color=color)
     f_bar = ax.bar(x - width/2, acc, width, label='F1-score', color=color)
-    ax.set_yticks(np.arange(0, 101, 10))
+    ax.set_yticks(np.arange(0, 101, 20))
     ax.set_xticks(x)
     ax.set_xticklabels(bar, fontweight='bold')
     #plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
@@ -148,7 +148,7 @@ def plot_cost_benefit(proportions, fscores, bar, strategies, output):
     color = '#850e04'
     ax2.set_ylabel('% removed edges', color=color)
     edges_bar = ax2.bar(x + width/2, edges, width, label='% removed edges', color=color)
-    ax2.set_yticks(np.arange(0, 101, 10))
+    ax2.set_yticks(np.arange(0, 101, 20))
     ax2.tick_params(axis='y', labelcolor=color)
 
     ax = autolabel(f_bar, ax)
