@@ -3,6 +3,7 @@
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 import argparse
 import utils
 from text_graph.text_graph import TextGraph
@@ -133,23 +134,23 @@ def plot_cost_benefit(proportions, fscores, bar, strategies, output):
     for s in strategies:
         edges.append(round(float(proportions[s]), 2))
         acc.append(round(float(fscores[s]), 2))
-
+    
     color = '#2e5a88'
     fig, ax = plt.subplots(figsize=(5,3.5))
-    ax.set_ylabel('F1-score', color=color)
+    ax.set_ylabel('F1-score', color=color, fontsize='large')
     f_bar = ax.bar(x - width/2, acc, width, label='F1-score', color=color)
     ax.set_yticks(np.arange(0, 101, 20))
     ax.set_xticks(x)
     ax.set_xticklabels(bar, fontweight='bold')
     #plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
-    ax.tick_params(axis='y', labelcolor=color)
+    #ax.tick_params(axis='y', labelcolor=color)
 
     ax2 = ax.twinx()
     color = '#850e04'
-    ax2.set_ylabel('% removed edges', color=color)
+    ax2.set_ylabel('% removed edges', color=color, fontsize='large')
     edges_bar = ax2.bar(x + width/2, edges, width, label='% removed edges', color=color)
     ax2.set_yticks(np.arange(0, 101, 20))
-    ax2.tick_params(axis='y', labelcolor=color)
+    #ax2.tick_params(axis='y', labelcolor=color)
 
     ax = autolabel(f_bar, ax)
     ax2 = autolabel(edges_bar, ax2)
