@@ -77,15 +77,6 @@ def graph_strategy_one(d, k):
             g.add_edge(w1, w2)
         if len(list(pair_windows))<1:
             g.add_vertex(i[0])
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
         train_graphs.append(g.graph)
     print("FINISHED TRAIN GRAPHS")
 
@@ -116,7 +107,7 @@ def graph_strategy_one(d, k):
 
 
 #each node is a word from document and edge weight is given by PMI(yao, 2019)
-def graph_strategy_two(d, k):
+def graph_strategy_two(d, k, threshold=0):
     train_graphs = []
     test_graphs = []
     print("BUILDING TRAIN GRAPHS")
@@ -135,21 +126,12 @@ def graph_strategy_two(d, k):
         for words, freq in pair_windows.items():
             w1, w2 = words
             pmi = log((freq/total_windows)/((word_windows[w1]*word_windows[w2])/(total_windows*total_windows)))
-            if pmi >= 0:
+            if pmi >= threshold:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
                 g.add_weight_edge(w1, w2, pmi)
         if ((len(list(pair_windows))<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
         train_graphs.append(g.graph)
     print("FINISHED TRAIN GRAPHS")
 
@@ -169,7 +151,7 @@ def graph_strategy_two(d, k):
         for words, freq in pair_windows.items():
             w1, w2 = words
             pmi = log((freq/total_windows)/((word_windows[w1]*word_windows[w2])/(total_windows*total_windows)))
-            if pmi >=  0:
+            if pmi >=  threshold:
                 g.add_vertex(w1)
                 g.add_vertex(w2)
                 g.add_weight_edge(w1, w2, pmi)
@@ -181,8 +163,8 @@ def graph_strategy_two(d, k):
 
     return train_graphs, test_graphs
 
-#each node is a word from document and edge weight is given by PMI(yao, 2019) normalized
-#with min max norm
+#each node is a word from document and edge weight is given by PMI(yao, 2019)
+#normalized with min max norm
 def graph_strategy_norm_two(d, k):
     train_graphs = []
     test_graphs = []
@@ -223,15 +205,6 @@ def graph_strategy_norm_two(d, k):
             exit()
         if ((len(list(pair_windows))<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
         train_graphs.append(g.graph)
     print("FINISHED TRAIN GRAPHS")
 
@@ -300,16 +273,8 @@ def graph_strategy_three_all(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        break
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
+
     print("BUILDING GRAPHS FROM TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
@@ -329,21 +294,12 @@ def graph_strategy_three_all(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        break
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
     return train_graphs, test_graphs
 
 #word association measure defined as PMI (Pointwise Mutual Information)
 #by  Church and Hankis 1990.
-def graph_strategy_three(d, k):
+def graph_strategy_three(d, k, threshold=0):
     train_graphs = []
     test_graphs = []
     print("BUILDING GRAPHS FROM TRAIN DATASET")
@@ -356,7 +312,7 @@ def graph_strategy_three(d, k):
                 pmi = pairs[1]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if pmi >= 0:
+                if pmi >= threshold:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, pmi)
@@ -375,7 +331,7 @@ def graph_strategy_three(d, k):
                 pmi = pairs[1]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if pmi >= 0:
+                if pmi >= threshold:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, pmi)

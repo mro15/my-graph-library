@@ -101,9 +101,6 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
     print("=== FINISHED RL IN TEST GRAPHS ===")
     return train_emb, test_emb
 
-def vector_methods(d, method):
-    pass
-
 def main():
     args = read_args()
 
@@ -132,8 +129,6 @@ def main():
     g_methods = ["node2vec"]
     if args.method in g_methods:
         train_emb, test_emb = graph_methods(d, args.method, args.window, args.strategy, args.emb_dim)
-    else:
-        vector_methods(d, args.method)
    
     print("=== WRITING NODE EMBEDDINGS ===")
     directory = "graphs/" + args.dataset + "-" + str(args.emb_dim) + "/"

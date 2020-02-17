@@ -193,30 +193,37 @@ def main():
                         "chi_square": utils.graph_strategy_six,
                         "chi_square_all": utils.graph_strategy_six_all }
 
+    strategies = args.strategy + ["no_weight"]
     bar = strategies_to_bar(args.strategy)
     #build graphs using each strategy
     graphs = {}
+    #base graph with all edges
+    graphs['no_weight'] = {}
+    edges_train, edges_test = strategies_map['no_weight'](d, args.window)
+    graphs['no_weight']["train"] = edges_train
+    graphs['no_weight']["test"] = edges_test
+    #other graphs
     for s in args.strategy:
         graphs[s] = {}
-        edges_train, edges_test = strategies_map[s](d, args.window)
+        edges_train, edges_test = strategies_map[s](d, args.window, 0)
         graphs[s]["train"] = edges_train
         graphs[s]["test"] = edges_test
     #number of edges of each graph
     edges = {}
-    for s in args.strategy:
+    for s in strategies:
         edges[s] = count_edges(graphs[s]["train"], graphs[s]["test"])
     #plot_cost(args.strategy, edges, args.window, args.dataset, bar)   
     #plot boxplot with the amount of edges
-    plot_boxplot([edges[s] for s in args.strategy], bar, args.dataset+"_number_of_edges_"+str(args.window))
+    plot_boxplot([edges[s] for s in strategies], bar, args.dataset+"_number_of_edges_"+str(args.window))
     #density of each graph
     density = {}
-    for s in args.strategy:
+    for s in strategies:
         density[s] = measure_density(graphs[s]["train"], graphs[s]["test"])
     #plot boxplot with the graph density
-    plot_boxplot([density[s] for s in args.strategy], bar, args.dataset+"_density_"+str(args.window))
+    plot_boxplot([density[s] for s in strategies], bar, args.dataset+"_density_"+str(args.window))
     
     #graph for cost x benefit
-    proportions = proportion(edges, args.strategy)
+    proportions = proportion(edges, strategies)
     mean_f1 = {}
     f = open("plots/" + args.dataset + '-' + str(args.emb_dim) + '/f1_' + args.dataset + "_" + str(args.window) + '.txt', 'r')
     lines = f.readlines()
