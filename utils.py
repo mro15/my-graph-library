@@ -15,12 +15,12 @@ from nltk.collocations import BigramAssocMeasures as bam
 from nltk.collocations import BigramCollocationFinder as bcf
 
 def plot_graph(g):
-        options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
-        edge_labels = nx.get_edge_attributes(g,'weight')
-        pos=nx.spring_layout(g)
-        nx.draw(g, pos, **options)
-        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
-        plt.show()
+    options = {'node_color': 'lightskyblue', 'node_size': 5000, 'with_labels': 'True'}
+    edge_labels = nx.get_edge_attributes(g,'weight')
+    pos=nx.spring_layout(g)
+    nx.draw(g, pos, **options)
+    nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels)
+    plt.show()
 
 def windows_in_pair(windows):
     windows_in_pair = Counter()
@@ -363,15 +363,6 @@ def graph_strategy_three(d, k):
         if((len(pairs)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
     
     print("BUILDING GRAPHS FROM TEST DATASET")
@@ -391,15 +382,6 @@ def graph_strategy_three(d, k):
         if((len(pairs)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
@@ -426,16 +408,8 @@ def graph_strategy_four_all(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        break
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
+
     print("BUILDING GRAPHS FROM TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
@@ -455,15 +429,6 @@ def graph_strategy_four_all(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        break
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
@@ -489,15 +454,6 @@ def graph_strategy_four(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
     
     print("BUILDING GRAPHS FROM TEST DATASET")
@@ -517,15 +473,6 @@ def graph_strategy_four(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
@@ -552,16 +499,8 @@ def graph_strategy_five_all(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        break
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
+
     print("BUILDING GRAPHS FROM TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
@@ -581,15 +520,6 @@ def graph_strategy_five_all(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        break
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
@@ -616,15 +546,6 @@ def graph_strategy_five(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
     
     print("BUILDING GRAPHS FROM TEST DATASET")
@@ -644,15 +565,6 @@ def graph_strategy_five(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
@@ -679,16 +591,8 @@ def graph_strategy_six_all(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        break
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
+
     print("BUILDING GRAPHS FROM TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
@@ -708,15 +612,6 @@ def graph_strategy_six_all(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        break
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
@@ -742,15 +637,6 @@ def graph_strategy_six(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         train_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
     print("FINISHED GRAPHS FROM TRAIN DATASET")
     
     print("BUILDING GRAPHS FROM TEST DATASET")
@@ -770,15 +656,6 @@ def graph_strategy_six(d, k):
         if((len(i)<1) or (len(g.nodes())==0)):
             g.add_vertex(i[0])
         test_graphs.append(g.graph)
-        """
-        #debug
-        print("---- NODES ----")
-        print(g.nodes())
-        print("---- EDGES ----")
-        print(g.edges())
-        plot_graph(g.graph)
-        exit()
-        """
     print("FINISHED GRAPHS FROM TEST DATASET")
 
     return train_graphs, test_graphs
