@@ -7,7 +7,6 @@ from matplotlib.font_manager import FontProperties
 import argparse
 import utils
 from text_graph.text_graph import TextGraph
-from text_graph.node_features import NodeFeatures
 from text_handler.dataset import Dataset
 import numpy as np
 import networkx as nx
