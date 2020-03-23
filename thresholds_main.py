@@ -21,7 +21,12 @@ def main():
     datasets = ["polarity", "webkb", "20ng"]
     for dataset in datasets:
         d = Dataset(dataset)
-        d.read_20ng()
+        read_functions = {
+            "polarity": d.read_polarity,
+            "webkb": d.read_webkb,
+            "20ng": d.read_20ng
+        }
+        read_functions[dataset]()
         d.pre_process_data()
         for window in [4, 7, 12, 20]:
             for strategy in args.strategy:
@@ -30,6 +35,5 @@ def main():
                 output_name = "threshold_handler/graphics/" + dataset + "_" + strategy + "_" + str(window) + "_global.png"
                 tan.histogram_strategy_global(d, window, strategy, output_name)
 
-    
 if __name__ == "__main__":
     main()

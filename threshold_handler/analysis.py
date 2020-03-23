@@ -25,7 +25,7 @@ def get_bam_function(strategy):
     return functions[strategy]
 
 def histogram_strategy_local(d, k, strategy, output_name):
-    print("CALCULATING PMI FOR TRAIN DATASET")
+    print("CALCULATING MEASURE FOR TRAIN DATASET")
     values = []
     progress = tqdm(d.train_data)
     for i in progress:
@@ -37,7 +37,7 @@ def histogram_strategy_local(d, k, strategy, output_name):
                 w2 = pairs[0][1]
                 values.append(pmi)
     
-    print("CALCULATING PMI FOR TEST DATASET")
+    print("CALCULATING MEASURE FOR TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
         if len(i) > k:
@@ -51,13 +51,14 @@ def histogram_strategy_local(d, k, strategy, output_name):
 
     plt.hist(values)
     plt.savefig(output_name)
+    print("save")
     plt.close()
 
 def histogram_strategy_global(d, k, strategy, output_name):
     values = []
     windows = bcf.from_words(utils.all_docs_to_one_tokens_list(d), window_size=k)
     global_pmi = dict(windows.score_ngrams(get_bam_function(strategy)))
-    print("CALCULATING PMI FOR TRAIN DATASET")
+    print("CALCULATING MEASURE FOR TRAIN DATASET")
     progress = tqdm(d.train_data)
     for i in progress:
         g = TextGraph(d.dataset)
@@ -69,7 +70,7 @@ def histogram_strategy_global(d, k, strategy, output_name):
                 w2 = pairs[0][1]
                 values.append(pmi)
 
-    print("CALCULATING PMI FOR TEST DATASET")
+    print("CALCULATING MEASURE FOR TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
         if len(i) > k:
@@ -83,5 +84,6 @@ def histogram_strategy_global(d, k, strategy, output_name):
 
     plt.hist(values)
     plt.savefig(output_name)
+    print("save global")
     plt.close()
 
