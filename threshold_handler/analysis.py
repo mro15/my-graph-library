@@ -49,9 +49,10 @@ def histogram_strategy_local(d, k, strategy, output_name):
                 values.append(pmi)
     print(len(values))
 
-    plt.hist(values)
+    fig, axs = plt.subplots(1, 2)
+    axs[0].hist(values)
+    axs[1].boxplot(values)
     plt.savefig(output_name)
-    print("save")
     plt.close()
 
 def histogram_strategy_global(d, k, strategy, output_name):
@@ -82,8 +83,9 @@ def histogram_strategy_global(d, k, strategy, output_name):
                 values.append(pmi)
     print(len(values))
 
-    plt.hist(values)
+    fig, axs = plt.subplots(1, 2)
+    axs[0].hist(values)
+    axs[1].boxplot(values)
     plt.savefig(output_name)
-    print("save global")
     plt.close()
 
