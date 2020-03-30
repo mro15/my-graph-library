@@ -18,9 +18,10 @@ import utils
 def get_bam_function(strategy):
     functions = {
         "pmi": bam.pmi,
-        "llr": bam.likelihood_ratio, 
+        "llr": bam.likelihood_ratio,
         "dice": bam.dice,
-        "chi_square": bam.chi_sq
+        "chi_square": bam.chi_sq,
+        "freq": bam.raw_freq
     }
     return functions[strategy]
 
@@ -36,7 +37,7 @@ def histogram_strategy_local(d, k, strategy, output_name):
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
                 values.append(pmi)
-    
+
     print("CALCULATING MEASURE FOR TEST DATASET")
     progress = tqdm(d.test_data)
     for i in progress:
