@@ -100,11 +100,106 @@ def graph_strategy_one(d, k):
 
         if len(list(pair_windows))<1:
             g.add_vertex(i[0])
-        test_graphs.append(g.graph) 
-    print("FINISHED TEST GRAPHS") 
+        test_graphs.append(g.graph)
+    print("FINISHED TEST GRAPHS")
 
     return train_graphs, test_graphs
 
+# frequency calculated over all documents from dataset
+def graph_strategy_two_all(d, k):
+    train_graphs = []
+    test_graphs = []
+    windows = bcf.from_words(all_docs_to_one_tokens_list(d), window_size=k)
+    llr_all = dict(windows.ngram_fd.items())
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.pmi):
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            t_windows = bcf.from_words(i, window_size=k)
+            for pairs in t_windows.score_ngrams(bam.raw_freq):
+                #print(pairs)
+                #print(llr_all[pairs[0]])
+                llr = llr_all[pairs[0]]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if llr >= 0:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, llr)
+        if((len(i)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+    print("FINISHED GRAPHS FROM TEST DATASET")
+    return train_graphs, test_graphs
+
+
+# weight is the frequency of coocurrence calculated over a single document
+# for once
+def graph_strategy_two(d, k, threshold=0):
+    train_graphs = []
+    test_graphs = []
+    print("BUILDING GRAPHS FROM TRAIN DATASET")
+    progress = tqdm(d.train_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.ngram_fd.items():
+                pmi = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if pmi >= threshold:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, pmi)
+        if((len(pairs)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        train_graphs.append(g.graph)
+    print("FINISHED GRAPHS FROM TRAIN DATASET")
+
+    print("BUILDING GRAPHS FROM TEST DATASET")
+    progress = tqdm(d.test_data)
+    for i in progress:
+        g = TextGraph(d.dataset)
+        if len(i) > k:
+            windows = bcf.from_words(i, window_size=k)
+            for pairs in windows.ngram_fd.items():
+                pmi = pairs[1]
+                w1 = pairs[0][0]
+                w2 = pairs[0][1]
+                if pmi >= threshold:
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_weight_edge(w1, w2, pmi)
+        if((len(pairs)<1) or (len(g.nodes())==0)):
+            g.add_vertex(i[0])
+        test_graphs.append(g.graph)
+    print("FINISHED GRAPHS FROM TEST DATASET")
+
+    return train_graphs, test_graphs
+
+
+# pmi 1990 calculated over all documents from dataset
 def graph_strategy_three_all(d, k):
     train_graphs = []
     test_graphs = []
@@ -151,8 +246,9 @@ def graph_strategy_three_all(d, k):
     print("FINISHED GRAPHS FROM TEST DATASET")
     return train_graphs, test_graphs
 
-#word association measure defined as PMI (Pointwise Mutual Information)
-#by  Church and Hankis 1990.
+# word association measure defined as PMI (Pointwise Mutual Information)
+# by  Church and Hankis 1990. Calculated over a single document from dataset
+# for once
 def graph_strategy_three(d, k, threshold=0):
     train_graphs = []
     test_graphs = []

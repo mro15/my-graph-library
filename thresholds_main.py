@@ -30,10 +30,16 @@ def main():
         d.pre_process_data()
         for window in [4, 7, 12, 20]:
             for strategy in args.strategy:
-                output_name = "threshold_handler/graphics/" + dataset + "_" + strategy + "_" + str(window) + "_local.png"
-                tan.histogram_strategy_local(d, window, strategy, output_name)
-                output_name = "threshold_handler/graphics/" + dataset + "_" + strategy + "_" + str(window) + "_global.png"
-                tan.histogram_strategy_global(d, window, strategy, output_name)
+                if strategy != "freq":
+                    output_name = "threshold_handler/graphics/" + dataset + "_" + strategy + "_" + str(window) + "_local.png"
+                    tan.histogram_strategy_local(d, window, strategy, output_name)
+                    output_name = "threshold_handler/graphics/" + dataset + "_" + strategy + "_" + str(window) + "_global.png"
+                    tan.histogram_strategy_global(d, window, strategy, output_name)
+                else:
+                    output_name = "threshold_handler/graphics/" + dataset + "_" + strategy + "_" + str(window) + "_local.png"
+                    tan.histogram_freq_local(d, window, output_name)
+                    output_name = "threshold_handler/graphics/" + dataset + "_" + strategy + "_" + str(window) + "_global.png"
+                    tan.histogram_freq_global(d, window, output_name)
 
 if __name__ == "__main__":
     main()
