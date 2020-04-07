@@ -38,9 +38,14 @@ def mean_and_std(all_values, output):
 
 #plot mean and std for each strategy and metric
 def plot_graphic(mean_acc, std_acc, mean_f1, std_f1, dataset, window, output_fig):
-    legend_map = { "no_weight": "Sem peso",
-                "pmi_1990": "PMI (1990)",
-                "pmi_1990_all": "PMI (1990) ALL"}
+    legend_map = {
+        "no_weight": "Sem peso",
+        "pmi_1990": "LOCAL PMI",
+        "pmi_1990_all": "GLOBAL PMI",
+        "freq": "LOCAL FREQUENCY",
+        "freq_all": "GLOBAL FREQUENCY"
+    }
+
     bar = []
     acc_mean = []
     acc_std = []
@@ -86,11 +91,11 @@ def main():
     args = read_args()
 
     directory = args.dataset + "-" + str(args.emb_dim) + "/"
-    strategies = ["no_weight", "pmi_1990", "pmi_1990_all"]
+    strategies = ["no_weight", "pmi_1990", "pmi_1990_all", "freq", "freq_all"]
     default_output = "plots/" + directory + args.dataset + "_" + str(args.window) + ".txt"
     acc_output = open(default_output, "w")
     f1_output = open("plots/" + directory + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
-    output_fig = default_output + ".png" 
+    output_fig = default_output + ".png"
     all_acc = {}
     all_f1 = {}
     #read results for each strategy
@@ -103,7 +108,7 @@ def main():
     statistical_tests(all_acc, all_f1, args.window, strategies)
     mean_acc, std_acc = mean_and_std(all_acc, acc_output)
     mean_f1, std_f1 = mean_and_std(all_f1, f1_output)
-    
+
     plot_graphic(mean_acc, std_acc, mean_f1, std_f1, args.dataset, args.window, output_fig)
 
 if __name__ == "__main__":
