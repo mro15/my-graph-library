@@ -21,9 +21,13 @@ def read_args():
     return parser.parse_args()
 
 def get_legend(strategy):
-    legend_map = {  "no_weight": "UNWEIGHTED",
-                    "pmi_1990": "LOCAL PMI",
-                    "pmi_1990_all": "GLOBAL PMI"}
+    legend_map = {
+        "no_weight": "UNWEIGHTED",
+        "pmi_1990": "LOCAL PMI",
+        "pmi_1990_all": "GLOBAL PMI",
+        "freq": "LOCAL FREQUENCY",
+        "freq_all": "GLOBAL FREQUENCY"
+    }
     return legend_map[strategy]
 
 def strategies_to_bar(strategies):
@@ -85,7 +89,7 @@ def proportion(edges, strategies):
         arr_div[np.isnan(arr_div)] = 0
         proportions[s] = np.mean(arr_div*100)
         print(proportions[s])
-    return proportions 
+    return proportions
 
 #calculate mean and std for metrics
 def mean_and_std(edges, strategies):
@@ -100,7 +104,7 @@ def mean_and_std(edges, strategies):
 def plot_cost(strategies, edges, window, dataset, bar):
     mean, std = mean_and_std(edges, strategies)
     print(mean, std)
-    
+
     mean_v = []
     std_v = []
     for s in strategies:
@@ -133,7 +137,7 @@ def plot_cost_benefit(proportions, fscores, bar, strategies, output):
     for s in strategies:
         edges.append(round(float(proportions[s]), 2))
         acc.append(round(float(fscores[s]), 2))
-    
+
     color = '#2e5a88'
     fig, ax = plt.subplots(figsize=(5,3.5))
     ax.set_ylabel('F1-score', color=color, fontsize='large')
@@ -183,14 +187,17 @@ def main():
         return 1
     d.pre_process_data()
 
-    strategies_map = { "no_weight": utils.graph_strategy_one,
-                        "pmi_1990": utils.graph_strategy_three,
-                        "pmi_1990_all": utils.graph_strategy_three_all,
-                        "pmi_2019": utils.graph_strategy_two,
-                        "llr": utils.graph_strategy_five,
-                        "llr_all": utils.graph_strategy_five_all,
-                        "chi_square": utils.graph_strategy_six,
-                        "chi_square_all": utils.graph_strategy_six_all }
+    strategies_map = {
+        "no_weight": utils.graph_strategy_one,
+        "freq": utils.graph_strategy_two,
+        "freq_all": utils.graph_strategy_two_all,
+        "pmi_1990": utils.graph_strategy_three,
+        "pmi_1990_all": utils.graph_strategy_three_all,
+        "llr": utils.graph_strategy_five,
+        "llr_all": utils.graph_strategy_five_all,
+        "chi_square": utils.graph_strategy_six,
+        "chi_square_all": utils.graph_strategy_six_all
+    }
 
     strategies = args.strategy + ["no_weight"]
     bar = strategies_to_bar(args.strategy)
@@ -204,14 +211,14 @@ def main():
     #other graphs
     for s in args.strategy:
         graphs[s] = {}
-        edges_train, edges_test = strategies_map[s](d, args.window, 0)
+        edges_train, edges_test = strategies_map[s](d, args.window)
         graphs[s]["train"] = edges_train
         graphs[s]["test"] = edges_test
     #number of edges of each graph
     edges = {}
     for s in strategies:
         edges[s] = count_edges(graphs[s]["train"], graphs[s]["test"])
-    #plot_cost(args.strategy, edges, args.window, args.dataset, bar)   
+    #plot_cost(args.strategy, edges, args.window, args.dataset, bar)
     #plot boxplot with the amount of edges
     plot_boxplot([edges[s] for s in strategies], bar, args.dataset+"_number_of_edges_"+str(args.window))
     #density of each graph
@@ -220,7 +227,7 @@ def main():
         density[s] = measure_density(graphs[s]["train"], graphs[s]["test"])
     #plot boxplot with the graph density
     plot_boxplot([density[s] for s in strategies], bar, args.dataset+"_density_"+str(args.window))
-    
+
     #graph for cost x benefit
     proportions = proportion(edges, strategies)
     mean_f1 = {}
