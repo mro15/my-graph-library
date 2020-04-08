@@ -2,10 +2,12 @@
 
 dim="100"
 #dim="100 300"
-windows="4 7 20 12"
+#windows="4 7 20 12"
+windows="12"
 #strategies="no_weight pmi_2019 pmi_1990 dice llr chi_square"
-strategies="no_weight pmi_1990 pmi_1990_all"
-datasets="20ng ohsumed webkb polarity"
+strategies="freq freq_all"
+#datasets="20ng ohsumed webkb polarity"
+datasets="20ng"
 methods="node2vec"
 pooling="global_max"
 
