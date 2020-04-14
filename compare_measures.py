@@ -139,12 +139,13 @@ def plot_cost_benefit(proportions, fscores, bar, strategies, output):
         acc.append(round(float(fscores[s]), 2))
 
     color = '#2e5a88'
-    fig, ax = plt.subplots(figsize=(5,3.5))
+    fig, ax = plt.subplots(figsize=(11,6))
     ax.set_ylabel('F1-score', color=color, fontsize='large')
     f_bar = ax.bar(x - width/2, acc, width, label='F1-score', color=color)
     ax.set_yticks(np.arange(0, 101, 20))
     ax.set_xticks(x)
     ax.set_xticklabels(bar, fontweight='bold')
+    plt.setp(ax.get_xticklabels(), rotation=45, horizontalalignment='right')
     #plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
     #ax.tick_params(axis='y', labelcolor=color)
 
@@ -199,8 +200,8 @@ def main():
         "chi_square_all": utils.graph_strategy_six_all
     }
 
-    strategies = args.strategy + ["no_weight"]
-    bar = strategies_to_bar(args.strategy)
+    strategies = ['no_weight'] + args.strategy
+    bar = strategies_to_bar(strategies)
     #build graphs using each strategy
     graphs = {}
     #base graph with all edges
@@ -237,7 +238,7 @@ def main():
         x = line.strip().split(",")
         mean_f1[x[0]] = x[1]
     print(mean_f1)
-    plot_cost_benefit(proportions, mean_f1, bar, args.strategy, args.dataset+"_cost_"+str(args.window))
+    plot_cost_benefit(proportions, mean_f1, bar, strategies, args.dataset+"_cost_"+str(args.window))
 
 if __name__ == "__main__":
     main()
