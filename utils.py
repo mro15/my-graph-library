@@ -463,7 +463,7 @@ def graph_strategy_four(d, k):
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, dice)
         else:
-            if len(i) > k:
+            if len(i) > 1:
                 windows = bcf.from_words(i, window_size=len(i))
                 for pairs in windows.score_ngrams(bam.dice):
                     dice = pairs[1]
@@ -493,7 +493,7 @@ def graph_strategy_four(d, k):
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, dice)
         else:
-            if len(i) > k:
+            if len(i) > 1:
                 windows = bcf.from_words(i, window_size=len(i))
                 for pairs in windows.score_ngrams(bam.dice):
                     dice = pairs[1]
@@ -531,13 +531,22 @@ def graph_strategy_five_all(d, k, threshold=0):
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, llr)
         else:
-            if len(i) > k:
+            if len(i) > 1:
                 t_windows = bcf.from_words(i, window_size=len(i))
-                for pairs in t_windows.score_ngrams(bam.likelihood_ratio):
-                    llr = llr_all[pairs[0]]
-                    w1 = pairs[0][0]
-                    w2 = pairs[0][1]
-                    if llr >= 0:
+                try:
+                    for pairs in t_windows.score_ngrams(bam.likelihood_ratio):
+                        llr = llr_all[pairs[0]]
+                        w1 = pairs[0][0]
+                        w2 = pairs[0][1]
+                        if llr >= 0:
+                            g.add_vertex(w1)
+                            g.add_vertex(w2)
+                            g.add_weight_edge(w1, w2, llr)
+                except ValueError:
+                    for words, v in t_windows.ngram_fd.items():
+                        w1 = words[0]
+                        w2 = words[1]
+                        llr = 1
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, llr)
@@ -561,13 +570,22 @@ def graph_strategy_five_all(d, k, threshold=0):
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, llr)
         else:
-            if len(i) > k:
+            if len(i) > 1:
                 t_windows = bcf.from_words(i, window_size=len(i))
-                for pairs in t_windows.score_ngrams(bam.likelihood_ratio):
-                    llr = llr_all[pairs[0]]
-                    w1 = pairs[0][0]
-                    w2 = pairs[0][1]
-                    if llr >= 0:
+                try:
+                    for pairs in t_windows.score_ngrams(bam.likelihood_ratio):
+                        llr = llr_all[pairs[0]]
+                        w1 = pairs[0][0]
+                        w2 = pairs[0][1]
+                        if llr >= 0:
+                            g.add_vertex(w1)
+                            g.add_vertex(w2)
+                            g.add_weight_edge(w1, w2, llr)
+                except ValueError:
+                    for words, v in t_windows.ngram_fd.items():
+                        w1 = words[0]
+                        w2 = words[1]
+                        llr = 1
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, llr)
@@ -600,11 +618,20 @@ def graph_strategy_five(d, k, threshold=0):
         else:
             if len(i) > 1:
                 windows = bcf.from_words(i, window_size=len(i))
-                for pairs in windows.score_ngrams(bam.likelihood_ratio):
-                    llr = pairs[1]
-                    w1 = pairs[0][0]
-                    w2 = pairs[0][1]
-                    if llr >= 0:
+                try:
+                    for pairs in windows.score_ngrams(bam.likelihood_ratio):
+                        llr = pairs[1]
+                        w1 = pairs[0][0]
+                        w2 = pairs[0][1]
+                        if llr >= 0:
+                            g.add_vertex(w1)
+                            g.add_vertex(w2)
+                            g.add_weight_edge(w1, w2, llr)
+                except ValueError:
+                    for words, v in windows.ngram_fd.items():
+                        w1 = words[0]
+                        w2 = words[1]
+                        llr = 1
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, llr)
@@ -630,11 +657,20 @@ def graph_strategy_five(d, k, threshold=0):
         else:
             if len(i) > 1:
                 windows = bcf.from_words(i, window_size=len(i))
-                for pairs in windows.score_ngrams(bam.likelihood_ratio):
-                    llr = pairs[1]
-                    w1 = pairs[0][0]
-                    w2 = pairs[0][1]
-                    if llr >= 0:
+                try:
+                    for pairs in windows.score_ngrams(bam.likelihood_ratio):
+                        llr = pairs[1]
+                        w1 = pairs[0][0]
+                        w2 = pairs[0][1]
+                        if llr >= 0:
+                            g.add_vertex(w1)
+                            g.add_vertex(w2)
+                            g.add_weight_edge(w1, w2, llr)
+                except ValueError:
+                    for words, v in windows.ngram_fd.items():
+                        w1 = words[0]
+                        w2 = words[1]
+                        llr = 1
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, llr)
