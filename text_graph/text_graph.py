@@ -13,10 +13,12 @@ class TextGraph(object):
         self.graph.add_node(v)
 
     def add_weight_edge(self, v1, v2, w):
-        self.graph.add_edge(v1, v2, weight=w)
+        if not v1==v2:
+            self.graph.add_edge(v1, v2, weight=w)
     
     def add_edge(self, v1, v2):
-        self.graph.add_edge(v1, v2)
+        if not v1==v2:
+            self.graph.add_edge(v1, v2)
     
     def nodes(self):
         return self.graph.nodes()
