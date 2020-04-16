@@ -26,7 +26,11 @@ def get_legend(strategy):
         "pmi_1990": "LOCAL PMI",
         "pmi_1990_all": "GLOBAL PMI",
         "freq": "LOCAL FREQUENCY",
-        "freq_all": "GLOBAL FREQUENCY"
+        "freq_all": "GLOBAL FREQUENCY",
+        "llr": "LOCAL LLR",
+        "llr_all": "GLOBAL LLR",
+        "chi_square": "LOCAL CHI SQUARE",
+        "chi_square_all": "GLOBAL CHI SQUARE"
     }
     return legend_map[strategy]
 
