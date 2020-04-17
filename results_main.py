@@ -79,6 +79,7 @@ def statistical_tests(all_acc, all_f1, window, strategies):
     print(" -- TESTING ACCURACY -- ")
     x = all_acc["no_weight"]
     for i in it:
+        print(i)
         y = all_acc[i]
         wilcoxon_test(x, y)
         student_test(x, y)
@@ -86,6 +87,7 @@ def statistical_tests(all_acc, all_f1, window, strategies):
     print(" -- TESTING F1-SCORE -- ")
     x = all_f1["no_weight"]
     for i in it:
+        print(i)
         y = all_f1[i]
         wilcoxon_test(x, y)
         student_test(x, y)

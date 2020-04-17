@@ -54,7 +54,6 @@ def padding_and_truncate(sentences, dim, cut_point):
         sparse_all.append(lil_matrix(sentences[i]))
     return sentences
 
-
 def main():
     args = read_args()
     classes = {
