@@ -37,28 +37,36 @@ def mean_and_std(all_values, output):
     return mean, std
 
 #plot mean and std for each strategy and metric
-def plot_graphic(mean_acc, std_acc, mean_f1, std_f1, dataset, window, output_fig):
-    legend_map = { "no_weight": "Sem peso",
-                "pmi_1990": "PMI (1990)",
-                "pmi_1990_all": "PMI (1990) ALL"}
+def plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, dataset, window, output_fig):
+    legend_map = {
+        "no_weight": "SEM PESO",
+        "pmi_1990": "LOCAL PMI",
+        "pmi_1990_all": "GLOBAL PMI",
+        "freq": "LOCAL FREQUENCY",
+        "freq_all": "GLOBAL FREQUENCY"
+    }
+
     bar = []
     acc_mean = []
     acc_std = []
     f1_mean = []
     f1_std = []
-    for s in mean_acc.keys():
+    for s in strategies:
         bar.append(legend_map[s])
         acc_mean.append(mean_acc[s])
         acc_std.append(std_acc[s])
         f1_mean.append(mean_f1[s])
         f1_std.append(std_f1[s])
 
-    plt.errorbar(bar, acc_mean, yerr=acc_std, marker='s', capsize=5)
-    plt.errorbar(bar, f1_mean, yerr=f1_std, marker='s', capsize=5)
+    fig, ax = plt.subplots()
+    ax.errorbar(bar, acc_mean, yerr=acc_std, marker='s', capsize=5)
+    ax.errorbar(bar, f1_mean, yerr=f1_std, marker='s', capsize=5)
+    plt.setp(ax.get_xticklabels(), rotation='35', horizontalalignment='right')
     plt.xlabel("Métricas")
     plt.ylabel("Valor")
     plt.title("Dataset: " + dataset + " #janela: " + str(window))
     plt.legend(["Taxa de acerto", "F1-score"], loc='upper left')
+    plt.tight_layout()
     plt.savefig(output_fig)
     plt.close()
 
@@ -86,11 +94,11 @@ def main():
     args = read_args()
 
     directory = args.dataset + "-" + str(args.emb_dim) + "/"
-    strategies = ["no_weight", "pmi_1990", "pmi_1990_all"]
+    strategies = ["no_weight", "pmi_1990", "pmi_1990_all", "freq", "freq_all"]
     default_output = "plots/" + directory + args.dataset + "_" + str(args.window) + ".txt"
     acc_output = open(default_output, "w")
     f1_output = open("plots/" + directory + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
-    output_fig = default_output + ".png" 
+    output_fig = default_output + ".png"
     all_acc = {}
     all_f1 = {}
     #read results for each strategy
@@ -103,8 +111,8 @@ def main():
     statistical_tests(all_acc, all_f1, args.window, strategies)
     mean_acc, std_acc = mean_and_std(all_acc, acc_output)
     mean_f1, std_f1 = mean_and_std(all_f1, f1_output)
-    
-    plot_graphic(mean_acc, std_acc, mean_f1, std_f1, args.dataset, args.window, output_fig)
+
+    plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, args.dataset, args.window, output_fig)
 
 if __name__ == "__main__":
     main()

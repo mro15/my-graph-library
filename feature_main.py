@@ -16,7 +16,7 @@ def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng", "ohsumed"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
-    parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "pmi_2019_all", "normalized_pmi", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
+    parser.add_argument('--strategy', type=str, choices=["no_weight", "freq", "freq_all", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
     return parser.parse_args()
@@ -42,14 +42,11 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
     weight = False
     if strategy == "no_weight":
         train_graphs, test_graphs = utils.graph_strategy_one(d, window_size)
-    elif strategy == "pmi_2019":
+    elif strategy == "freq":
         train_graphs, test_graphs = utils.graph_strategy_two(d, window_size)
         weight = True
-    elif strategy == "pmi_2019_all":
-        #weight = True
-        pass
-    elif strategy == "normalized_pmi":
-        train_graphs, test_graphs = utils.graph_strategy_norm_two(d, window_size)
+    elif strategy == "freq_all":
+        train_graphs, test_graphs = utils.graph_strategy_two_all(d, window_size)
         weight = True
     elif strategy == "pmi_1990":
         train_graphs, test_graphs = utils.graph_strategy_three(d, window_size)
@@ -101,9 +98,6 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
     print("=== FINISHED RL IN TEST GRAPHS ===")
     return train_emb, test_emb
 
-def vector_methods(d, method):
-    pass
-
 def main():
     args = read_args()
 
@@ -132,8 +126,6 @@ def main():
     g_methods = ["node2vec"]
     if args.method in g_methods:
         train_emb, test_emb = graph_methods(d, args.method, args.window, args.strategy, args.emb_dim)
-    else:
-        vector_methods(d, args.method)
    
     print("=== WRITING NODE EMBEDDINGS ===")
     directory = "graphs/" + args.dataset + "-" + str(args.emb_dim) + "/"

@@ -13,7 +13,7 @@ def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng", "ohsumed"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
-    parser.add_argument('--strategy', type=str, choices=["no_weight", "pmi_2019", "pmi_2019_all", "normalized_pmi", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
+    parser.add_argument('--strategy', type=str, choices=["no_weight", "freq", "freq_all", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
     parser.add_argument('--pool_type', type=str, choices=["max", "global_max"], help='pooling type', required=True)
@@ -58,10 +58,11 @@ def padding_and_truncate(sentences, dim, cut_point):
 def main():
     args = read_args()
     classes = {
-            "polarity": 2,
-            "webkb": 4,
-            "ohsumed": 23,
-            "20ng": 20 }
+        "polarity": 2,
+        "webkb": 4,
+        "ohsumed": 23,
+        "20ng": 20
+    }
     directory = "graphs/" + args.dataset + "-" + str(args.emb_dim) + "/"
 
     with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'rb') as infile:
