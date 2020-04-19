@@ -14,7 +14,7 @@ from cnn.my_cnn import My_cnn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng", "ohsumed"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng", "ohsumed", "r8"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "freq", "freq_all", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
@@ -86,7 +86,6 @@ def graph_methods(d, method, window_size, strategy, emb_dim):
         rl.representation_method.train()
         train_emb.append(rl.representation_method.get_embeddings())
     print("=== FINISHED RL IN TRAIN GRAPHS ===")
-
     print("=== STARTING RL IN TEST GRAPHS ===")
     #for i in range(0, 10):
     for i in range(0, len(test_graphs)):
@@ -119,6 +118,9 @@ def main():
     elif args.dataset == "ohsumed":
         d = Dataset(args.dataset)
         d.read_ohsumed()
+    elif args.dataset == "r8":
+        d = Dataset(args.dataset)
+        d.read_r8()
     else:
         print("Error: dataset name unknown")
         return 1
