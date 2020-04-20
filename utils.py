@@ -305,7 +305,7 @@ def graph_strategy_three(d, k, threshold=0):
                 pmi = pairs[1]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if pmi >= threshold:
+                if pmi > threshold:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, pmi)
@@ -316,7 +316,7 @@ def graph_strategy_three(d, k, threshold=0):
                     pmi = pairs[1]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
-                    if pmi >= threshold:
+                    if pmi > threshold:
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, pmi)
@@ -335,7 +335,7 @@ def graph_strategy_three(d, k, threshold=0):
                 pmi = pairs[1]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if pmi >= threshold:
+                if pmi > threshold:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, pmi)
@@ -346,7 +346,7 @@ def graph_strategy_three(d, k, threshold=0):
                     pmi = pairs[1]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
-                    if pmi >= threshold:
+                    if pmi > threshold:
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, pmi)
