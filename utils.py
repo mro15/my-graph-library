@@ -103,7 +103,7 @@ def graph_strategy_two_all(d, k, threshold=0):
                 freq = freq_all[pairs[0]]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if freq >= 0:
+                if freq > 0:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, freq)
@@ -114,7 +114,7 @@ def graph_strategy_two_all(d, k, threshold=0):
                     freq = freq_all[pairs[0]]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
-                    if freq >= threshold:
+                    if freq > threshold:
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, freq)
@@ -133,7 +133,7 @@ def graph_strategy_two_all(d, k, threshold=0):
                 freq = freq_all[pairs[0]]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if freq >= 0:
+                if freq > 0:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, freq)
@@ -144,7 +144,7 @@ def graph_strategy_two_all(d, k, threshold=0):
                     freq = freq_all[pairs[0]]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
-                    if freq >= threshold:
+                    if freq > threshold:
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, freq)
@@ -170,7 +170,7 @@ def graph_strategy_two(d, k, threshold=0):
                 freq = pairs[1]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if freq >= threshold:
+                if freq > threshold:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, freq)
@@ -181,7 +181,7 @@ def graph_strategy_two(d, k, threshold=0):
                     freq = pairs[1]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
-                    if freq >= threshold:
+                    if freq > threshold:
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, freq)
@@ -200,7 +200,7 @@ def graph_strategy_two(d, k, threshold=0):
                 freq = pairs[1]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if freq >= threshold:
+                if freq > threshold:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, freq)
@@ -211,7 +211,7 @@ def graph_strategy_two(d, k, threshold=0):
                     freq = pairs[1]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
-                    if freq >= threshold:
+                    if freq > threshold:
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, freq)
@@ -238,7 +238,7 @@ def graph_strategy_three_all(d, k, threshold=0):
                 pmi = pmi_all[pairs[0]]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if pmi >= 0:
+                if pmi > 0:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, pmi)
@@ -249,7 +249,7 @@ def graph_strategy_three_all(d, k, threshold=0):
                     pmi = pmi_all[pairs[0]]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
-                    if pmi >= 0:
+                    if pmi > 0:
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, pmi)
@@ -268,7 +268,7 @@ def graph_strategy_three_all(d, k, threshold=0):
                 pmi = pmi_all[pairs[0]]
                 w1 = pairs[0][0]
                 w2 = pairs[0][1]
-                if pmi >= 0:
+                if pmi > 0:
                     g.add_vertex(w1)
                     g.add_vertex(w2)
                     g.add_weight_edge(w1, w2, pmi)
@@ -279,7 +279,7 @@ def graph_strategy_three_all(d, k, threshold=0):
                     pmi = pmi_all[pairs[0]]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
-                    if pmi >= 0:
+                    if pmi > 0:
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_weight_edge(w1, w2, pmi)
