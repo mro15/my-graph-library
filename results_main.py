@@ -11,7 +11,7 @@ from scipy.stats import ttest_ind
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "20ng", "webkb", "ohsumed"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "20ng", "webkb", "r8", "ohsumed"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--emb_dim', type=int, help='embeddings dimension', required=True)
     parser.add_argument('--window', type=int, help='window size', required=True)
@@ -96,7 +96,8 @@ def main():
     args = read_args()
 
     directory = args.dataset + "-" + str(args.emb_dim) + "/"
-    strategies = ["no_weight", "pmi_1990", "pmi_1990_all", "freq", "freq_all"]
+    #strategies = ["no_weight", "pmi_1990", "pmi_1990_all", "freq", "freq_all"]
+    strategies = ["no_weight", "pmi_1990", "pmi_1990_all"]
     default_output = "plots/" + directory + args.dataset + "_" + str(args.window) + ".txt"
     acc_output = open(default_output, "w")
     f1_output = open("plots/" + directory + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
