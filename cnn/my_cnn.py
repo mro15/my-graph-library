@@ -123,7 +123,7 @@ class My_cnn(object):
             data_train = self.all_x[train]
             data_test = self.all_x[test]
             
-            K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=12, inter_op_parallelism_threads=12)))
+            K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=8, inter_op_parallelism_threads=8)))
             model.fit(data_train, keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=32, epochs=20, verbose=0, validation_data=(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes)))
 
             score = model.evaluate(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes))

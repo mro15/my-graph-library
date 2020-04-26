@@ -11,7 +11,7 @@ import text_graph.features as tg_features
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng", "ohsumed"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng", "r8", "ohsumed"], help='dataset name', required=True)   
     parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     parser.add_argument('--strategy', type=str, choices=["no_weight", "freq", "freq_all", "pmi_1990", "pmi_1990_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
     parser.add_argument('--window', type=int,  help='window size', required=True)
@@ -60,7 +60,8 @@ def main():
         "polarity": 2,
         "webkb": 4,
         "ohsumed": 23,
-        "20ng": 20
+        "20ng": 20,
+        "r8": 8
     }
     directory = "graphs/" + args.dataset + "-" + str(args.emb_dim) + "/"
 
