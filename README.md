@@ -8,6 +8,7 @@ This project contains the  implementation of my tests with graph of words.
 - WEBKB
 - Ohsumed
 - 20 Newsgroups
+- R8
 
 # Experiments
 
