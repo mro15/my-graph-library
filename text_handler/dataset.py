@@ -45,6 +45,30 @@ class Dataset(object):
         print(len(self.test_data), len(self.test_labels))
         print(labels_map, self.classes)
 
+    def read_r8(self):
+        dataset = "datasets/r8/"
+        data_sentence = []
+        data_label = []
+        for i in ["train", "test"]:
+            fp = open(dataset+i+".txt", 'r')
+            for lines in fp.readlines():
+                line = lines.split()
+                if len(line[1:]) > 0:
+                    data_label.append(line[0])
+                    data_sentence.append(line[1:])
+        labels_map = {}
+        for i, label in enumerate(sorted(list(set(data_label)))):
+            labels_map.update({label:i})
+        data_label_int = []
+        for i in range(0, len(data_label)):
+            data_label_int.append(labels_map[data_label[i]])
+        half = int(len(data_sentence)/2)
+        self.train_data = data_sentence[:half]
+        self.train_labels = data_label_int[:half]
+        self.test_data = data_sentence[half:]
+        self.test_labels = data_label_int[half:]
+        self.classes = 8
+
     def read_20ng(self):
         dataset = "datasets/20ng/"
         data_sentence = []
@@ -182,7 +206,7 @@ class Dataset(object):
             tokens = [word for word in tokens if word.isalpha() and (word!="br")] #remove non alphabetic tokens
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]
-            tokens = [lem.lemmatize(w) for w in tokens]
+            #tokens = [lem.lemmatize(w) for w in tokens]
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.train_data = clean_texts
@@ -198,7 +222,7 @@ class Dataset(object):
             tokens = [word for word in tokens if word.isalpha() and (word!="br")]
             tokens = [w for w in tokens if not w in self.stop_words]
             tokens = [stem.stem(w) for w in tokens]
-            tokens = [lem.lemmatize(w) for w in tokens]
+            #tokens = [lem.lemmatize(w) for w in tokens]
             self.vocabulary.update(tokens)
             clean_texts.append(tokens)
         self.test_data = clean_texts

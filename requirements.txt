@@ -1,0 +1,14 @@
+numpy
+matplotlib
+networkx
+nltk
+node2vec
+gensim
+ipython
+Keras
+Keras-Applications
+Keras-Preprocessing
+scikit-learn
+scipy
+tqdm
+tensorflow

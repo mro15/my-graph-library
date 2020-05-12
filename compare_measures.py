@@ -13,7 +13,7 @@ import networkx as nx
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "ohsumed", "20ng"], help='dataset name', required=True)   
+    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "ohsumed", "20ng", "r8"], help='dataset name', required=True)   
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--strategy', action="append", help='methods to compare', required=True)
     parser.add_argument('--emb_dim', type=int, help='embeddings dimension', required=True)
@@ -187,6 +187,9 @@ def main():
     elif args.dataset == "20ng":
         d = Dataset(args.dataset)
         d.read_20ng()
+    elif args.dataset == "r8":
+        d = Dataset(args.dataset)
+        d.read_r8()
     else:
         print("Error: dataset name unknown")
         return 1
