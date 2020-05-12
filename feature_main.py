@@ -1,16 +1,11 @@
 #! /usr/bin/env python3
 
 import argparse
-from text_graph.text_graph import TextGraph
-from text_graph.node_features import NodeFeatures
 from text_handler.dataset import Dataset
 import utils
 import analysis.vocabulary as an
 from representation_learning.representation_learning import RepresentationLearning
-import numpy as np
 import _pickle as pickle
-import sklearn
-from cnn.my_cnn import My_cnn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")

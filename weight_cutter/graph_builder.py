@@ -5,11 +5,25 @@
 # Internal imports
 from text_graph.text_graph import TextGraph
 
-
 class GraphBuilder():
 
+    def __init__(self, **kwargs):
+        self.dataset = kwargs.get("dataset")
+        self.strategy = kwargs.get("strategy")
+        self.window_size = kwargs.get("window_size")
+        self.cut_percentage = kwargs.get("cut_porcentage")
 
-    def local_pmi_graph():
+    def print_parameters(self):
+        """
+            Print the parameters used to build the graphs
+        """
+
+        print("Dataset:", self.dataset.dataset)
+        print("strategy:", self.strategy)
+        print("window_size:", self.window_size)
+        print("cut_percentage:", self.cut_percentage)
+
+    def local_pmi_graph(self):
         """
             Graph with local PMI edge weight
         """
@@ -24,7 +38,7 @@ class GraphBuilder():
 
         pass
 
-    def global_pmi_graph()
+    def global_pmi_graph(self):
         """
             Graph with global PMI edge weight
         """

@@ -1,24 +1,22 @@
 #! /usr/bin/env python3
 
+# Internal imports
+from weight_cutter.graph_builder import GraphBuilder
 
-class WeigthCutter():
-
+class WeightCutter():
 
     train_grapphs = []
     test_graphs = []
 
-    def __init__():
-        dataset = dataset
-        strategy = strategy
-        window_size = window_size
-        cut_percentage = cut_porcentage
+    def __init__(self, **kwargs):
+        self.graph_builder = GraphBuilder(**kwargs)
 
     def construct_graphs(self):
         """
             Build the graphs
         """
 
-        pass
+        self.graph_builder.print_parameters()
 
     def make_out_dir(self):
         """
