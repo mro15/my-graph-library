@@ -128,7 +128,7 @@ def main():
     g_methods = ["node2vec"]
     if args.method in g_methods:
         train_emb, test_emb = graph_methods(d, args.method, args.window, args.strategy, args.emb_dim)
-   
+  
     print("=== WRITING NODE EMBEDDINGS ===")
     directory = "graphs/" + args.dataset + "-" + str(args.emb_dim) + "/"
     with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'wb') as outfile:
