@@ -7,10 +7,6 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from tqdm import tqdm
 import itertools
-from collections import Counter
-from math import log
-from sklearn.preprocessing import MinMaxScaler
-import numpy as np
 from nltk.collocations import BigramAssocMeasures as bam
 from nltk.collocations import BigramCollocationFinder as bcf
 
