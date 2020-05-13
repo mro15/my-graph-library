@@ -30,13 +30,13 @@ class WeightCutter():
             Creates de output directory if not exists
         """
 
-        directory = "graphs/next_level/" + self.dataset.dataset + str(self.emb_dim)
+        directory = "graphs/next_level/" + self.dataset.dataset + "-" + str(self.emb_dim) + "/"
 
         if not os.path.exists(directory):
             print("dir not exist, creating ...")
             os.makedirs(directory)
 
-        return directory        
+        return directory
 
     def get_output_files(self):
         """
@@ -46,6 +46,7 @@ class WeightCutter():
         #polarity_node2vec_chi_square_all_4_test_x.pkl
         directory = self.make_out_dir()
         train_file = (
+            directory +
             self.dataset.dataset + 
             "_node2vec_" + 
             self.graph_builder.strategy +
@@ -54,6 +55,7 @@ class WeightCutter():
             "_train"
         )
         test_file = (
+            directory +
             self.dataset.dataset + 
             "_node2vec_" + 
             self.graph_builder.strategy +

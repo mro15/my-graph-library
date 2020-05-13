@@ -108,7 +108,7 @@ def learn_node2vec_representation(dataset, train_graphs, test_graphs, emb_dim):
 
     return train_emb, test_emb
 
-def write_representation(dataset.train_emb, test_emb, train_file, test_file):
+def write_representation(dataset, train_emb, test_emb, train_file, test_file):
     print("=== WRITING NODE EMBEDDINGS ===")
     with open(train_file + '_x.pkl', 'wb') as outfile:
         pickle.dump(train_emb, outfile)
