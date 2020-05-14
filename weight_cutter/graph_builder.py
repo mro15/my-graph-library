@@ -26,7 +26,7 @@ class GraphBuilder():
         self.dataset = kwargs.get("dataset")
         self.strategy = kwargs.get("strategy")
         self.window_size = kwargs.get("window_size")
-        self.cut_percentage = kwargs.get("cut_porcentage")
+        self.cut_percentage = float(kwargs.get("cut_percentage"))/100.0
 
     def print_parameters(self):
         """
@@ -66,7 +66,11 @@ class GraphBuilder():
             g = TextGraph(self.dataset.dataset)
             if len(i) > self.window_size:
                 windows = bcf.from_words(i, window_size=self.window_size)
-                for pairs in windows.score_ngrams(weight_function):
+                edges_weights = windows.score_ngrams(weight_function)
+                edges_weights.sort(key=lambda value:value[1])
+                cut_point = int(len(edges_weights)*self.cut_percentage)
+                edges_weights_cut = edges_weights[cut_point:]
+                for pairs in edges_weights_cut:
                     pmi = pairs[1]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
@@ -77,7 +81,11 @@ class GraphBuilder():
             else:
                 if len(i) > 1:
                     windows = bcf.from_words(i, window_size=len(i))
-                    for pairs in windows.score_ngrams(weight_function):
+                    edges_weights = windows.score_ngrams(weight_function)
+                    edges_weights.sort(key=lambda value:value[1])
+                    cut_point = int(len(edges_weights)*self.cut_percentage)
+                    edges_weights_cut = edges_weights[cut_point:]
+                    for pairs in edges_weights_cut:
                         pmi = pairs[1]
                         w1 = pairs[0][0]
                         w2 = pairs[0][1]
@@ -96,7 +104,11 @@ class GraphBuilder():
             g = TextGraph(self.dataset.dataset)
             if len(i) > self.window_size:
                 windows = bcf.from_words(i, window_size=self.window_size)
-                for pairs in windows.score_ngrams(weight_function):
+                edges_weights = windows.score_ngrams(weight_function)
+                edges_weights.sort(key=lambda value:value[1])
+                cut_point = int(len(edges_weights)*self.cut_percentage)
+                edges_weights_cut = edges_weights[cut_point:]
+                for pairs in edges_weights_cut:
                     pmi = pairs[1]
                     w1 = pairs[0][0]
                     w2 = pairs[0][1]
@@ -107,7 +119,11 @@ class GraphBuilder():
             else:
                 if len(i) > 1:
                     windows = bcf.from_words(i, window_size=len(i))
-                    for pairs in windows.score_ngrams(weight_function):
+                    edges_weights = windows.score_ngrams(weight_function)
+                    edges_weights.sort(key=lambda value:value[1])
+                    cut_point = int(len(edges_weights)*self.cut_percentage)
+                    edges_weights_cut = edges_weights[cut_point:]
+                    for pairs in edges_weights_cut:
                         pmi = pairs[1]
                         w1 = pairs[0][0]
                         w2 = pairs[0][1]
