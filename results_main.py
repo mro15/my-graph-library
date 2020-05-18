@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import argparse
+import os
 import numpy as np
 import sklearn
 import matplotlib
@@ -11,10 +12,21 @@ from scipy.stats import ttest_ind
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "20ng", "webkb", "r8", "ohsumed"], help='dataset name', required=True)   
-    parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
+    parser.add_argument(
+        '--dataset',
+        type=str,
+        choices=["polarity", "20ng", "webkb", "r8"],
+        help='dataset name',
+        required=True
+    )   
     parser.add_argument('--emb_dim', type=int, help='embeddings dimension', required=True)
     parser.add_argument('--window', type=int, help='window size', required=True)
+    parser.add_argument(
+        '--cut_percent',
+        type=int,
+        help='percentage of edges to cut',
+        required=True
+    )
     return parser.parse_args()
 
 def wilcoxon_test(x, y):
@@ -40,8 +52,8 @@ def mean_and_std(all_values, output):
 def plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, dataset, window, output_fig):
     legend_map = {
         "no_weight": "SEM PESO",
-        "pmi_1990": "LOCAL PMI",
-        "pmi_1990_all": "GLOBAL PMI",
+        "pmi": "LOCAL PMI",
+        "pmi_all": "GLOBAL PMI",
         "freq": "LOCAL FREQUENCY",
         "freq_all": "GLOBAL FREQUENCY"
     }
@@ -92,25 +104,71 @@ def statistical_tests(all_acc, all_f1, window, strategies):
         wilcoxon_test(x, y)
         student_test(x, y)
 
+def make_results_dir(directory):
+    if not os.path.exists(directory):
+        print("results dir not exist, creating ...")
+        os.makedirs(directory)
+
+    return directory
+
 def main():
     args = read_args()
 
-    directory = args.dataset + "-" + str(args.emb_dim) + "/"
-    #strategies = ["no_weight", "pmi_1990", "pmi_1990_all", "freq", "freq_all"]
-    strategies = ["no_weight", "pmi_1990", "pmi_1990_all"]
-    default_output = "plots/" + directory + args.dataset + "_" + str(args.window) + ".txt"
-    acc_output = open(default_output, "w")
-    f1_output = open("plots/" + directory + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
-    output_fig = default_output + ".png"
+    cut_percent = args.cut_percent/100.0 
+    method = "node2vec"
+
+    directory = (
+        "results/" +
+        args.dataset +
+        "-" +
+        str(args.emb_dim) +
+        "/"
+    )
+
     all_acc = {}
     all_f1 = {}
+
+    s = "no_weight"
+    f = open(directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+    all_acc[s] = np.array([line.rstrip('\n') for line in f]).astype(np.float)
+    ff = open(directory + 'f1_' + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+    all_f1[s] = np.array([line.rstrip('\n') for line in ff]).astype(np.float)
+
+
+    directory = (
+        "results/next_level/" +
+        args.dataset +
+        "-" +
+        str(args.emb_dim) +
+        "/" +
+        str(cut_percent) +
+        "/"
+    )
+
+    #strategies = ["no_weight", "pmi_1990", "pmi_1990_all", "freq", "freq_all"]
+    default_output_dir = make_results_dir("plots/next_level/" + str(cut_percent) + "/" + args.dataset) 
+    default_output = default_output_dir + "/" + args.dataset + "_" + str(args.window) + ".txt"
+    acc_output = open(default_output, "w")
+    f1_output = open(default_output_dir  + "/" + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
+    output_fig = default_output + ".png"
+
+    strategies = ["pmi"]
     #read results for each strategy
     for s in strategies:
-        f = open("results/" + directory + args.dataset + '_' + args.method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+        f = open(directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
         all_acc[s] = np.array([line.rstrip('\n') for line in f]).astype(np.float)
-        ff = open("results/" + directory + 'f1_' + args.dataset + '_' + args.method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+        ff = open(directory + 'f1_' + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
         all_f1[s] = np.array([line.rstrip('\n') for line in ff]).astype(np.float)
 
+    no_wight_directory = (
+        "results/" +
+        args.dataset +
+        "-" +
+        str(args.emb_dim) +
+        "/"
+    )
+
+    strategies = ["no_weight", "pmi"]
     statistical_tests(all_acc, all_f1, args.window, strategies)
     mean_acc, std_acc = mean_and_std(all_acc, acc_output)
     mean_f1, std_f1 = mean_and_std(all_f1, f1_output)
