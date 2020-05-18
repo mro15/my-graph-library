@@ -134,7 +134,6 @@ def main():
 
     train_graphs = weight_cutter.graph_builder.train_graphs
     test_graphs = weight_cutter.graph_builder.test_graphs
-    print(len(train_graphs), len(test_graphs))
 
     train_file, test_file = weight_cutter.get_output_files()
     print(train_file, test_file)

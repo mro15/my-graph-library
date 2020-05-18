@@ -1,22 +1,55 @@
 #! /usr/bin/env python3
 
 import argparse
+import os
 from cnn.my_cnn import My_cnn
 import numpy as np
 import _pickle as pickle
 import sklearn
 from scipy.sparse import csr_matrix, lil_matrix
-from keras.preprocessing.sequence import pad_sequences
 import text_graph.features as tg_features
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "20ng", "r8", "ohsumed"], help='dataset name', required=True)   
-    parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
-    parser.add_argument('--strategy', type=str, choices=["no_weight", "freq", "freq_all", "pmi", "pmi_all", "dice", "dice_all", "llr", "llr_all", "chi_square", "chi_square_all"], help='representation method', required=True)
+    parser.add_argument(
+        '--dataset',
+        type=str,
+        choices=["polarity", "webkb", "20ng", "r8"],
+        help='dataset name',
+        required=True
+    )   
+    parser.add_argument(
+        '--strategy',
+        type=str,
+        choices=[
+            "no_weight", 
+            "freq",
+            "freq_all",
+            "pmi",
+            "pmi_all",
+            "llr",
+            "llr_all",
+            "chi_square",
+            "chi_square_all"
+        ],
+        help='representation method',
+        required=True
+    )
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
-    parser.add_argument('--pool_type', type=str, choices=["max", "global_max"], help='pooling type', required=True)
+    parser.add_argument(
+        '--pool_type',
+        type=str,
+        choices=["max", "global_max"],
+        help='pooling type',
+        required=True
+    )
+    parser.add_argument(
+        '--cut_percent',
+        type=int,
+        help='percentage of edges to cut',
+        required=True
+    )
     return parser.parse_args()
 
 def padding(train, test, dim):
@@ -54,6 +87,13 @@ def padding_and_truncate(sentences, dim, cut_point):
         sparse_all.append(lil_matrix(sentences[i]))
     return sentences
 
+def make_results_dir(directory):
+    if not os.path.exists(directory):
+        print("results dir not exist, creating ...")
+        os.makedirs(directory)
+
+    return directory
+
 def main():
     args = read_args()
     classes = {
@@ -63,15 +103,27 @@ def main():
         "20ng": 20,
         "r8": 8
     }
-    directory = "graphs/next_level/" + args.dataset + "-" + str(args.emb_dim) + "/"
 
-    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'rb') as infile:
+    cut_percent = args.cut_percent/100.0
+
+    directory = (
+        "graphs/next_level/" +
+        args.dataset +
+        "-" +
+        str(args.emb_dim) +
+        "/" +
+        str(cut_percent) +
+        "/"
+    )
+    method = "node2vec"
+
+    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'rb') as infile:
         train_emb = pickle.load(infile)
-    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'rb') as infile:
+    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'rb') as infile:
         train_labels = pickle.load(infile)
-    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'rb') as infile:
+    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'rb') as infile:
         test_emb = pickle.load(infile)
-    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'rb') as infile:
+    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'rb') as infile:
         test_labels = pickle.load(infile)
 
     tg_features.discover_sentences_size(train_emb+test_emb)
@@ -84,12 +136,21 @@ def main():
     mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0]).shape, classes[args.dataset], args.pool_type)
     results, results_f1 = mcnn.do_all()
 
-    directory = "results/" + args.dataset + "-" + str(args.emb_dim) + "/"
-    with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
+    directory = (
+        "results/next_level/" +
+        args.dataset +
+        "-" +
+        str(args.emb_dim) +
+        "/" +
+        str(cut_percent) +
+        "/"
+    )
+    directory = make_results_dir(directory)
+
+    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
         for i in results:
             f.write(str(i) + "\n")
-    directory = "results/" + args.dataset + "-" + str(args.emb_dim) + "/"
-    with open(directory + "f1_" + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
+    with open(directory + "f1_" + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
         for i in results_f1:
             f.write(str(i) + "\n")
 
