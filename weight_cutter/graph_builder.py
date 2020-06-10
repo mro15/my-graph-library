@@ -87,18 +87,35 @@ class GraphBuilder():
             else:
                 if len(i) > 1:
                     windows = bcf.from_words(i, window_size=len(i))
-                    edges_weights = windows.score_ngrams(weight_function)
-                    edges_weights.sort(key=lambda value:value[1])
-                    cut_point = int(len(edges_weights)*self.cut_percentage)
-                    edges_weights_cut = edges_weights[cut_point:]
-                    for pairs in edges_weights_cut:
-                        pmi = pairs[1]
-                        w1 = pairs[0][0]
-                        w2 = pairs[0][1]
-                        if pmi > 0:
-                            g.add_vertex(w1)
-                            g.add_vertex(w2)
-                            g.add_weight_edge(w1, w2, pmi)
+                    try:
+                        edges_weights = windows.score_ngrams(weight_function)
+                        edges_weights.sort(key=lambda value:value[1])
+                        cut_point = int(len(edges_weights)*self.cut_percentage)
+                        edges_weights_cut = edges_weights[cut_point:]
+                        for pairs in edges_weights_cut:
+                            pmi = pairs[1]
+                            w1 = pairs[0][0]
+                            w2 = pairs[0][1]
+                            if pmi > 0:
+                                g.add_vertex(w1)
+                                g.add_vertex(w2)
+                                g.add_weight_edge(w1, w2, pmi)
+                    except:
+                        i_unique = list(set(i))
+                        windows = bcf.from_words(i_unique, window_size=len(i_unique))
+                        edges_weights = windows.score_ngrams(weight_function)
+                        edges_weights.sort(key=lambda value:value[1])
+                        cut_point = int(len(edges_weights)*self.cut_percentage)
+                        edges_weights_cut = edges_weights[cut_point:]
+                        for pairs in edges_weights_cut:
+                            pmi = pairs[1]
+                            w1 = pairs[0][0]
+                            w2 = pairs[0][1]
+                            if pmi > 0:
+                                g.add_vertex(w1)
+                                g.add_vertex(w2)
+                                g.add_weight_edge(w1, w2, pmi)
+
             if((len(pairs)<1) or (len(g.nodes())==0)):
                 g.add_vertex(i[0])
             self.train_graphs.append(g.graph)
@@ -125,18 +142,34 @@ class GraphBuilder():
             else:
                 if len(i) > 1:
                     windows = bcf.from_words(i, window_size=len(i))
-                    edges_weights = windows.score_ngrams(weight_function)
-                    edges_weights.sort(key=lambda value:value[1])
-                    cut_point = int(len(edges_weights)*self.cut_percentage)
-                    edges_weights_cut = edges_weights[cut_point:]
-                    for pairs in edges_weights_cut:
-                        pmi = pairs[1]
-                        w1 = pairs[0][0]
-                        w2 = pairs[0][1]
-                        if pmi > 0:
-                            g.add_vertex(w1)
-                            g.add_vertex(w2)
-                            g.add_weight_edge(w1, w2, pmi)
+                    try:
+                        edges_weights = windows.score_ngrams(weight_function)
+                        edges_weights.sort(key=lambda value:value[1])
+                        cut_point = int(len(edges_weights)*self.cut_percentage)
+                        edges_weights_cut = edges_weights[cut_point:]
+                        for pairs in edges_weights_cut:
+                            pmi = pairs[1]
+                            w1 = pairs[0][0]
+                            w2 = pairs[0][1]
+                            if pmi > 0:
+                                g.add_vertex(w1)
+                                g.add_vertex(w2)
+                                g.add_weight_edge(w1, w2, pmi)
+                    except:
+                        i_unique = list(set(i))
+                        windows = bcf.from_words(i_unique, window_size=len(i_unique))
+                        edges_weights = windows.score_ngrams(weight_function)
+                        edges_weights.sort(key=lambda value:value[1])
+                        cut_point = int(len(edges_weights)*self.cut_percentage)
+                        edges_weights_cut = edges_weights[cut_point:]
+                        for pairs in edges_weights_cut:
+                            pmi = pairs[1]
+                            w1 = pairs[0][0]
+                            w2 = pairs[0][1]
+                            if pmi > 0:
+                                g.add_vertex(w1)
+                                g.add_vertex(w2)
+                                g.add_weight_edge(w1, w2, pmi)
 
             if((len(pairs)<1) or (len(g.nodes())==0)):
                 g.add_vertex(i[0])
@@ -173,19 +206,37 @@ class GraphBuilder():
                 if len(i) > 1:
                     local_windows = bcf.from_words(i, window_size=len(i))
                     edges_weights = []
-                    for pairs in local_windows.score_ngrams(weight_function):
-                        edges_weights.append((pairs[0], weight_all[pairs[0]]))
-                    edges_weights.sort(key=lambda value:value[1])
-                    cut_point = int(len(edges_weights)*self.cut_percentage)
-                    edges_weights_cut = edges_weights[cut_point:]
-                    for pairs in edges_weights_cut:
-                        pmi = pairs[1]
-                        w1 = pairs[0][0]
-                        w2 = pairs[0][1]
-                        if pmi > 0:
-                            g.add_vertex(w1)
-                            g.add_vertex(w2)
-                            g.add_weight_edge(w1, w2, pmi)
+                    try:
+                        for pairs in local_windows.score_ngrams(weight_function):
+                            edges_weights.append((pairs[0], weight_all[pairs[0]]))
+                        edges_weights.sort(key=lambda value:value[1])
+                        cut_point = int(len(edges_weights)*self.cut_percentage)
+                        edges_weights_cut = edges_weights[cut_point:]
+                        for pairs in edges_weights_cut:
+                            pmi = pairs[1]
+                            w1 = pairs[0][0]
+                            w2 = pairs[0][1]
+                            if pmi > 0:
+                                g.add_vertex(w1)
+                                g.add_vertex(w2)
+                                g.add_weight_edge(w1, w2, pmi)
+                    except:
+                        edges_weights = []
+                        i_unique = list(set(i)) # calculate only for unique tokens
+                        local_windows = bcf.from_words(i_unique, window_size=len(i_unique))
+                        for pairs in local_windows.score_ngrams(weight_function):
+                            edges_weights.append((pairs[0], weight_all[pairs[0]]))
+                        edges_weights.sort(key=lambda value:value[1])
+                        cut_point = int(len(edges_weights)*self.cut_percentage)
+                        for pairs in edges_weights_cut:
+                            pmi = pairs[1]
+                            w1 = pairs[0][0]
+                            w2 = pairs[0][1]
+                            if pmi > 0:
+                                g.add_vertex(w1)
+                                g.add_vertex(w2)
+                                g.add_weight_edge(w1, w2, pmi)
+
             if((len(pairs)<1) or (len(g.nodes())==0)):
                 g.add_vertex(i[0])
             self.train_graphs.append(g.graph)
@@ -215,19 +266,37 @@ class GraphBuilder():
                 if len(i) > 1:
                     local_windows = bcf.from_words(i, window_size=len(i))
                     edges_weights = []
-                    for pairs in local_windows.score_ngrams(weight_function):
-                        edges_weights.append((pairs[0], weight_all[pairs[0]]))
-                    edges_weights.sort(key=lambda value:value[1])
-                    cut_point = int(len(edges_weights)*self.cut_percentage)
-                    edges_weights_cut = edges_weights[cut_point:]
-                    for pairs in edges_weights_cut:
-                        pmi = pairs[1]
-                        w1 = pairs[0][0]
-                        w2 = pairs[0][1]
-                        if pmi > 0:
-                            g.add_vertex(w1)
-                            g.add_vertex(w2)
-                            g.add_weight_edge(w1, w2, pmi)
+                    try:
+                        for pairs in local_windows.score_ngrams(bam.pmi):
+                            edges_weights.append((pairs[0], weight_all[pairs[0]]))
+                        edges_weights.sort(key=lambda value:value[1])
+                        cut_point = int(len(edges_weights)*self.cut_percentage)
+                        edges_weights_cut = edges_weights[cut_point:]
+                        for pairs in edges_weights_cut:
+                            pmi = pairs[1]
+                            w1 = pairs[0][0]
+                            w2 = pairs[0][1]
+                            if pmi > 0:
+                                g.add_vertex(w1)
+                                g.add_vertex(w2)
+                                g.add_weight_edge(w1, w2, pmi)
+                    except:
+                        edges_weights = []
+                        i_unique = list(set(i)) # calculate only for unique tokens
+                        local_windows = bcf.from_words(i_unique, window_size=len(i_unique))
+                        for pairs in local_windows.score_ngrams(weight_function):
+                            edges_weights.append((pairs[0], weight_all[pairs[0]]))
+                        edges_weights.sort(key=lambda value:value[1])
+                        cut_point = int(len(edges_weights)*self.cut_percentage)
+                        for pairs in edges_weights_cut:
+                            pmi = pairs[1]
+                            w1 = pairs[0][0]
+                            w2 = pairs[0][1]
+                            if pmi > 0:
+                                g.add_vertex(w1)
+                                g.add_vertex(w2)
+                                g.add_weight_edge(w1, w2, pmi)
+
             if((len(pairs)<1) or (len(g.nodes())==0)):
                 g.add_vertex(i[0])
             self.test_graphs.append(g.graph)
