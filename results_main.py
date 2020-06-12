@@ -56,7 +56,8 @@ def plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, dataset, window
         "pmi_all": "GLOBAL PMI",
         "freq": "LOCAL FREQUENCY",
         "freq_all": "GLOBAL FREQUENCY",
-        "llr": "LLR"
+        "llr": "LLR",
+        "llr_all": "GLOBAL LLR"
     }
 
     bar = []
@@ -153,7 +154,7 @@ def main():
     f1_output = open(default_output_dir  + "/" + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
     output_fig = default_output + ".png"
 
-    strategies = ["pmi", "pmi_all", "llr"]
+    strategies = ["pmi", "pmi_all", "llr", "llr_all"]
     #read results for each strategy
     for s in strategies:
         f = open(directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
@@ -169,7 +170,7 @@ def main():
         "/"
     )
 
-    strategies = ["no_weight", "pmi", "pmi_all", "llr"]
+    strategies = ["no_weight", "pmi", "pmi_all", "llr", "llr_all"]
     statistical_tests(all_acc, all_f1, args.window, strategies)
     mean_acc, std_acc = mean_and_std(all_acc, acc_output)
     mean_f1, std_f1 = mean_and_std(all_f1, f1_output)
