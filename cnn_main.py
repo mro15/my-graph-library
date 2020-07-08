@@ -38,13 +38,6 @@ def read_args():
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--emb_dim', type=int,  help='embeddings dimension', required=True)
     parser.add_argument(
-        '--pool_type',
-        type=str,
-        choices=["max", "global_max"],
-        help='pooling type',
-        required=True
-    )
-    parser.add_argument(
         '--cut_percent',
         type=int,
         help='percentage of edges to cut',
@@ -133,7 +126,7 @@ def main():
     #all_x = padding(train_emb, test_emb, args.emb_dim)
     all_y = np.concatenate((np.array(train_labels), np.array(test_labels)), axis=None)
 
-    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0]).shape, classes[args.dataset], args.pool_type)
+    mcnn = My_cnn(np.array(all_x), all_y, np.array(all_x[0]).shape, classes[args.dataset])
     results, results_f1 = mcnn.do_all()
 
     directory = (
