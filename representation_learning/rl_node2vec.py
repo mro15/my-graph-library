@@ -4,7 +4,7 @@ from node2vec import Node2Vec
 import numpy as np
 
 class MyNode2Vec(object):
-    def __init__(self, graph, weight, sentence, dim, walk_length):
+    def __init__(self, graph, weight, sentence, dim):
         self.graph = graph
         self.model  = None
         self.trained_model = None

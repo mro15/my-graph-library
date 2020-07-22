@@ -1,16 +1,11 @@
 #! /usr/bin/env python3
 
 import argparse
-from text_graph.text_graph import TextGraph
-from text_graph.node_features import NodeFeatures
 from text_handler.dataset import Dataset
 import utils
 import analysis.vocabulary as an
 from representation_learning.representation_learning import RepresentationLearning
-import numpy as np
 import _pickle as pickle
-import sklearn
-from cnn.my_cnn import My_cnn
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
@@ -128,7 +123,7 @@ def main():
     g_methods = ["node2vec"]
     if args.method in g_methods:
         train_emb, test_emb = graph_methods(d, args.method, args.window, args.strategy, args.emb_dim)
-   
+  
     print("=== WRITING NODE EMBEDDINGS ===")
     directory = "graphs/" + args.dataset + "-" + str(args.emb_dim) + "/"
     with open(directory + args.dataset + '_' + args.method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'wb') as outfile:

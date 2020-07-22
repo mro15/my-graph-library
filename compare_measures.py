@@ -121,7 +121,6 @@ def plot_cost(strategies, edges, window, dataset, bar):
     plt.savefig("analysis/" + dataset + "_cost_mean_edges_" + str(window) + ".png")
     plt.close()
 
-
 def autolabel(rects, ax):
     """Attach a text label above each bar in *rects*, displaying its height."""
     for rect in rects:
