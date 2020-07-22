@@ -34,10 +34,13 @@ class My_cnn(object):
         kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=2)
         for train, test in kfold.split(self.all_x, self.all_y):
             print("MODEL2: RUNNING FOLD ", fold)
-            filters = (2, 4)
+            filters = (2, 3)
             model_input = Input(shape=self.input_shape)
             conv_blocks = []
             for block_size in filters:
+                conv = Conv1D(filters=32, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
+                conv = Dropout(0.5)(conv)
+                conv = GlobalMaxPooling1D()(conv)
                 conv1 = Conv1D(filters=64, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
                 conv1 = Dropout(0.5)(conv1)
                 conv1 = GlobalMaxPooling1D()(conv1)
@@ -46,10 +49,11 @@ class My_cnn(object):
                 conv2 = GlobalMaxPooling1D()(conv2)
                 conv_blocks.append(conv2)
                 conv_blocks.append(conv1)
+                conv_blocks.append(conv)
 
             conc = Concatenate(axis=1)(conv_blocks) if len(conv_blocks) > 1 else conv_blocks[0]
             conc = Dropout(0.2)(conc)
-            conc = Dense(64, activation='relu')(conc)
+            conc = Dense(256, activation='relu')(conc)
             #conc = Dropout(0.2)(conc)
             model_output = Dense(self.num_classes, activation='softmax')(conc)
 
@@ -58,7 +62,6 @@ class My_cnn(object):
 
             data_train = self.all_x[train]
             data_test = self.all_x[test]
-            
             K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=8, inter_op_parallelism_threads=8)))
             model.fit(data_train, keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=32, epochs=20, verbose=0, validation_data=(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes)))
 
