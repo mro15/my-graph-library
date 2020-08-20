@@ -3,6 +3,7 @@
 # External imports
 import argparse
 import _pickle as pickle
+from memory_profiler import profile
 
 # Internal imports
 from text_handler.dataset import Dataset
@@ -71,6 +72,7 @@ def build_graphs(dataset, window, strategy, cut_percentage, emb_dim):
     weight_cutter.construct_graphs()
     return weight_cutter
 
+@profile
 def learn_node2vec_representation(dataset, train_graphs, test_graphs, emb_dim):
     weight = True # TODO: set for false when unweighted graph
     train_emb = []
@@ -136,7 +138,6 @@ def main():
     test_graphs = weight_cutter.graph_builder.test_graphs
 
     train_file, test_file = weight_cutter.get_output_files()
-    print(train_file, test_file)
 
     train_emb, test_emb = learn_node2vec_representation(
         dataset=dataset,
