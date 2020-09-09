@@ -56,10 +56,66 @@ class GraphBuilder():
         local_weight, global_weight =  self.get_weight_function()
         if local_weight:
             self.local_weighted_graphs(local_weight)
-        else:
+        elif global_weight:
             self.global_weighted_graphs(global_weight)
+        else:
+            self.unweighted_graphs()
 
         print(len(self.train_graphs), len(self.test_graphs))
+
+    def unweighted_graphs(self):
+
+        print("BUILDING GRAPHS FROM TRAIN DATASET")
+        progress = tqdm(self.dataset.train_data)
+        for i in progress:
+            g = TextGraph(self.dataset.dataset)
+            if len(i) > self.window_size:
+                windows = bcf.from_words(i, window_size=self.window_size)
+                for pairs in windows.ngram_fd.items():
+                    w1 = pairs[0][0]
+                    w2 = pairs[0][1]
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_edge(w1, w2)
+            else:
+                if len(i) > 1:
+                    windows = bcf.from_words(i, window_size=len(i))
+                    for pairs in windows.ngram_fd.items():
+                        w1 = pairs[0][0]
+                        w2 = pairs[0][1]
+                        g.add_vertex(w1)
+                        g.add_vertex(w2)
+                        g.add_edge(w1, w2)
+            if((len(pairs)<1) or (len(g.nodes())==0)):
+                g.add_vertex(i[0])
+            self.train_graphs.append(g.graph)
+        print("FINISHED GRAPHS FROM TRAIN DATASET")
+
+        print("BUILDING GRAPHS FROM TEST DATASET")
+        progress = tqdm(self.dataset.test_data)
+        for i in progress:
+            g = TextGraph(self.dataset.dataset)
+            if len(i) > self.window_size:
+                windows = bcf.from_words(i, window_size=self.window_size)
+                for pairs in windows.ngram_fd.items():
+                    w1 = pairs[0][0]
+                    w2 = pairs[0][1]
+                    g.add_vertex(w1)
+                    g.add_vertex(w2)
+                    g.add_edge(w1, w2)
+            else:
+                if len(i) > 1:
+                    windows = bcf.from_words(i, window_size=len(i))
+                    for pairs in windows.ngram_fd.items():
+                        w1 = pairs[0][0]
+                        w2 = pairs[0][1]
+                        g.add_vertex(w1)
+                        g.add_vertex(w2)
+                        g.add_edge(w1, w2)
+            if((len(pairs)<1) or (len(g.nodes())==0)):
+                g.add_vertex(i[0])
+            self.test_graphs.append(g.graph)
+        print("FINISHED GRAPHS FROM TEST DATASET")
 
     def local_weighted_graphs(self, weight_function):
         """
