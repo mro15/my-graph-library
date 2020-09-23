@@ -75,8 +75,6 @@ def padding_and_truncate(sentences, dim, cut_point):
             sentences[i]+= ([pad] * mult)
         elif len(sentences[i]) > cut_point:
             sentences[i] = sentences[i][:cut_point]
-        #print(sentences[i][:10])
-        #print("-----")
         sparse_all.append(lil_matrix(sentences[i]))
     return sentences
 
@@ -92,7 +90,6 @@ def main():
     classes = {
         "polarity": 2,
         "webkb": 4,
-        "ohsumed": 23,
         "20ng": 20,
         "r8": 8
     }
