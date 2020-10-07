@@ -409,7 +409,7 @@ def plot_file(filename, index=0, timestamps=True, children=True, legend=None, op
     else:
         mem_line_label = legend
 
-    pl.plot(t, mem, "+-" + mem_line_colors[index % len(mem_line_colors)],
+    pl.plot(t, mem, mem_line_colors[index % len(mem_line_colors)],
             label=mem_line_label)
 
     bottom, top = pl.ylim()
