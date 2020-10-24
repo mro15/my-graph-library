@@ -74,14 +74,15 @@ def plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, dataset, window
         f1_mean.append(mean_f1[s])
         f1_std.append(std_f1[s])
 
+    positions = np.arange(len(bar))
+    width = 0.3
     fig, ax = plt.subplots()
-    (_, caps, _) = ax.errorbar(bar, acc_mean, yerr=acc_std, marker='s', capsize=5)
-    for cap in caps:
-        cap.set_markeredgewidth(1.5)
-    (_, caps, _) = ax.errorbar(bar, f1_mean, yerr=f1_std, marker='s', capsize=5)
+    ax.bar(positions - (width/2), acc_mean, width, yerr=acc_std, capsize=5)
+    ax.set_xticks(positions)
+    ax.set_xticklabels(bar)
+
+    ax.bar(positions + (width/2), f1_mean, width, yerr=f1_std, capsize=5)
     plt.setp(ax.get_xticklabels(), rotation='35', horizontalalignment='right')
-    for cap in caps:
-        cap.set_markeredgewidth(1.5)
     plt.xlabel("Medida de associatividade")
     plt.ylabel("Valor da taxa de acerto e do F1-score")
     plt.title("Dataset: {0} Janela: {1} Corte: {2}%".format(dataset, window, cut_percent))
