@@ -35,5 +35,3 @@ class RepresentationLearning(object):
         print("MEAN: ", self.mean)
         print("MEDIAN: ", self.median)
         print("STD: ", self.standard_deviation)
-
-

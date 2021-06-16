@@ -42,8 +42,11 @@ class MyNode2Vec(object):
         for i in self.graph.nodes():
             print(i, ": ", self.trained_model.wv[str(i)])
 
-    #this method returns the mean, the median and the standard deviation of the graph node embeddings 
     def embeddings_compact(self):
+        """
+            This method returns the mean, the median and the standard deviation
+            of the graph node embeddings 
+        """
         emb = []
         for i in self.sentence:
             emb.append(self.trained_model.wv[str(i)])
