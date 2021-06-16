@@ -1,21 +1,57 @@
 #! /bin/bash
 
 dim="100"
-windows="4 7 20 12"
-strategies="no_weight pmi_1990 pmi_1990_all freq freq_all"
-datasets="polarity webkb 20ng"
-methods="node2vec"
-pooling="global_max"
+windows="4 12 20"
+strategies="pmi pmi_all"
+datasets="20ng"
+cuts="5 10 20"
 
 for d in $dim; do
 	for w in $windows; do
 		for dr in $datasets; do
-			for m in $methods; do
+			for cp in $cuts; do
 				for s in $strategies; do
-					for p in $pooling; do
-						python3 cnn_main.py --dataset $dr --method $m --strategy $s --window $w --emb_dim $d --pool_type $p
-					done
+					python3 cnn_main.py --dataset $dr --cut_percent $cp --strategy $s --window $w --emb_dim $d &
 				done
+				wait
+			done
+		done
+	done
+done
+
+dim="100"
+windows="4 12 20"
+strategies="llr llr_all"
+datasets="20ng"
+cuts="5 10 20"
+
+for d in $dim; do
+	for w in $windows; do
+		for dr in $datasets; do
+			for cp in $cuts; do
+				for s in $strategies; do
+					python3 cnn_main.py --dataset $dr --cut_percent $cp --strategy $s --window $w --emb_dim $d &
+				done
+				wait
+			done
+		done
+	done
+done
+
+dim="100"
+windows="4 12 20"
+strategies="chi_square chi_square_all"
+datasets="20ng"
+cuts="5 10 20"
+
+for d in $dim; do
+	for w in $windows; do
+		for dr in $datasets; do
+			for cp in $cuts; do
+				for s in $strategies; do
+					python3 cnn_main.py --dataset $dr --cut_percent $cp --strategy $s --window $w --emb_dim $d &
+				done
+				wait
 			done
 		done
 	done

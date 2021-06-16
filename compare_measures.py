@@ -17,7 +17,6 @@ def read_args():
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--strategy', action="append", help='methods to compare', required=True)
     parser.add_argument('--emb_dim', type=int, help='embeddings dimension', required=True)
-    #parser.add_argument('--method', type=str, choices=["node2vec", "gcn"], help='representation method', required=True)
     return parser.parse_args()
 
 def get_legend(strategy):
@@ -171,18 +170,9 @@ def main():
     if args.dataset == "polarity":
         d = Dataset(args.dataset)
         d.read_polarity()
-    elif args.dataset == "imdb":
-        d = Dataset(args.dataset)
-        d.read_imdb()
-    elif args.dataset == "mr":
-        d = Dataset(args.dataset)
-        d.read_mr()
     elif args.dataset == "webkb":
         d = Dataset(args.dataset)
         d.read_webkb()
-    elif args.dataset == "ohsumed":
-        d = Dataset(args.dataset)
-        d.read_ohsumed()
     elif args.dataset == "20ng":
         d = Dataset(args.dataset)
         d.read_20ng()

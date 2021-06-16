@@ -1,19 +1,21 @@
 #! /bin/bash
 
+
 dim="100"
-windows="4 7 20 12"
-#strategies="freq freq_all"
-strategies="no_weight pmi_1990 pmi_1990_all freq freq_all"
-datasets="polarity webkb 20ng"
+windows="20"
+strategies="llr llr_all"
+datasets="20ng"
 methods="node2vec"
+cuts="20"
+time_interval="60"
 
 for d in $dim; do
 	for w in $windows; do
 		for dr in $datasets; do
-			for m in $methods; do
+			for cp in $cuts; do
 				for s in $strategies; do
-					python3 feature_main.py --dataset $dr --method $m --strategy $s --window $w --emb_dim $d &
-					echo "python3 feature_main.py --dataset $dr --method $m --strategy $s --window $w --emb_dim $d" >> executed_features.txt &
+					mprof run --output time_mem/mprofile.$dr.$s.$w.$cp.dat --interval $time_interval feature_generator.py --dataset $dr --strategy $s --window $w --emb_dim $d  --cut_percent $cp &
+					echo "python3 feature_generator.py --dataset $dr --strategy $s --window $w --emb_dim $d --cut_percent $cp" >> executed_features_new_measures.txt &
 				done
 				wait
 			done

@@ -11,4 +11,7 @@ Keras-Preprocessing
 scikit-learn
 scipy
 tqdm
-tensorflow
+memory_profiler
+tensorboard==1.10.0
+tensorflow==1.5.0
+tensorflow-tensorboard==1.5.1

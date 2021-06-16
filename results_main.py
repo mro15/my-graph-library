@@ -49,13 +49,17 @@ def mean_and_std(all_values, output):
     return mean, std
 
 #plot mean and std for each strategy and metric
-def plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, dataset, window, output_fig):
+def plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, dataset, window, cut_percent, output_fig):
+    plt.style.use('seaborn-notebook')
+    plt.style.use('seaborn')
     legend_map = {
         "no_weight": "SEM PESO",
-        "pmi": "LOCAL PMI",
-        "pmi_all": "GLOBAL PMI",
-        "freq": "LOCAL FREQUENCY",
-        "freq_all": "GLOBAL FREQUENCY"
+        "pmi": "PMI LOCAL",
+        "pmi_all": "PMI GLOBAL",
+        "llr": "LLR LOCAL",
+        "llr_all": "LLR GLOBAL",
+        "chi_square": "CS LOCAL",
+        "chi_square_all": "CS GLOBAL"
     }
 
     bar = []
@@ -70,13 +74,18 @@ def plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, dataset, window
         f1_mean.append(mean_f1[s])
         f1_std.append(std_f1[s])
 
+    positions = np.arange(len(bar))
+    width = 0.3
     fig, ax = plt.subplots()
-    ax.errorbar(bar, acc_mean, yerr=acc_std, marker='s', capsize=5)
-    ax.errorbar(bar, f1_mean, yerr=f1_std, marker='s', capsize=5)
+    ax.bar(positions - (width/2), acc_mean, width, yerr=acc_std, capsize=5)
+    ax.set_xticks(positions)
+    ax.set_xticklabels(bar)
+
+    ax.bar(positions + (width/2), f1_mean, width, yerr=f1_std, capsize=5)
     plt.setp(ax.get_xticklabels(), rotation='35', horizontalalignment='right')
-    plt.xlabel("Métricas")
-    plt.ylabel("Valor")
-    plt.title("Dataset: " + dataset + " #janela: " + str(window))
+    plt.xlabel("Medida de associatividade")
+    plt.ylabel("Valor da taxa de acerto e do F1-score")
+    plt.title("Dataset: {0} Janela: {1} Corte: {2}%".format(dataset, window, cut_percent))
     plt.legend(["Taxa de acerto", "F1-score"], loc='upper left')
     plt.tight_layout()
     plt.savefig(output_fig)
@@ -118,11 +127,11 @@ def main():
     method = "node2vec"
 
     directory = (
-        "results/" +
+        "results/next_level/" +
         args.dataset +
         "-" +
         str(args.emb_dim) +
-        "/"
+        "/0.0/"
     )
 
     all_acc = {}
@@ -152,7 +161,7 @@ def main():
     f1_output = open(default_output_dir  + "/" + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
     output_fig = default_output + ".png"
 
-    strategies = ["pmi", "pmi_all"]
+    strategies = ["pmi", "pmi_all", "llr", "llr_all", "chi_square", "chi_square_all"]
     #read results for each strategy
     for s in strategies:
         f = open(directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
@@ -168,12 +177,24 @@ def main():
         "/"
     )
 
-    strategies = ["no_weight", "pmi", "pmi_all"]
+    strategies = ["no_weight", "pmi", "pmi_all", "llr", "llr_all", "chi_square", "chi_square_all"]
     statistical_tests(all_acc, all_f1, args.window, strategies)
+    print('==== ACCURACY ====')
     mean_acc, std_acc = mean_and_std(all_acc, acc_output)
+    print('==== F1 SCORE ====')
     mean_f1, std_f1 = mean_and_std(all_f1, f1_output)
 
-    plot_graphic(strategies, mean_acc, std_acc, mean_f1, std_f1, args.dataset, args.window, output_fig)
+    plot_graphic(
+        strategies=strategies,
+        mean_acc=mean_acc,
+        std_acc=std_acc,
+        mean_f1=mean_f1,
+        std_f1=std_f1,
+        dataset=args.dataset,
+        window=args.window,
+        cut_percent=int(cut_percent*100),
+        output_fig=output_fig
+    )
 
 if __name__ == "__main__":
     main()
