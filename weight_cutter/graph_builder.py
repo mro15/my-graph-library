@@ -365,4 +365,3 @@ class GraphBuilder():
         docs = self.dataset.train_data+self.dataset.test_data
         token_list = list(itertools.chain(*docs))
         return token_list
-

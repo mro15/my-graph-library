@@ -1,6 +1,5 @@
 #! /bin/bash
 
-#datasets="polarity"
 datasets="polarity webkb r8 20ng"
 windows="4 12 20"
 cuts="5 10 20"

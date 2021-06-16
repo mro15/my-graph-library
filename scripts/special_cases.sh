@@ -3,11 +3,9 @@
 dim="100"
 windows="4 12 20"
 strategies="llr_all"
-#datasets="20ng"
 datasets="polarity webkb r8"
 methods="node2vec"
 cuts="30 40 50"
-#cuts="10"
 
 for d in $dim; do
 	for w in $windows; do

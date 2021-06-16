@@ -19,18 +19,17 @@ def read_args():
 def main():
     args = read_args()
     datasets = ["polarity", "webkb", "20ng"]
-    #datasets = ["webkb"]
     for dataset in datasets:
         d = Dataset(dataset)
         read_functions = {
             "polarity": d.read_polarity,
             "webkb": d.read_webkb,
-            "20ng": d.read_20ng
+            "20ng": d.read_20ng,
+            "r8": d.read_r8
         }
         read_functions[dataset]()
         d.pre_process_data()
         for window in [4, 7, 12, 20]:
-        #for window in [4]:
             for strategy in args.strategy:
                 if strategy != "freq":
                     output_name = "threshold_handler/graphics/" + dataset + "_" + strategy + "_" + str(window) + "_local.png"
