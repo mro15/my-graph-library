@@ -10,6 +10,7 @@ from sklearn.model_selection import StratifiedKFold
 from keras import backend as K
 from sklearn.metrics import f1_score, classification_report, confusion_matrix
 
+
 class My_cnn(object):
     def __init__(self, all_x, all_y, input_shape, num_classes):
         self.all_x = all_x
@@ -38,13 +39,30 @@ class My_cnn(object):
             model_input = Input(shape=self.input_shape)
             conv_blocks = []
             for block_size in filters:
-                conv = Conv1D(filters=32, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
+                conv = Conv1D(
+                    filters=32,
+                    kernel_size=block_size,
+                    padding='valid', activation='relu',
+                    strides=1
+                )(model_input)
                 conv = Dropout(0.5)(conv)
                 conv = GlobalMaxPooling1D()(conv)
-                conv1 = Conv1D(filters=64, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
+                conv1 = Conv1D(
+                    filters=64,
+                    kernel_size=block_size,
+                    padding='valid',
+                    activation='relu',
+                    strides=1
+                )(model_input)
                 conv1 = Dropout(0.5)(conv1)
                 conv1 = GlobalMaxPooling1D()(conv1)
-                conv2 = Conv1D(filters=128, kernel_size=block_size, padding='valid', activation='relu', strides=1)(model_input)
+                conv2 = Conv1D(
+                    filters=128,
+                    kernel_size=block_size,
+                    padding='valid',
+                    activation='relu',
+                    strides=1
+                )(model_input)
                 conv2 = Dropout(0.5)(conv2)
                 conv2 = GlobalMaxPooling1D()(conv2)
                 conv_blocks.append(conv2)
@@ -54,7 +72,7 @@ class My_cnn(object):
             conc = Concatenate(axis=1)(conv_blocks) if len(conv_blocks) > 1 else conv_blocks[0]
             conc = Dropout(0.2)(conc)
             conc = Dense(256, activation='relu')(conc)
-            #conc = Dropout(0.2)(conc)
+            # conc = Dropout(0.2)(conc)
             model_output = Dense(self.num_classes, activation='softmax')(conc)
 
             model = Model(model_input, model_output)
@@ -62,10 +80,30 @@ class My_cnn(object):
 
             data_train = self.all_x[train]
             data_test = self.all_x[test]
-            K.set_session(K.tf.Session(config=K.tf.ConfigProto(intra_op_parallelism_threads=8, inter_op_parallelism_threads=8)))
-            model.fit(data_train, keras.utils.to_categorical(self.all_y[train], self.num_classes), batch_size=32, epochs=20, verbose=0, validation_data=(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes)))
+            K.set_session(
+                K.tf.Session(
+                    config=K.tf.ConfigProto(
+                        intra_op_parallelism_threads=8,
+                        inter_op_parallelism_threads=8
+                    )
+                )
+            )
+            model.fit(
+                data_train,
+                keras.utils.to_categorical(self.all_y[train], self.num_classes),
+                batch_size=32,
+                epochs=20,
+                verbose=0,
+                validation_data=(
+                    data_test,
+                    keras.utils.to_categorical(self.all_y[test], self.num_classes)
+                )
+            )
 
-            score = model.evaluate(data_test, keras.utils.to_categorical(self.all_y[test], self.num_classes))
+            score = model.evaluate(
+                data_test,
+                keras.utils.to_categorical(self.all_y[test], self.num_classes)
+            )
 
             results.append(score[1])
             y_prob = model.predict(data_test)
@@ -77,6 +115,13 @@ class My_cnn(object):
             K.clear_session()
             print("loss: ", score[0], "accuracy: ", score[1], "f1: ", f1)
             fold += 1
-        print("MEAN: ", np.mean(results), "STD: ", np.std(results), "MEAN F1: ", np.mean(f1_results), "STD F1: ", np.std(f1_results))
+        print(
+            "MEAN: ",
+            np.mean(results),
+            "STD: ",
+            np.std(results),
+            "MEAN F1: ",
+            np.mean(f1_results),
+            "STD F1: ",
+            np.std(f1_results))
         return results, f1_results
-        

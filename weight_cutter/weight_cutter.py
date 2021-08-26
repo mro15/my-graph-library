@@ -7,10 +7,7 @@ import os
 from weight_cutter.graph_builder import GraphBuilder
 
 
-class WeightCutter():
-
-    train_grapphs = []
-    test_graphs = []
+class WeightCutter:
 
     def __init__(self, **kwargs):
         self.emb_dim = kwargs.get("emb_dim")
@@ -18,17 +15,13 @@ class WeightCutter():
         self.graph_builder = GraphBuilder(**kwargs)
 
     def construct_graphs(self):
-        """
-            Build the graphs
-        """
+        """ Build the graphs"""
 
         self.graph_builder.print_parameters()
         self.graph_builder.build_graphs()
 
     def make_out_dir(self):
-        """
-            Creates de output directory if not exists
-        """
+        """Creates the output directory if not exists"""
 
         directory = (
             "graphs/next_level/" + 
@@ -47,9 +40,7 @@ class WeightCutter():
         return directory
 
     def get_output_files(self):
-        """
-            Return the train and test output files
-        """
+        """Return the train and test output files"""
 
         directory = self.make_out_dir()
         train_file = (
