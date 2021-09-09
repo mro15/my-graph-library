@@ -2,18 +2,19 @@
 
 import gensim
 
-class NodeFeatures(object):
+
+class NodeFeatures:
     def __init__(self, dataset):
         self.model = None
         self.dataset = dataset
 
     def load_model(self):
-        #load model from specific datset 
+        # load model from specific dataset
         pass
 
     def edge_weight(self, v1, v2):
         cos = self.w2v_model.similarity(v1, v2)
-        #print(v1, v2, cos)
+        # print(v1, v2, cos)
         return cos
 
     def vertex_w2v_features(self, v):
