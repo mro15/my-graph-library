@@ -107,13 +107,25 @@ def main():
     )
     method = "node2vec"
 
-    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_x.pkl', 'rb') as infile:
+    with open(
+        directory +args.dataset + '_' + method + '_' + args.strategy + '_'
+        + str(args.window) + '_' + 'train_x.pkl', 'rb'
+    ) as infile:
         train_emb = pickle.load(infile)
-    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '_' + 'train_y.pkl', 'rb') as infile:
+    with open(
+        directory + args.dataset + '_' + method + '_' + args.strategy + '_'
+        + str(args.window) + '_' + 'train_y.pkl', 'rb'
+    ) as infile:
         train_labels = pickle.load(infile)
-    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_x.pkl', 'rb') as infile:
+    with open(
+        directory + args.dataset + '_' + method + '_' + args.strategy + '_'
+        + str(args.window) + '_' + 'test_x.pkl', 'rb'
+    ) as infile:
         test_emb = pickle.load(infile)
-    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '_' + 'test_y.pkl', 'rb') as infile:
+    with open(
+        directory + args.dataset + '_' + method + '_' + args.strategy + '_'
+        + str(args.window) + '_' + 'test_y.pkl', 'rb'
+    ) as infile:
         test_labels = pickle.load(infile)
 
     tg_features.discover_sentences_size(train_emb+test_emb)
@@ -137,10 +149,16 @@ def main():
     )
     directory = make_results_dir(directory)
 
-    with open(directory + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
+    with open(
+        directory + args.dataset + '_' + method + '_'
+        + args.strategy + '_' + str(args.window) + '.txt', 'w'
+    ) as f:
         for i in results:
             f.write(str(i) + "\n")
-    with open(directory + "f1_" + args.dataset + '_' + method + '_' + args.strategy + '_' + str(args.window) + '.txt', 'w') as f:
+    with open(
+        directory + "f1_" + args.dataset + '_' + method + '_'
+        + args.strategy + '_' + str(args.window) + '.txt', 'w'
+    ) as f:
         for i in results_f1:
             f.write(str(i) + "\n")
 

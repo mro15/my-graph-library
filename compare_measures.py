@@ -13,7 +13,13 @@ import networkx as nx
 
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
-    parser.add_argument('--dataset', type=str, choices=["imdb", "polarity", "mr", "webkb", "ohsumed", "20ng", "r8"], help='dataset name', required=True)   
+    parser.add_argument(
+        '--dataset',
+        type=str,
+        choices=["imdb", "polarity", "mr", "webkb", "ohsumed", "20ng", "r8"],
+        help='dataset name',
+        required=True
+    )
     parser.add_argument('--window', type=int,  help='window size', required=True)
     parser.add_argument('--strategy', action="append", help='methods to compare', required=True)
     parser.add_argument('--emb_dim', type=int, help='embeddings dimension', required=True)
@@ -217,18 +223,30 @@ def main():
         edges[s] = count_edges(graphs[s]["train"], graphs[s]["test"])
     #plot_cost(args.strategy, edges, args.window, args.dataset, bar)
     #plot boxplot with the amount of edges
-    plot_boxplot([edges[s] for s in strategies], bar, args.dataset+"_number_of_edges_"+str(args.window))
+    plot_boxplot(
+        values=[edges[s] for s in strategies],
+        methods=bar,
+        name=args.dataset+"_number_of_edges_"+str(args.window)
+    )
     #density of each graph
     density = {}
     for s in strategies:
         density[s] = measure_density(graphs[s]["train"], graphs[s]["test"])
     #plot boxplot with the graph density
-    plot_boxplot([density[s] for s in strategies], bar, args.dataset+"_density_"+str(args.window))
+    plot_boxplot(
+        values=[density[s] for s in strategies],
+        methods=bar,
+        name=args.dataset+"_density_"+str(args.window)
+    )
 
     #graph for cost x benefit
     proportions = proportion(edges, strategies)
     mean_f1 = {}
-    f = open("plots/" + args.dataset + '-' + str(args.emb_dim) + '/f1_' + args.dataset + "_" + str(args.window) + '.txt', 'r')
+    plot_file_name = (
+        "plots/" + args.dataset + '-' + str(args.emb_dim)
+        + '/f1_' + args.dataset + "_" + str(args.window) + '.txt'
+    )
+    f = open(plot_file_name, 'r')
     lines = f.readlines()
     for line in lines:
         x = line.strip().split(",")

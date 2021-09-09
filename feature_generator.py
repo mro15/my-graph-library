@@ -74,7 +74,7 @@ def build_graphs(dataset, window, strategy, cut_percentage, emb_dim):
 
 @profile
 def learn_node2vec_representation(dataset, train_graphs, test_graphs, emb_dim):
-    weight = True # TODO: set for false when unweighted graph
+    weight = True  # TODO: set for false when unweighted graph
     train_emb = []
     test_emb = []
 
@@ -110,6 +110,7 @@ def learn_node2vec_representation(dataset, train_graphs, test_graphs, emb_dim):
 
     return train_emb, test_emb
 
+
 def write_representation(dataset, train_emb, test_emb, train_file, test_file):
     print("=== WRITING NODE EMBEDDINGS ===")
     with open(train_file + '_x.pkl', 'wb') as outfile:
@@ -120,6 +121,7 @@ def write_representation(dataset, train_emb, test_emb, train_file, test_file):
         pickle.dump(test_emb, outfile)
     with open(test_file + '_y.pkl', 'wb') as outfile:
         pickle.dump(dataset.test_labels, outfile)
+
 
 def main():
     args = read_args()
@@ -147,6 +149,7 @@ def main():
     )
 
     write_representation(dataset, train_emb, test_emb, train_file, test_file)
+
 
 if __name__ == "__main__":
     main()

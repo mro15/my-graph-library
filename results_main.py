@@ -138,11 +138,16 @@ def main():
     all_f1 = {}
 
     s = "no_weight"
-    f = open(directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+    file_all_acc_no_weight = (
+        directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt'
+    )
+    f = open(file_all_acc, 'r')
     all_acc[s] = np.array([line.rstrip('\n') for line in f]).astype(np.float)
-    ff = open(directory + 'f1_' + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+    file_all_ff_no_weight = (
+        directory + 'f1_' + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt'
+    )
+    ff = open(file_all_ff, 'r')
     all_f1[s] = np.array([line.rstrip('\n') for line in ff]).astype(np.float)
-
 
     directory = (
         "results/next_level/" +
@@ -158,15 +163,28 @@ def main():
     default_output_dir = make_results_dir("plots/next_level/" + str(cut_percent) + "/" + args.dataset) 
     default_output = default_output_dir + "/" + args.dataset + "_" + str(args.window) + ".txt"
     acc_output = open(default_output, "w")
-    f1_output = open(default_output_dir  + "/" + "f1_" + args.dataset + "_" + str(args.window) + ".txt", "w")
+    f1_output = open(
+        file=default_output_dir  + "/" + "f1_" + args.dataset + "_" + str(args.window) + ".txt",
+        model='w'
+    )
     output_fig = default_output + ".png"
 
     strategies = ["pmi", "pmi_all", "llr", "llr_all", "chi_square", "chi_square_all"]
     #read results for each strategy
     for s in strategies:
-        f = open(directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+        f = open(
+            file=directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt',
+            mode='r'
+        )
         all_acc[s] = np.array([line.rstrip('\n') for line in f]).astype(np.float)
-        ff = open(directory + 'f1_' + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt', 'r')
+        file_all_acc_strategy = (
+            directory + 'f1_' + args.dataset + '_' + method
+            + '_' + s + '_' + str(args.window) + '.txt'
+        )
+        ff = open(
+            file=file_all_acc_strategy,
+            mode='r'
+        )
         all_f1[s] = np.array([line.rstrip('\n') for line in ff]).astype(np.float)
 
     no_wight_directory = (
