@@ -141,12 +141,12 @@ def main():
     file_all_acc_no_weight = (
         directory + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt'
     )
-    f = open(file_all_acc, 'r')
+    f = open(file_all_acc_no_weight, 'r')
     all_acc[s] = np.array([line.rstrip('\n') for line in f]).astype(np.float)
     file_all_ff_no_weight = (
         directory + 'f1_' + args.dataset + '_' + method + '_' + s + '_' + str(args.window) + '.txt'
     )
-    ff = open(file_all_ff, 'r')
+    ff = open(file_all_ff_no_weight, 'r')
     all_f1[s] = np.array([line.rstrip('\n') for line in ff]).astype(np.float)
 
     directory = (
@@ -165,7 +165,7 @@ def main():
     acc_output = open(default_output, "w")
     f1_output = open(
         file=default_output_dir  + "/" + "f1_" + args.dataset + "_" + str(args.window) + ".txt",
-        model='w'
+        mode='w'
     )
     output_fig = default_output + ".png"
 
