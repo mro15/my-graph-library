@@ -23,6 +23,7 @@ def read_args():
     parser.add_argument('--window', type=int, help='window size', required=True)
     return parser.parse_args()
 
+
 #plot mean and std for each strategy and metric
 def plot_f1_score(cuts, strategies, mean_f1, std_f1, dataset, window,output_fig):
     plt.style.use('seaborn')
@@ -46,11 +47,14 @@ def plot_f1_score(cuts, strategies, mean_f1, std_f1, dataset, window,output_fig)
             std_f1_bar.append(std_f1[s][str(c)])
             line_cut.append(c)
         plt.errorbar(
-            line_cut, line_f1, std_f1_bar, fmt='.',
-            label=legend_map[s], capsize=8, capthick=1
+            x=line_cut, y=line_f1, yerr=std_f1_bar, fmt='.',
+            label=legend_map[s], capsize=8, linewidth=1, linestyle='-',
+            capthick=1
         )
 
     ax.legend()
+    plt.xlabel("CUT PERCENTAGE")
+    plt.ylabel("F1-SCORE")
     plt.tight_layout()
     plt.savefig(output_fig)
     plt.close()
@@ -133,6 +137,7 @@ def main():
         window=args.window,
         output_fig=output_fig
     )
+
 
 if __name__ == "__main__":
     main()
