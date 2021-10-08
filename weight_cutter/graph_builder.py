@@ -52,6 +52,8 @@ class GraphBuilder:
         return local_weight, global_weight
 
     def build_graphs(self):
+        self.train_graphs = []
+        self.test_graphs = []
         local_weight, global_weight =  self.get_weight_function()
         if local_weight:
             self.local_weighted_graphs(local_weight)

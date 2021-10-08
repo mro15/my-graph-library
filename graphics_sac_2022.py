@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 from scipy.stats import wilcoxon
 from scipy.stats import ttest_ind
 
+
+from text_handler.dataset import Dataset
+from weight_cutter.weight_cutter import WeightCutter
+
 def read_args():
     parser = argparse.ArgumentParser(description="The parameters are:")
     parser.add_argument(
@@ -73,6 +77,57 @@ def mean_and_std(all_values):
 
     return mean, std
 
+def build_graphs(dataset, window, strategy, cut_percentage, emb_dim):
+    weight_cutter = WeightCutter(
+        emb_dim=emb_dim,
+        dataset=dataset,
+        strategy=strategy,
+        window_size=window,
+        cut_percentage=cut_percentage
+    )
+
+    weight_cutter.construct_graphs()
+    return weight_cutter
+
+def read_dataset(dataset):
+    d = Dataset(dataset)
+    dataset_readers={
+        "polarity": "read_polarity",
+        "webkb": "read_webkb",
+        "r8": "read_r8",
+        "20ng": "read_20ng"
+    }
+    read_function = getattr(d, dataset_readers.get(dataset))
+    read_function()
+    return d
+
+
+def vertex_and_edges(dataset, window, emb_dim, cut, strategy):
+
+    weight_cutter = build_graphs(
+        dataset=dataset,
+        window=window,
+        strategy=strategy,
+        cut_percentage=cut*100,
+        emb_dim=emb_dim
+    )
+
+    graphs = (
+            weight_cutter.graph_builder.train_graphs +
+            weight_cutter.graph_builder.test_graphs
+    )
+    print(len(graphs))
+    edges = [amount.number_of_edges() for amount in graphs]
+    nodes = [amount.number_of_nodes() for amount in graphs]
+    print(f'==== CUT: {cut} =====')
+    print('EDGES')
+    print(f'LEN: {len(edges)}, MEAN: {np.mean(edges)}, STD: {np.std(edges)}')
+    print('NODES')
+    print(f'LEN: {len(nodes)}, MEAN: {np.mean(nodes)}, STD: {np.std(nodes)}')
+    weight_cutter = None
+    graphs = None
+    return np.mean(edges), np.mean(nodes)
+
 
 def main():
     args = read_args()
@@ -128,6 +183,7 @@ def main():
 
     mean_f1, std_f1 = mean_and_std(all_f1)
 
+
     plot_f1_score(
         cuts=cuts,
         strategies=strategies,
@@ -137,6 +193,18 @@ def main():
         window=args.window,
         output_fig=output_fig
     )
+
+    
+    dataset_object = read_dataset(args.dataset)
+    dataset_object.pre_process_data()
+    strategy = 'llr_all'
+    for strategy in [strategy]:
+        bar_edges = []
+        bar_nodes = []
+        for cut in cuts[1:]:
+            edges, nodes = vertex_and_edges(dataset_object, args.window, args.emb_dim, cut, strategy)
+            bar_edges.append(edges)
+            bar_nodes.append(nodes)
 
 
 if __name__ == "__main__":
