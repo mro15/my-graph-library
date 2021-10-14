@@ -52,7 +52,7 @@ def plot_f1_score(cuts, strategies, mean_f1, std_f1, dataset, window,output_fig)
             line_cut.append(c)
         plt.errorbar(
             x=line_cut, y=line_f1, yerr=std_f1_bar, fmt='.',
-            label=legend_map[s], capsize=8, linewidth=1, linestyle='-',
+            label=legend_map[s], capsize=8, linewidth=1, linestyle='--',
             capthick=1
         )
 
@@ -193,19 +193,6 @@ def main():
         window=args.window,
         output_fig=output_fig
     )
-
-    
-    dataset_object = read_dataset(args.dataset)
-    dataset_object.pre_process_data()
-    strategy = 'llr_all'
-    for strategy in [strategy]:
-        bar_edges = []
-        bar_nodes = []
-        for cut in cuts[1:]:
-            edges, nodes = vertex_and_edges(dataset_object, args.window, args.emb_dim, cut, strategy)
-            bar_edges.append(edges)
-            bar_nodes.append(nodes)
-
 
 if __name__ == "__main__":
     main()

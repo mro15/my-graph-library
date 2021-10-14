@@ -141,8 +141,8 @@ def plot_bar_graph(cuts, bar_edges, bar_nodes, bar_time, bar_memory, output_fig)
     host.set_xlabel("CUT PERCENTAGE")
     host.set_ylabel("# EDGES")
     par3.set_ylabel("# NODES")
-    par1.set_ylabel("MEMORY")
-    par2.set_ylabel("TIME")
+    par1.set_ylabel("MEMORY USED [MB]")
+    par2.set_ylabel("TIME [s]")
 
 
     host.legend()
@@ -155,7 +155,7 @@ def plot_bar_graph(cuts, bar_edges, bar_nodes, bar_time, bar_memory, output_fig)
     par3.axis["left"].label.set_color('peru')
 
     #plt.tight_layout()
-    plt.savefig(output_fig)
+    plt.savefig(output_fig, format='eps')
     plt.close()
 
 
@@ -203,7 +203,7 @@ def main():
             bar_nodes.append(nodes)
             bar_time.append(time)
             bar_memory.append(memory)
-        output_fig = "sac_results/all_" + dataset + "_" + str(args.window) + strategy + ".png"
+        output_fig = "sac_results/all_" + dataset + "_" + str(args.window) + strategy + ".eps"
         plot_bar_graph(cuts, bar_edges, bar_nodes, bar_time, bar_memory, output_fig)
 
 if __name__ == "__main__":
