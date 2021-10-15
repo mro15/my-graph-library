@@ -145,7 +145,7 @@ def plot_bar_graph(cuts, bar_edges, bar_nodes, bar_time, bar_memory, output_fig)
     par2.set_ylabel("TIME [s]")
 
 
-    host.legend()
+    host.legend(loc='lower left')
     legend_str = [str(cut) for cut in cuts]
     #host.set_xticklabels(legend_str)
     plt.xticks(positions+(width/2), legend_str)

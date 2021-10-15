@@ -60,7 +60,7 @@ def plot_f1_score(cuts, strategies, mean_f1, std_f1, dataset, window,output_fig)
     plt.xlabel("CUT PERCENTAGE")
     plt.ylabel("F1-SCORE")
     plt.tight_layout()
-    plt.savefig(output_fig)
+    plt.savefig(output_fig, format='eps')
     plt.close()
 
 
@@ -136,7 +136,7 @@ def main():
 
     dataset = args.dataset 
 
-    output_fig = "sac_results/" + dataset + "_" + str(args.window) + ".png"
+    output_fig = "sac_results/" + dataset + "_" + str(args.window) + ".eps"
     strategies = ["no_weight", "chi_square", "chi_square_all", "llr", "llr_all", "pmi", "pmi_all"]
     all_f1 = {}
     for s in strategies:
