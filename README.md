@@ -4,9 +4,7 @@ This project contains the  implementation of my tests with graph of words.
 
 # Datasets
 - Polarity
-- IMDB
 - WEBKB
-- Ohsumed
 - 20 Newsgroups
 - R8
 

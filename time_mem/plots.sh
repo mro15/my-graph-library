@@ -1,8 +1,8 @@
 #! /bin/bash
 
-datasets="polarity webkb r8 20ng"
-windows="4 12 20"
-cuts="5 10 20"
+datasets="r8 webkb polarity"
+windows="12"
+cuts="5 10 20 30 50 70 80 90"
 
 for dt in $datasets; do
 	for w in $windows; do

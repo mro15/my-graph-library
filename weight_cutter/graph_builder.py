@@ -9,7 +9,8 @@ from nltk.collocations import BigramCollocationFinder as bcf
 # Internal imports
 from text_graph.text_graph import TextGraph
 
-class GraphBuilder():
+
+class GraphBuilder:
 
     train_graphs = []
     test_graphs = []
@@ -37,9 +38,7 @@ class GraphBuilder():
         self.cut_percentage = float(kwargs.get("cut_percentage"))/100.0
 
     def print_parameters(self):
-        """
-            Print the parameters used to build the graphs
-        """
+        """Print the parameters used to build the graphs"""
 
         print("Dataset:", self.dataset.dataset)
         print("strategy:", self.strategy)
@@ -53,6 +52,8 @@ class GraphBuilder():
         return local_weight, global_weight
 
     def build_graphs(self):
+        self.train_graphs = []
+        self.test_graphs = []
         local_weight, global_weight =  self.get_weight_function()
         if local_weight:
             self.local_weighted_graphs(local_weight)
@@ -86,7 +87,7 @@ class GraphBuilder():
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_edge(w1, w2)
-            if((len(pairs)<1) or (len(g.nodes())==0)):
+            if (len(pairs)<1) or (len(g.nodes())==0):
                 g.add_vertex(i[0])
             self.train_graphs.append(g.graph)
         print("FINISHED GRAPHS FROM TRAIN DATASET")
@@ -112,15 +113,13 @@ class GraphBuilder():
                         g.add_vertex(w1)
                         g.add_vertex(w2)
                         g.add_edge(w1, w2)
-            if((len(pairs)<1) or (len(g.nodes())==0)):
+            if (len(pairs)<1) or (len(g.nodes())==0):
                 g.add_vertex(i[0])
             self.test_graphs.append(g.graph)
         print("FINISHED GRAPHS FROM TEST DATASET")
 
     def local_weighted_graphs(self, weight_function):
-        """
-            Graphs with local edge weight
-        """
+        """Graphs with local edge weight"""
         
         print("BUILDING GRAPHS FROM TRAIN DATASET")
         progress = tqdm(self.dataset.train_data)
@@ -172,7 +171,7 @@ class GraphBuilder():
                                 g.add_vertex(w2)
                                 g.add_weight_edge(w1, w2, pmi)
 
-            if((len(pairs)<1) or (len(g.nodes())==0)):
+            if(len(pairs)<1) or (len(g.nodes())==0):
                 g.add_vertex(i[0])
             self.train_graphs.append(g.graph)
         print("FINISHED GRAPHS FROM TRAIN DATASET")
@@ -227,15 +226,13 @@ class GraphBuilder():
                                 g.add_vertex(w2)
                                 g.add_weight_edge(w1, w2, pmi)
 
-            if((len(pairs)<1) or (len(g.nodes())==0)):
+            if(len(pairs)<1) or (len(g.nodes())==0):
                 g.add_vertex(i[0])
             self.test_graphs.append(g.graph)
         print("FINISHED GRAPHS FROM TEST DATASET")
 
     def global_weighted_graphs(self, weight_function):
-        """
-            Graphs with global edge weight
-        """
+        """Graphs with global edge weight"""
         windows = bcf.from_words(self.all_docs_to_one_tokens_list(), window_size=self.window_size)
         weight_all = dict(windows.score_ngrams(weight_function))
         print("BUILDING GRAPHS FROM TRAIN DATASET")
@@ -293,7 +290,7 @@ class GraphBuilder():
                                 g.add_vertex(w2)
                                 g.add_weight_edge(w1, w2, pmi)
 
-            if((len(pairs)<1) or (len(g.nodes())==0)):
+            if(len(pairs)<1) or (len(g.nodes())==0):
                 g.add_vertex(i[0])
             self.train_graphs.append(g.graph)
         print("FINISHED GRAPHS FROM TRAIN DATASET")
@@ -353,16 +350,13 @@ class GraphBuilder():
                                 g.add_vertex(w2)
                                 g.add_weight_edge(w1, w2, pmi)
 
-            if((len(pairs)<1) or (len(g.nodes())==0)):
+            if (len(pairs)<1) or (len(g.nodes())==0):
                 g.add_vertex(i[0])
             self.test_graphs.append(g.graph)
         print("FINISHED GRAPHS FROM TEST DATASET")
                 
     def all_docs_to_one_tokens_list(self):
-        """
-            Converts all documents from dataset to a single document
-        """
+        """Converts all documents from dataset to a single document"""
         docs = self.dataset.train_data+self.dataset.test_data
         token_list = list(itertools.chain(*docs))
         return token_list
-

@@ -6,7 +6,8 @@ import string
 import collections
 import re
 
-class Dataset(object):
+
+class Dataset:
     def __init__(self, dataset):
         self.dataset = dataset
         self.train_data = None
@@ -16,6 +17,7 @@ class Dataset(object):
         self.stop_words = set(nltk.corpus.stopwords.words('english'))
         self.vocabulary = collections.Counter()
         self.classes = 0
+        self.text_data = None
 
     def read_ohsumed(self):
         dataset = "datasets/ohsumed/"
@@ -228,7 +230,8 @@ class Dataset(object):
         self.test_data = clean_texts
         print("PRE PROCESS: END")
 
-    def clean_str(self, string):
+    @staticmethod
+    def clean_str(string):
         string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
         string = re.sub(r"\'s", " \'s", string)
         string = re.sub(r"\'ve", " \'ve", string)
@@ -244,7 +247,7 @@ class Dataset(object):
         string = re.sub(r"\s{2,}", " ", string)
         return string.strip().lower()
 
-    #remove uncommon words
+    # remove uncommon words
     def remove_words(self):
         vocab, count = zip(*self.vocabulary.most_common())
         cutoff = count.index(4)

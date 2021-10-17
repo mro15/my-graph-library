@@ -3,7 +3,8 @@
 from representation_learning.rl_node2vec import MyNode2Vec
 import numpy as np
 
-class RepresentationLearning(object):
+
+class RepresentationLearning:
     def __init__(self, graph, method, weight, sentence, emb_dim):
         self.graph = graph
         self.method = method
@@ -29,11 +30,9 @@ class RepresentationLearning(object):
         mean_str = " ".join(str(e) for e in self.mean)
         median_str = " ".join(str(e) for e in self.median)
         std_str = " ".join(str(e) for e in self.standard_deviation)
-        return mean_str + " " + median_str + " "  + std_str + " "
+        return mean_str + " " + median_str + " " + std_str + " "
 
     def print_features(self):
         print("MEAN: ", self.mean)
         print("MEDIAN: ", self.median)
         print("STD: ", self.standard_deviation)
-
-
