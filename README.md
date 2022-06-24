@@ -11,7 +11,7 @@
 We implemented auxiliar scripts in the `scripts/` directory. To use these scripts, copy them to the project root directory (this directory). Example:
 
 ```sh
-    cp scripts/feature_runner.sh .
+cp scripts/feature_runner.sh .
 ```
 
 ## Requirements
@@ -25,19 +25,19 @@ There is a **optional** step, to use a virtual environment before install the de
 Install the virtualenv package:
 
 ```sh
-    pip install virtualenv
+pip install virtualenv
 ```
 
 Create a new environment:
 
 ```sh
-    virtualenv venv
+virtualenv venv
 ```
 
 Activate the new environment:
 
 ```sh
-    source venv/bin/activate
+source venv/bin/activate
 ```
 
 ### Install the dependencies:
@@ -46,7 +46,7 @@ The dependencies are listed in the `requirements.txt` file. To install, run:
 
 
 ```sh
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 
@@ -57,25 +57,28 @@ The dependencies are listed in the `requirements.txt` file. To install, run:
 To run the proposed approach:
 
 ```sh
-    ./feature_runner.sh
+./feature_runner.sh
 ```
 To run the baseline:
 
 ```sh
-    ./baseline_feature_runner.sh
+./baseline_feature_runner.sh
 ```
 
 ### Running a single estimation
 
 ```sh
-    mprof run --output <time_mem_output_file.dat> --interval 60 feature_generator.py --dataset <dataset> --strategy <weight_strategy> --window 12 --emb_dim 100  --cut_percent <cut_p>
+mprof run --output <time_mem_output_file.dat> --interval 60 feature_generator.py --dataset <dataset> --strategy <weight_strategy> --window 12 --emb_dim 100  --cut_percent <cut_p>
 ```
 
 Where:
 
 \<time_mem_output_file> : Output file to register time x memory values.
+
 \<dataset>              : Input dataset: polarity, r8 or webkb
+
 \<weight_strategy>      : Weight strategy: pmi, pmi_all,llr, llr_all, chi_square, chi_square_all (for proprosed weight approaches) or no_weight (for baseline)
+
 \<cut_p>          : Cut p: 5, 10, 20, 30, 50, 70, 90 (for the proposed approach) or 0 (for baseline)
 
 
@@ -85,25 +88,31 @@ Where:
 
 To run the proposed approach:
 
-```sh
-    ./cnn_runner.sh
-```
-To run the baseline:
 
 ```sh
-    ./baseline_cnn_runner.sh
+./cnn_runner.sh
+```
+
+
+To run the baseline:
+
+
+```sh
+./baseline_cnn_runner.sh
 ```
 
 ### Running a single estimation
 
 ```sh
-    python3 cnn_main.py --dataset <dataset> --cut_percent <cut_p> --strategy <weight_strategy> --window 12 --emb_dim 100
+python3 cnn_main.py --dataset <dataset> --cut_percent <cut_p> --strategy <weight_strategy> --window 12 --emb_dim 100
 ```
 
 Where:
 
 \<dataset>              : Input dataset: polarity, r8 or webkb
+
 \<weight_strategy>      : Weight strategy: pmi, pmi_all,llr, llr_all, chi_square, chi_square_all (for proprosed weight approaches) or no_weight (for baseline)
+
 \<cut_p>          : Cut p: 5, 10, 20, 30, 50, 70, 90 (for the proposed approach) or 0 (for baseline)
 
 
@@ -116,7 +125,7 @@ This script performs for a dataset and cut p, the calculation of the 10-fold mea
 For example, runnin the `results_main.py` script as:
 
 ```sh
-    python results_main.py --dataset r8 --emb_dim 100 --window 12 --cut_percent 50
+python results_main.py --dataset r8 --emb_dim 100 --window 12 --cut_percent 50
 ```
 
 will generate the file: `plots/next_level/0.05/polarity/f1_polarity_12.txt`, containing:
