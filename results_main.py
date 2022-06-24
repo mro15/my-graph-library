@@ -42,8 +42,9 @@ def mean_and_std(all_values, output):
     for i in list(all_values.keys()):
         mean[i] = np.mean(all_values[i])
         std[i] = np.std(all_values[i])
-        line = str(i)+","+str(mean[i]*100)+","+str(std[i])+"\n"
+        line = f'{str(i)},{str(mean[i]*100)},{str(std[i])}\n'
         print(line)
+        print(f'${(mean[i]*100):.2f}$')
         output.write(line)
 
     return mean, std
@@ -159,7 +160,6 @@ def main():
         "/"
     )
 
-    #strategies = ["no_weight", "pmi_1990", "pmi_1990_all", "freq", "freq_all"]
     default_output_dir = make_results_dir("plots/next_level/" + str(cut_percent) + "/" + args.dataset) 
     default_output = default_output_dir + "/" + args.dataset + "_" + str(args.window) + ".txt"
     acc_output = open(default_output, "w")
@@ -169,7 +169,7 @@ def main():
     )
     output_fig = default_output + ".png"
 
-    strategies = ["pmi", "pmi_all", "llr", "llr_all", "chi_square", "chi_square_all"]
+    strategies = ["chi_square", "chi_square_all", "llr", "llr_all", "pmi", "pmi_all"]
     #read results for each strategy
     for s in strategies:
         f = open(

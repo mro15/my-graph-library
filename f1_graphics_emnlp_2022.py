@@ -31,7 +31,7 @@ def read_args():
 #plot mean and std for each strategy and metric
 def plot_f1_score(cuts, strategies, mean_f1, std_f1, dataset, window,output_fig):
     plt.style.use('seaborn')
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6.5,4))
     legend_map = {
         "no_weight": "UNWEIGHTED",
         "pmi": "LOCAL PMI",
@@ -57,9 +57,10 @@ def plot_f1_score(cuts, strategies, mean_f1, std_f1, dataset, window,output_fig)
         )
 
     ax.legend()
-    plt.xlabel("CUT PERCENTAGE")
-    plt.ylabel("F1-SCORE")
+    plt.xlabel("CUT PERCENTAGE", fontsize='large', fontweight='bold')
+    plt.ylabel("F1-SCORE", fontsize='large', fontweight='bold')
     plt.tight_layout()
+    #fig.subplots_adjust(wspace=None, hspace=None)
     plt.savefig(output_fig, format='eps')
     plt.close()
 
@@ -136,7 +137,7 @@ def main():
 
     dataset = args.dataset 
 
-    output_fig = "sac_results/" + dataset + "_" + str(args.window) + ".eps"
+    output_fig = "emnlp_2022_results/" + dataset + "_" + str(args.window) + "emnlp.eps"
     strategies = ["no_weight", "chi_square", "chi_square_all", "llr", "llr_all", "pmi", "pmi_all"]
     all_f1 = {}
     for s in strategies:
