@@ -8,7 +8,8 @@
 - 20 Newsgroups
 
 # Reproducing the experiments
-We implemented auxiliar scripts in the `scripts/` directory. To use these scripts, copy them to the project root directory (this directory). Example:
+
+We implemented auxiliary scripts in the `scripts/` directory. To use these scripts, copy them to the project root directory (this directory). Example:
 
 ```sh
 cp scripts/feature_runner.sh .
@@ -118,11 +119,9 @@ Where:
 
 ## Evaluation
 
+The `results_main.py` script file implements the evaluation component. This script calculates - for a dataset and cut p - the 10-fold mean f1 score for all weight strategies and the baseline and also runs the Wilcoxon test comparing each weight strategy with the baseline. These results are printed in the console running the script (for example, the Linux terminal), and also, the results are written to output files in the `plots/next_level/<cut p>/<dataset>` directory, in txt files name as `f1_polarity_12.txt`
 
-The evaluation is implemented on `results_main.py` file.
-This script performs for a dataset and cut p, the calculation of the 10-fold mean f1 score for all weight strategies and the baseline, and also, runs the Wilcoxon test comparing each weight strategy with the baseline. This results are printed in the console runing the script (for example the linux terminal) and also the results are writen to output files in the `plots/next_level/<cut p>/<dataset>` directory, in txt files name as `f1_polarity_12.txt`
-
-For example, runnin the `results_main.py` script as:
+For example, running the `results_main.py` script as:
 
 ```sh
 python results_main.py --dataset r8 --emb_dim 100 --window 12 --cut_percent 50
@@ -141,14 +140,15 @@ pmi,79.42541259746658,0.03398688281606517,p=0.16015625
 pmi_all,78.89614764450108,0.046800758344722936,p=0.275390625
 ```
 
+
 Where:
 
-The first line contains the mean f1 score and the standard deviation for the baseline (no_weight).
-And the other lines contain for each weight strategy the mean f1 score and the standard deviation and the p value for the Wilcoxon test compared to the baseline.
+The first line contains the mean f1 score and the standard deviation for the baseline (no_weight). The other lines contain for each weight strategy the mean f1 score, the standard deviation, and the p-value for the Wilcoxon test compared to the baseline.
 
-The `results_main.py` runs for a single estimation on a combination of dataset and cut p. To run the evaluation for all experiments, run:
+The `results_main.py` runs for a single estimation on a combination of a dataset and cut p. To run the evaluation for all experiments, run:
+
 
 ```sh
-    ./plot_f1.sh
+./plot_f1.sh
 ```
 
