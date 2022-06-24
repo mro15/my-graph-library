@@ -1,10 +1,9 @@
 #! /bin/bash
 
 dim="100"
-windows="4 12 20"
+windows="12"
 strategies="no_weight"
-#datasets="r8 webkb polarity"
-datasets="20ng"
+datasets="r8 webkb polarity"
 methods="node2vec"
 cuts="0"
 time_interval="60"
