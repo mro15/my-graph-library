@@ -29,22 +29,31 @@ def read_args():
     )
     return parser.parse_args()
 
-def wilcoxon_test(x, y):
-    print(wilcoxon(x, y))
+def wilcoxon_test(x, y, show=True):
+    result = wilcoxon(x, y)
+    if show:
+        print(result)
+    return result
 
 def student_test(x, y):
     print(ttest_ind(x, y))
 
 #calculate mean and std for metrics
-def mean_and_std(all_values, output):
+def mean_and_std(all_values, output, run_test=False):
     mean = {}
     std = {}
     for i in list(all_values.keys()):
         mean[i] = np.mean(all_values[i])
         std[i] = np.std(all_values[i])
-        line = str(i)+","+str(mean[i]*100)+","+str(std[i])+"\n"
+        line = f'{str(i)},{str(mean[i]*100)},{str(std[i])}'
+        if run_test:
+            if not i == "no_weight":
+                x = all_values["no_weight"]
+                y = all_values[i]
+                test_result = wilcoxon_test(x, y, False)
+                line = f'{line},p={test_result[1]}'
         print(line)
-        output.write(line)
+        output.write(f'{line}\n')
 
     return mean, std
 
@@ -159,7 +168,6 @@ def main():
         "/"
     )
 
-    #strategies = ["no_weight", "pmi_1990", "pmi_1990_all", "freq", "freq_all"]
     default_output_dir = make_results_dir("plots/next_level/" + str(cut_percent) + "/" + args.dataset) 
     default_output = default_output_dir + "/" + args.dataset + "_" + str(args.window) + ".txt"
     acc_output = open(default_output, "w")
@@ -169,7 +177,7 @@ def main():
     )
     output_fig = default_output + ".png"
 
-    strategies = ["pmi", "pmi_all", "llr", "llr_all", "chi_square", "chi_square_all"]
+    strategies = ["chi_square", "chi_square_all", "llr", "llr_all", "pmi", "pmi_all"]
     #read results for each strategy
     for s in strategies:
         f = open(
@@ -196,11 +204,11 @@ def main():
     )
 
     strategies = ["no_weight", "pmi", "pmi_all", "llr", "llr_all", "chi_square", "chi_square_all"]
-    statistical_tests(all_acc, all_f1, args.window, strategies)
     print('==== ACCURACY ====')
     mean_acc, std_acc = mean_and_std(all_acc, acc_output)
     print('==== F1 SCORE ====')
-    mean_f1, std_f1 = mean_and_std(all_f1, f1_output)
+    mean_f1, std_f1 = mean_and_std(all_f1, f1_output, True)
+    statistical_tests(all_acc, all_f1, args.window, strategies)
 
     plot_graphic(
         strategies=strategies,

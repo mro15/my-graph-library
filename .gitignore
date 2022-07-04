@@ -81,3 +81,5 @@ datasets
 graphs/
 graphs
 venv
+.idea/
+.python-version
